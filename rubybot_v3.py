@@ -160,13 +160,13 @@ async def on_ready():
 
     for s in client.servers:
         authed_servers = [
-        358806463139020810, #Moderation United
-        232218346999775232, #lwu
-        245789672842723329, #TABUU
-        290270624558088192 #Minda
+        "358806463139020810", #Moderation United
+        "232218346999775232", #lwu
+        "245789672842723329", #TABUU
+        "290270624558088192" #Minda
         ]
         if s.id not in authed_servers:
-            await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! Leaving. ")
+            await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
             await client.leave_server(s)
 
     print('Logged in as')
