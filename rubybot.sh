@@ -1,12 +1,12 @@
-cd ~/discord/rubybot/
+cd ~/rubybot-v3/
 echo Rubybot.sh started
-cp rubybot_2.py rubybot_2.py.pre.bak
+cp rubybot_v3.py rubybot_v3.pre.bak
 echo starting up at `date`
 
-python3 rubybot_2.py
+python3 rubybot_v3.py
 
 echo Crashed at `date`
 
-cp rubybot_2.py rubybot_2.py.post.bak
+cp rubybot_v3.py rubybot_v3.post.bak
 
 bash rubybot.sh 
