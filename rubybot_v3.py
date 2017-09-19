@@ -15,9 +15,7 @@ import datetime
 import sys
 
 #TODO: Make sure all image assets point to the asset folder
-#TODO: Discrete logs for server/channel filestructure
 #TODO: Modular command system
-#TODO: Migrate fully to python 3.6
 
 
 class Unbuffered(object):
