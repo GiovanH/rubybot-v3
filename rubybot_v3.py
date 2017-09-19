@@ -128,9 +128,9 @@ eprint("Parsing rubybot core routines")
 
 def logpath(message):
     if message.server != None:
-        _dir = "~/logs/" + message.channel.server.name + "/" + message.channel.name
+        _dir = "logs/" + message.channel.server.name + "/" + message.channel.name
     else:
-        _dir = "~/logs/direct_messages/" + message.author.name
+        _dir = "logs/direct_messages/" + message.author.name
     try:
         os.makedirs(_dir)
     except:
