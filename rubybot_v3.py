@@ -17,6 +17,7 @@ import sys
 #TODO: Make sure all image assets point to the asset folder
 #TODO: Discrete logs for server/channel filestructure
 #TODO: Modular command system
+#TODO: Migrate fully to python 3.6
 
 
 class Unbuffered(object):
@@ -42,7 +43,7 @@ def eprint(*args, **kwargs):
     # print(*args, file=sys.stderr, **kwargs)
     print("[Logging:]" + t)
     print(*args, **kwargs)
-    # yield from client.send_message(gio, *args)
+    # await client.send_message(gio, *args)
 
 
 def pickleLoad(filename):
@@ -56,6 +57,8 @@ def pickleSave(object, filename):
     pickle.dump(object, filehandler)
 
 
+
+#TODO: Load tokens from file instead
 client = discord.Client()
 token = 'MjQzMjczMDY4MTI5MTU3MTIw.CvslNg.7BCNEfVTd03zqmwHJdtEFIdOhoQ'
 helpstr = "Generic commands:\n```!rules\n!frog\n!callvote option1, option2[, option3...]\n!roll NdN\n!roll NdN[ droplowest N] | [ - N] [ +N]\n!help```\nAdmin:\n```!restart```\nLoreweaver Universe commands:\n```!pronoun [F|M|T|He|She|They|Him|Her|Them|Other] (This is a toggle!)\n!rules```\nAdmin:\n```!bad @user [@user2...]\n!shadowbad @user [@user2...]\n!frug @user [@user2...]\n!frugnuke N\n!unbad @user\n!unbad @user1 [user2...]\n!verify @user1 [user2...]```\nMinda Chat Commands:\nNone.\nTaboo commands:\n```!sortinghat```\nAdmin:\n```!reteam\n!unteam```\nList of PM commands:\n```!help```"
@@ -71,8 +74,7 @@ froggos = ["Not ready yet! Try again!"]
 #@client.event
 
 
-@asyncio.coroutine
-def loadfrogs():
+async def loadfrogs():
     global froggos
     froggos = []
     with open('frogs.frog') as f:
@@ -129,11 +131,10 @@ eprint("Parsing rubybot core routines")
 
 
 @client.event
-@asyncio.coroutine
-def on_ready():
+async def on_ready():
     print('Initializing rubybot listeners')
     global gio
-    gio = yield from client.get_user_info('233017800854077441')
+    gio = await client.get_user_info('233017800854077441')
 
     global workingChan
     workingChan = client.get_channel('232218346999775232')
@@ -167,8 +168,8 @@ def on_ready():
 
     global rubybot_member
     rubybot_member = lwu_server.get_member('243273068129157120')
-    yield from client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
-    # yield from client.change_presence(game=discord.Game(name="[gio pls add meme]",type=1))
+    await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
+    # await client.change_presence(game=discord.Game(name="[gio pls add meme]",type=1))
 
     print('Logged in as')
     print(client.user.name)
@@ -176,9 +177,9 @@ def on_ready():
     print('------')
     print(workingChan)
     print('------')
-    # yield from client.send_message(gio, "Can you hear me?")
+    # await client.send_message(gio, "Can you hear me?")
     #gameplayed = MAIN.get("gameplayed", "github/freiheit/discord_rss_bot")
-    # yield from client.change_status(game=discord.Game(name=gameplayed))
+    # await client.change_status(game=discord.Game(name=gameplayed))
 
     print("Creating event loops")
     loop = asyncio.get_event_loop()
@@ -204,59 +205,54 @@ def on_ready():
     modrole.update({minda_server:  discord.utils.get(minda_server.roles, id='298390405169283072'),
                     lwu_server: discord.utils.get(lwu_server.roles, id='282703165269213184')})
     print("Only frogs now")
-    yield from loadfrogs()
+    await loadfrogs()
     print("Fully loaded.")
 
 # IM GOING TO REPORT THIS
 
 
 @client.event
-@asyncio.coroutine
-def on_message_edit(before, after):
+async def on_message_edit(before, after):
     global gio
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|'
     print(fmt.format(after, before))
-    # yield from client.send_message(gio, fmt.format(after, before))
+    # await client.send_message(gio, fmt.format(after, before))
 
 
 @client.event
-@asyncio.coroutine
-def on_message_delete(message):
+async def on_message_delete(message):
     global gio
     fmt = '{0.author.name} has deleted the message: |{0.content}|'
     print(fmt.format(message))
-# yield from client.send_message(gio, fmt.format(message))
+# await client.send_message(gio, fmt.format(message))
 
 
 @client.event
-@asyncio.coroutine
-def on_member_join(member):
+async def on_member_join(member):
     if member.server is taboo_server:
         eprint("setting manual team")
         target = member
         newteam = random.choice(taboo_teams)
-        yield from client.add_roles(target, newteam)
+        await client.add_roles(target, newteam)
         for role in taboo_teams:
-            # yield from client.send_message(message.channel, "Checking role " + role.name)
+            # await client.send_message(message.channel, "Checking role " + role.name)
             if (role in target.roles) and (role is not newteam):
-                # yield from client.send_message(message.channel, "Removing role " + role.name)
-                yield from client.remove_roles(target, role)
-        yield from client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
+                # await client.send_message(message.channel, "Removing role " + role.name)
+                await client.remove_roles(target, role)
+        await client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
 
 
-@asyncio.coroutine
-def fear_of_death(freq):
+async def fear_of_death(freq):
     global timezone
     while not client.is_closed:
-        os.system("date >> ping.log")
-        os.system("ping discordapp.com -c 1 >> ping.log")
+        # os.system("date >> ping.log")
+        # os.system("ping discordapp.com -c 1 >> ping.log")
 
         os.system("rm kill.sh 2>> /dev/null")
-        yield from asyncio.sleep(freq)
+        await asyncio.sleep(freq)
 
 
-@asyncio.coroutine
-def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
+async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
     global timezone
     mostRecentID = '1'
     lastPostID = '0'
@@ -276,58 +272,53 @@ def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
                     print(mostRecentID)
                     print("Update")
                     print(lastPostID)
-                    yield from client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
-                    # yield from client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
-                    yield from client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ Update! ]]")
+                    await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
+                    # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
+                    await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ Update! ]]")
             lastPostID = mostRecentID
         except:
             eprint("error fetching status for " + feedurl)
             # raise
         # No matter what goes wrong, wait same time and try again
         finally:
-            yield from asyncio.sleep(freq)
+            await asyncio.sleep(freq)
 
 
-@asyncio.coroutine
-def alias_peribot():
+async def alias_peribot():
     # fp = open("peribot.png", 'rb')
     # filestream = fp.read()
-    # yield from client.edit_profile(avatar=filestream)
+    # await client.edit_profile(avatar=filestream)
     # fp.close()
-    yield from client.change_nickname(rubybot_member, "Peribot")
+    await client.change_nickname(rubybot_member, "Peribot")
 
 
-@asyncio.coroutine
-def alias_rubybot():
+async def alias_rubybot():
     # fp = open("rubybot.png", 'rb')
     # filestream = fp.read()
-    # yield from client.edit_profile(avatar=filestream)
+    # await client.edit_profile(avatar=filestream)
     # fp.close()
-    yield from client.change_nickname(rubybot_member, "rubybot")
+    await client.change_nickname(rubybot_member, "rubybot")
 
 
-@asyncio.coroutine
-def alias_sapphy():
+async def alias_sapphy():
     # fp = open("sapphire.jpg", 'rb')
     # filestream = fp.read()
-    # yield from client.edit_profile(avatar=filestream)
+    # await client.edit_profile(avatar=filestream)
     # fp.close()
-    yield from client.change_nickname(rubybot_member, "sapphy")
+    await client.change_nickname(rubybot_member, "sapphy")
 
 
-@asyncio.coroutine
-def alias_peribot():
+async def alias_peribot():
     # fp = open("peribot.png", 'rb')
     # filestream = fp.read()
-    # yield from client.edit_profile(avatar=filestream)
+    # await client.edit_profile(avatar=filestream)
     # fp.close()
-    yield from client.change_nickname(rubybot_member, "Peribot")
+    await client.change_nickname(rubybot_member, "Peribot")
 
 # ismod boolean (modrole[message.server] in user.roles)
 
 
-@asyncio.coroutine
-def bad(target, source, channel):
+async def bad(target, source, channel):
     global rubybot_member
     global modchat
     if source == None:
@@ -339,60 +330,59 @@ def bad(target, source, channel):
     i = 1
     while (badr not in target.roles):
         i = i + 1
-        yield from client.add_roles(target, badr)
+        await client.add_roles(target, badr)
     while (verified in target.roles):
         i = i + 1
-        yield from client.remove_roles(target, verified)
+        await client.remove_roles(target, verified)
     # if verified in target.roles:
         # eprint("unverifying")
-        # yield from client.remove_roles(target, verified)
+        # await client.remove_roles(target, verified)
     # else:
         # eprint("Already unverified?")
-        # yield from client.send_message(modchat, "For unknown reasons, badding may not have removed verified frogs role. Please check. ")
+        # await client.send_message(modchat, "For unknown reasons, badding may not have removed verified frogs role. Please check. ")
 
     # if badr not in target.roles:
         # eprint("badding")
-        # yield from client.add_roles(target, badr)
+        # await client.add_roles(target, badr)
     # else:
         # eprint("Already bad?")
 
-    yield from alias_peribot()
-    yield from client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
-    yield from client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
-    # yield from client.send_message(target, "You have been a bad frog." )
+    await alias_peribot()
+    await client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
+    await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
+    # await client.send_message(target, "You have been a bad frog." )
 
-    yield from alias_rubybot()
+    await alias_rubybot()
 
 
-@asyncio.coroutine
-def unbad(target, source):
+async def unbad(target, source):
     global modchat
     badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
     verified = discord.utils.get(lwu_server.roles, id='275764022547316736')
 
-    # yield from client.remove_roles(target, badr)
+    # await client.remove_roles(target, badr)
     i = 1
     while (badr in target.roles):
         i = i + 1
-        yield from client.remove_roles(target, badr)
+        await client.remove_roles(target, badr)
     while (verified not in target.roles):
         i = i + 1
-        yield from client.add_roles(target, verified)
+        await client.add_roles(target, verified)
 
     # if badr in target.roles:
-        # yield from client.remove_roles(target, badr)
+        # await client.remove_roles(target, badr)
     # else:
         # eprint("Already unbadded?")
 
     # if verified not in target.roles:
-        # yield from client.add_roles(target, verified)
+        # await client.add_roles(target, verified)
     # else:
         # eprint("Already verified?")
 
-    yield from alias_sapphy()
-    # yield from client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
-    yield from client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
-    yield from alias_rubybot()
+    await alias_sapphy()
+    # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
+    await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
+    await alias_rubybot()
 
 
 def rollplain(rolls, limit):
@@ -418,8 +408,7 @@ def totalDelimitedList(list, number):
     return total
 
 
-@asyncio.coroutine
-def rollcmd(dice, message):
+async def rollcmd(dice, message):
     print(dice)
     bonus = 0
     drops = 0
@@ -428,30 +417,30 @@ def rollcmd(dice, message):
         try:
             dice, bonus = map(str, dice.split(' +'))
         except Exception:
-            yield from client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N")
+            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N")
             return
     if "droplowest" in dice:
         try:
             dice, drops = map(str, dice.split(' droplowest '))
         except Exception:
-            yield from client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N droplowest N")
+            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N droplowest N")
             return
     elif "-" in dice:
         try:
             dice, drops = map(str, dice.split(' -'))
         except Exception:
-            yield from client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N -N")
+            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N -N")
             return
     try:
         rolls, limit = map(int, dice.split('d'))
     except Exception:
-        yield from client.send_message(message.channel, "I don't understand that dice notation! The format is NdN")
+        await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN")
         return
 
     bonus = int(bonus)
     drops = int(drops)
     if rolls + limit > 200:
-        yield from client.send_message(message.channel, "Hey, I'm really sorry " + message.author.mention + ", but I can't do that in my head. :c")
+        await client.send_message(message.channel, "Hey, I'm really sorry " + message.author.mention + ", but I can't do that in my head. :c")
         return
 
     try:
@@ -459,15 +448,15 @@ def rollcmd(dice, message):
         resultsstr = ', '.join(str(result[r]) for r in range(rolls))
         if rolls > 1:
             total = totalDelimitedList(result, drops)
-            yield from client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + "\nTotal: " + str(total) + "+ " + str(bonus) + " = " + str(total + bonus))
+            await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + "\nTotal: " + str(total) + "+ " + str(bonus) + " = " + str(total + bonus))
         else:
-            yield from client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
+            await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
 
     except Exception:
-        yield from client.send_message(message.channel, message.author.mention + "  :? ")
+        await client.send_message(message.channel, message.author.mention + "  :? ")
         return
     if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
-        yield from client.send_message(message.channel, "you meme-loving degenerates.")
+        await client.send_message(message.channel, "you meme-loving degenerates.")
 
 
 def isMod(server, member):
@@ -487,8 +476,7 @@ def isMod(server, member):
 
 
 @client.event
-@asyncio.coroutine
-def on_message(message):
+async def on_message(message):
     #print("" + message.author.name + ": " + message.content)
     #tic = time.clock()
     # we do not want the bot to react to itself
@@ -515,17 +503,17 @@ def on_message(message):
         print("[" + message.channel.server.name + "]\t" + "[" + message.channel.name +
               "] " + message.author.name + ": " + message.clean_content)
         if message.content.startswith('!frog refresh') and isMod(message.server, message.author):
-            yield from loadfrogs()
-            yield from client.delete_message(message)
+            await loadfrogs()
+            await client.delete_message(message)
             return
         if message.content.startswith('!error'):
             m = [1]
             print(m[3])
 
         if message.content.startswith('!react'):
-            msg = yield from client.send_message(message.channel, 'React to me')
-            res = yield from client.wait_for_reaction(message=msg)
-            yield from client.send_message(message.channel, '{0.reaction.emoji} {0.reaction.emoji.id} {0.reaction.emoji.name} {0.reaction.emoji.url}!'.format(res))
+            msg = await client.send_message(message.channel, 'React to me')
+            res = await client.wait_for_reaction(message=msg)
+            await client.send_message(message.channel, '{0.reaction.emoji} {0.reaction.emoji.id} {0.reaction.emoji.name} {0.reaction.emoji.url}!'.format(res))
 
         if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
             reaction_dict = random.choice(
@@ -534,41 +522,41 @@ def on_message(message):
 
             msg = ' '.join(message.content.split()[1:])  # Remove first word
             options = msg.split(', ')  # Create list from CSV
-            pollmsg = yield from client.send_message(message.channel, "Loading...")
+            pollmsg = await client.send_message(message.channel, "Loading...")
             i = 0
             polltext = message.author.name + " has called a vote:"
             for o in options:
                 polltext = polltext + "\n" + reaction_dict[i] + ": " + o
-                yield from client.add_reaction(pollmsg, reaction_dict[i])
+                await client.add_reaction(pollmsg, reaction_dict[i])
                 i = i + 1
-            yield from client.edit_message(pollmsg, new_content=polltext)
+            await client.edit_message(pollmsg, new_content=polltext)
 
         if message.content.startswith('!roles'):
             for role in message.server.roles:
-                yield from client.send_message(message.author, str(role.name) + ": " + str(role.id))
+                await client.send_message(message.author, str(role.name) + ": " + str(role.id))
 
         if message.content.startswith('!serverdata'):
-            yield from client.send_message(message.author, message.server.name)
-            yield from client.send_message(message.author, message.server.id)
-            yield from client.send_message(message.author, message.server.icon)
-            yield from client.delete_message(message)
+            await client.send_message(message.author, message.server.name)
+            await client.send_message(message.author, message.server.id)
+            await client.send_message(message.author, message.server.icon)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!sayhere'):
             msg = message.content[9:]
             print(type(msg))
-            yield from client.send_message(message.channel, msg)
-            yield from client.delete_message(message)
+            await client.send_message(message.channel, msg)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!frog') or message.content.startswith('!contraband'):
-            yield from client.send_typing(message.channel)
+            await client.send_typing(message.channel)
             global froggos
             frogi = (random.randint(1, len(froggos) - 1))
             froggo = froggos[frogi]
             #froggo = random.choice(froggos)
-            yield from client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
-            yield from client.delete_message(message)
+            await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
+            await client.delete_message(message)
             return
         elif message.content.startswith('!addfrog '):
             msg = message.content[9:]
@@ -578,7 +566,7 @@ def on_message(message):
                 try:
                     urllib.request.urlopen(msg).read()
                 except (urllib.error.HTTPError, urllib.error.URLError) as e:
-                    yield from client.send_message(message.channel, "Check failed! Bad link? Details in log.")
+                    await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
                     traceback.print_exc(file=sys.stdout)
                     # return
                 fh = open(frogfile, 'a')
@@ -586,63 +574,63 @@ def on_message(message):
                 froggos.extend(msg)
                 uniqlines = set(open(frogfile).readlines())
                 open(frogfile, 'w').writelines(set(uniqlines))
-                yield from loadfrogs()
-                yield from client.send_message(message.channel, "Success!")
+                await loadfrogs()
+                await client.send_message(message.channel, "Added frog.")
             else:
-                yield from client.send_message(message.channel, "You do not have permissions to add a frog!")
+                await client.send_message(message.channel, "You do not have permissions to add a frog!")
         # if message.content.startswith('!love'):
-            # yield from client.send_message(message.channel, "You both love me and I love both of you! <:smolrubes:243554386549276672>")
-            # yield from client.delete_message(message)
+            # await client.send_message(message.channel, "You both love me and I love both of you! <:smolrubes:243554386549276672>")
+            # await client.delete_message(message)
 
         if message.content.startswith('!emoji'):
             for s in message.server.emojis:
-                yield from client.send_message(message.author, s.name + ", " + s.id)
+                await client.send_message(message.author, s.name + ", " + s.id)
 
         if message.content.startswith('!pm '):
             if (modrole[message.server] in message.author.roles):
                 for m in message.mentions:
                     target = m
                     if target == None:
-                        yield from client.send_message(message.channel, "No such person")
-                        yield from clientF.delete_message(message)
+                        await client.send_message(message.channel, "No such person")
+                        await clientF.delete_message(message)
                         return
                     print(message.content)
                     content = message.content[27:]
                     print(content)
-                    yield from client.send_message(target, content)
-                yield from client.delete_message(message)
+                    await client.send_message(target, content)
+                await client.delete_message(message)
             return
 
         if message.content.startswith('!restart') or message.content.startswith('!reload'):
             if isMod(message.server, message.author):
-                yield from client.change_presence(game=discord.Game(name="swords", type=1))
-                yield from client.delete_message(message)
+                await client.change_presence(game=discord.Game(name="swords", type=1))
+                await client.delete_message(message)
                 os.system("killall python3")
             return
         if message.content.startswith('!permissions'):
             eprint("!permissions called")
             if isMod(message.server, message.author):
-                yield from client.send_message(message.channel, "Administrator")
+                await client.send_message(message.channel, "Administrator")
             else:
-                yield from client.send_message(message.channel, "User")
+                await client.send_message(message.channel, "User")
             return
 
         # and message.channel == client.get_channel('240266528417775617'):
         if message.content.startswith('!roll'):
             dice = message.content[6:]
-            yield from alias_peribot()
-            yield from rollcmd(dice, message)
-            yield from alias_rubybot()
+            await alias_peribot()
+            await rollcmd(dice, message)
+            await alias_rubybot()
             return
 
         if "rubybot" in message.content.lower():
             print("Debug: i've beem nentioned!")
-            yield from client.add_reaction(message, emotes[message.server])
+            await client.add_reaction(message, emotes[message.server])
             return
 
         if "boobybot" in message.content.lower():
             print("Debug: i've beem nentioned!")
-            yield from client.add_reaction(message, blushemote[message.server])
+            await client.add_reaction(message, blushemote[message.server])
             return
 
     if message.server == taboo_server:
@@ -650,51 +638,51 @@ def on_message(message):
             eprint("setting manual team")
             for target in message.mentions:
                 newteam = random.choice(taboo_teams)
-                yield from client.add_roles(target, newteam)
+                await client.add_roles(target, newteam)
                 for role in taboo_teams:
-                    # yield from client.send_message(message.channel, "Checking role " + role.name)
+                    # await client.send_message(message.channel, "Checking role " + role.name)
                     if (role in target.roles) and (role is not newteam):
-                        # yield from client.send_message(message.channel, "Removing role " + role.name)
-                        yield from client.remove_roles(target, role)
-                yield from client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
-            yield from client.delete_message(message)
+                        # await client.send_message(message.channel, "Removing role " + role.name)
+                        await client.remove_roles(target, role)
+                await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
+            await client.delete_message(message)
         elif message.content.startswith('!unteam') and isMod(message.server, message.author):
             eprint("unsetting manual team")
             for target in message.mentions:
                 for role in taboo_teams:
                     if (role in target.roles):
-                        yield from client.remove_roles(target, role)
-            yield from client.delete_message(message)
+                        await client.remove_roles(target, role)
+            await client.delete_message(message)
         elif message.content.startswith('!sortinghat'):
-            yield from client.send_message(message.channel, "I will now determine your alignment.")
+            await client.send_message(message.channel, "I will now determine your alignment.")
             target = message.author
             newteam = random.choice(taboo_teams)
             for role in taboo_teams:
-                # yield from client.send_message(message.channel, "Checking role " + role.name)
+                # await client.send_message(message.channel, "Checking role " + role.name)
                 if (role in target.roles):
-                    yield from client.send_message(message.channel, "It is too late. The die has been cast.")
+                    await client.send_message(message.channel, "It is too late. The die has been cast.")
                     return
-            yield from client.add_roles(target, newteam)
-            yield from client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
+            await client.add_roles(target, newteam)
+            await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
 
     if message.server == lwu_server:
 
         if message.content.startswith('!rules'):
-            yield from client.send_typing(message.channel)
-            yield from client.send_message(message.channel, rulestxt)
-            yield from client.delete_message(message)
+            await client.send_typing(message.channel)
+            await client.send_message(message.channel, rulestxt)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!pins'):
-            yield from client.send_typing(message.channel)
-            pins = yield from client.logs_from(client.get_channel('278819870106451969'), limit=400)
+            await client.send_typing(message.channel)
+            pins = await client.logs_from(client.get_channel('278819870106451969'), limit=400)
             pinmsg = random.choice(list(pins))
             pinurl = pinmsg.content
             print(pinmsg.timestamp)
             for a in pinmsg.attachments:
                 pinurl += "\n" + a.get('url')
-            yield from client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
-            yield from client.delete_message(message)
+            await client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!bad'):
@@ -705,11 +693,11 @@ def on_message(message):
                 else:
                     target = message.author
                 if target == None:
-                    yield from client.send_message(message.channel, "No such person")
-                    yield from client.delete_message(message)
+                    await client.send_message(message.channel, "No such person")
+                    await client.delete_message(message)
                     return
-                yield from bad(target, message.author, message.channel)
-            yield from client.delete_message(message)
+                await bad(target, message.author, message.channel)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!shadowbad'):
@@ -720,11 +708,11 @@ def on_message(message):
                 else:
                     target = message.author
                 if target == None:
-                    yield from client.send_message(message.channel, "No such person")
-                    yield from client.delete_message(message)
+                    await client.send_message(message.channel, "No such person")
+                    await client.delete_message(message)
                     return
-                yield from bad(target, None, message.channel)
-            yield from client.delete_message(message)
+                await bad(target, None, message.channel)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!unbad'):
@@ -733,11 +721,11 @@ def on_message(message):
                     #msg = message.content[7:]
                     target = m
                     if target == None:
-                        yield from client.send_message(message.channel, "No such person")
-                        yield from client.delete_message(message)
+                        await client.send_message(message.channel, "No such person")
+                        await client.delete_message(message)
                         return
-                    yield from unbad(target, message.author)
-            yield from client.delete_message(message)
+                    await unbad(target, message.author)
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!frug '):
@@ -745,11 +733,11 @@ def on_message(message):
                 for m in message.mentions:
                     target = m
                     if target == None:
-                        yield from client.send_message(message.channel, "No such person")
-                        yield from client.delete_message(message)
+                        await client.send_message(message.channel, "No such person")
+                        await client.delete_message(message)
                         return
-                    yield from client.change_nickname(target, "frug")
-                yield from client.delete_message(message)
+                    await client.change_nickname(target, "frug")
+                await client.delete_message(message)
             return
 
         if message.content.startswith('!pronoun'):
@@ -772,24 +760,24 @@ def on_message(message):
             #eprint("pronoun role: " + role.name);
             try:
                 if role in message.author.roles:
-                    yield from client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
+                    await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
                     eprint(message.author.name + " has role " +
                            role.name + ", removing.")
-                    yield from client.remove_roles(message.author, role)
+                    await client.remove_roles(message.author, role)
                 else:
                     if role not in message.author.roles:
-                        yield from client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
+                        await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
                         eprint(message.author.name +
                                " does not have role " + role.name + ", adding.")
-                        yield from client.add_roles(message.author, role)
+                        await client.add_roles(message.author, role)
             except BaseException as e:
-                yield from client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
-            yield from client.delete_message(message)
+                await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!help'):
-            yield from client.send_message(message.author, helpstr)
-            yield from client.delete_message(message)
+            await client.send_message(message.author, helpstr)
+            await client.delete_message(message)
         if message.content.startswith('!verify'):
             if (modrole[message.server] in message.author.roles):
                 verified = discord.utils.get(
@@ -800,32 +788,32 @@ def on_message(message):
                         # eprint(member.name)
                         # eprint(role.name)
                     if verified not in member.roles:
-                        yield from client.add_roles(member, verified)
-                        yield from client.send_message(message.channel, "Verified user " + member.name)
+                        await client.add_roles(member, verified)
+                        await client.send_message(message.channel, "Verified user " + member.name)
                     else:
-                        yield from client.send_message(message.channel, "User is already verified: " + member.name)
-            yield from client.send_message(workingChan, "Please welcome new user " + member.mention + " to the server!")
-            yield from client.delete_message(message)
+                        await client.send_message(message.channel, "User is already verified: " + member.name)
+            await client.send_message(workingChan, "Please welcome new user " + member.mention + " to the server!")
+            await client.delete_message(message)
             return
 
         if message.content.startswith('!frugnuke '):
             if (modrole[message.server] in message.author.roles):
                 msg = message.content[10:]
                 print("Getting logs ")
-                logs = yield from client.logs_from(message.channel, int(msg))
+                logs = await client.logs_from(message.channel, int(msg))
 
                 print("Itterating  logs ")
                 for logmessage in logs:
                          # python will convert \n to os.linesep
-                    # yield from client.send_message(gio, message.author.name)
+                    # await client.send_message(gio, message.author.name)
 
                     try:
                         print("Targetting " + logmessage.author.name)
-                        yield from client.change_nickname(logmessage.author, "frug")
+                        await client.change_nickname(logmessage.author, "frug")
                     except BaseException as e:
                         print("error")
 
-                yield from client.delete_message(message)
+                await client.delete_message(message)
             return
 
     if message.server == None:  # Private Message
@@ -836,19 +824,19 @@ def on_message(message):
                 print(s.name + ", " + s.id)
 
         if message.content.startswith('!help'):
-            yield from client.send_message(message.author, helpstr)
+            await client.send_message(message.author, helpstr)
 
         if message.author == gio:
 
             if message.content.startswith('!mention'):
                 print(message.author.mention)
             if message.content.startswith('!hardreboot'):
-                yield from client.send_message(message.author, "Here goes!")
-                yield from client.send_message(message.author, os.system("sudo reboot"))
+                await client.send_message(message.author, "Here goes!")
+                await client.send_message(message.author, os.system("sudo reboot"))
                 return
             if message.content.startswith('!restart') or message.content.startswith('!reload'):
-                yield from client.change_presence(game=discord.Game(name="swords", type=1))
-                yield from client.delete_message(message)
+                await client.change_presence(game=discord.Game(name="swords", type=1))
+                await client.delete_message(message)
                 os.system("killall python3")
                 return
             if message.content.startswith('!eval'):
@@ -856,35 +844,35 @@ def on_message(message):
                 try:
                     eval(msg)
                 except BaseException as e:
-                    yield from client.send_message(message.author, str(e))
+                    await client.send_message(message.author, str(e))
 
             elif message.content.startswith('!syseval'):
                 msg = message.content[9:]
                 try:
                     os.system(msg)
                 except BaseException as e:
-                    yield from client.send_message(message.author, str(e))
+                    await client.send_message(message.author, str(e))
             elif message.content.startswith('!say'):
                 msg = message.content[5:]
                 print(type(msg))
-                yield from client.send_message(workingChan, msg)
+                await client.send_message(workingChan, msg)
 
             elif message.content.startswith('!avatar'):
                 msg = message.content[8:]
                 fp = open(msg, 'rb')
                 filestream = fp.read()
-                yield from client.edit_profile(avatar=filestream)
+                await client.edit_profile(avatar=filestream)
                 fp.close()
 
             elif message.content.startswith('!nick'):
                 nickname = message.content[6:]
-                yield from client.change_nickname(rubybot_member, nickname)
+                await client.change_nickname(rubybot_member, nickname)
 
             elif message.content.startswith('!smol'):
                 print("sending one smol")
-                yield from client.send_message(workingChan, "<" + emotes[lwu_server] + ">")
+                await client.send_message(workingChan, "<" + emotes[lwu_server] + ">")
 
-                # yield from client.send_message(workingChan, "<:smolrubes:243554386549276672>")
+                # await client.send_message(workingChan, "<:smolrubes:243554386549276672>")
 
             # elif message.content.startswith('!fakeupdate'):
                 #lastPostID = '1'
@@ -894,27 +882,27 @@ def on_message(message):
                 # r = r.decode()
                 # #re.search('article', r)
                 # mostRecentID = re.search('article.* data-post-id="(.*)"', r).group(1)
-                # yield from client.send_message(message.author, "```" + str(lastPostID) + "/" + str(mostRecentID) + "```")
+                # await client.send_message(message.author, "```" + str(lastPostID) + "/" + str(mostRecentID) + "```")
 
             elif message.content.startswith('!peribot'):
-                yield from alias_peribot()
+                await alias_peribot()
             elif message.content.startswith('!rubybot'):
-                yield from alias_rubybot()
+                await alias_rubybot()
             elif message.content.startswith('!sapphire'):
-                yield from alias_sapphy()
+                await alias_sapphy()
 
             elif message.content.startswith('!chan'):
                 msg = message.content[6:]
                 workingChan = client.get_channel(msg)
-                yield from client.send_message(message.author, workingChan.name)
+                await client.send_message(message.author, workingChan.name)
 
             elif message.content.startswith('!log'):
                 logno = int(message.content[5:])
                 for channel in lwu_server.channels:
-                    logs = yield from client.logs_from(channel, logno)
+                    logs = await client.logs_from(channel, logno)
                     f = open('/media/bluebook/logs/' +
                              channel.name + '.log', 'w')
-                    yield from client.send_message(message.author, "Logged " + channel.name)
+                    await client.send_message(message.author, "Logged " + channel.name)
                     for message in logs:
                         f.write(str(message.timestamp) + " " + message.author.name + ": " + message.content +
                                 ' ' + json.dumps(message.attachments) + '\n')  # python will convert \n to os.linesep
