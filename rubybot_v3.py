@@ -14,25 +14,21 @@ from time import gmtime, strftime
 import datetime
 import sys
 
-#TODO: Make sure all image assets point to the asset folder
-#TODO: Modular command system
+# TODO: Make sure all image assets point to the asset folder
+# TODO: Modular command system
 
 
 class Unbuffered(object):
     def __init__(self, stream):
         self.stream = stream
-
     def write(self, data):
         self.stream.write(data)
         self.stream.flush()
-
     def __getattr__(self, attr):
         return getattr(self.stream, attr)
 
-
 sys.stdout = Unbuffered(sys.stdout)
 sys.stderr = Unbuffered(sys.stderr)
-
 
 def eprint(*args, **kwargs):
     #global gio
@@ -43,33 +39,23 @@ def eprint(*args, **kwargs):
     print(*args, **kwargs)
     # await client.send_message(gio, *args)
 
-
 def pickleLoad(filename):
     filehandler = open("pickle/" + filename + ".obj", 'rb')
     object = pickle.load(filehandler)
     return object
 
-
 def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
 
-
-
-#TODO: Load tokens from file instead
+# TODO: Load tokens from file instead
 client = discord.Client()
 helpstr = "Generic commands:\n```!rules\n!frog\n!callvote option1, option2[, option3...]\n!roll NdN\n!roll NdN[ droplowest N] | [ - N] [ +N]\n!help```\nAdmin:\n```!restart```\nLoreweaver Universe commands:\n```!pronoun [F|M|T|He|She|They|Him|Her|Them|Other] (This is a toggle!)\n!rules```\nAdmin:\n```!bad @user [@user2...]\n!shadowbad @user [@user2...]\n!frug @user [@user2...]\n!frugnuke N\n!unbad @user\n!unbad @user1 [user2...]\n!verify @user1 [user2...]```\nMinda Chat Commands:\nNone.\nTaboo commands:\n```!sortinghat```\nAdmin:\n```!reteam\n!unteam```\nList of PM commands:\n```!help```"
 rulestxt = "**No politics, no porn, and no spoilers!**\n\nPlease keep discussion of things Lore hasn't seen yet to the spoilerchat! \n\nPlease don't push Lore on when he's doing an episode. It's stressful and unnecessary. Be polite! \n\n**Current important spoiler topics:** \n==No Undertale discussion *at all* outside the spoilerchat until he finishes the game\n==No Steven Universe past his latest liveblog\n==No Over the Garden Wall or Madoka Magica until he starts those liveblogs.\n if you're not certain about other things he could get spoiled on, go ahead and ask!\n\nPlease also keep all Homestuck talk to the Homestuck chat, as Minda is liveblogging it, and we all know how spoilery that can get.\n\nKeep nonsense-posting to The Pit, and **above all be excellent to each other.**"
 # client.get_channel('243261625304481793')
 
-# for message in client.logs_from(workingChan):
-#	say(message.content)
-
 global froggos
 froggos = ["Not ready yet! Try again!"]
-
-#@client.event
-
 
 async def loadfrogs():
     global froggos
@@ -88,7 +74,6 @@ async def loadfrogs():
     except:
         traceback.print_exc(file=sys.stdout)
         eprint("frog error, continuing")
-
     try:
         r = urllib.request.urlopen(
             "http://stickyfrogs.tumblr.com/tagged/frogfriends").read()
@@ -98,7 +83,6 @@ async def loadfrogs():
     except:
         traceback.print_exc(file=sys.stdout)
         eprint("frog error, continuing")
-
     try:
         r = urllib.request.urlopen(
             "https://twitter.com/stickyfrogs/media").read()
@@ -108,7 +92,6 @@ async def loadfrogs():
     except:
         traceback.print_exc(file=sys.stdout)
         eprint("frog error, continuing")
-
     try:
         r = urllib.request.urlopen(
             "https://twitter.com/Litoriacaeru/media").read()
@@ -120,12 +103,9 @@ async def loadfrogs():
         eprint("frog error, continuing")
     froggos = list(set(froggos))
 
-
-# print(froggos)
 eprint("Parsing rubybot core routines")
 
 # Initialization
-
 def logpath(message):
     if message.server != None:
         _dir = "logs/" + message.channel.server.name + "/" + message.channel.name
@@ -216,28 +196,22 @@ async def on_ready():
     print("Fully loaded.")
 
 # IM GOING TO REPORT THIS
-
-
 @client.event
 async def on_message_edit(before, after):
     message = after
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
     with open(logpath(message), 'a+') as file:
         file.write(fmt.format(after, before))
-        file.write("[" + message.channel.name +"] " + message.author.name + ": " + message.clean_content + "\n")
-
-    # await client.send_message(gio, fmt.format(after, before))
-
+        file.write("[" + message.channel.name + "] " +
+                   message.author.name + ": " + message.clean_content + "\n")
 
 @client.event
 async def on_message_delete(message):
     fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
     with open(logpath(message), 'a+') as file:
         file.write(fmt.format(message))
-        file.write("[" + message.channel.name +"] " + message.author.name + ": " + message.clean_content + "\n")
-
-# await client.send_message(gio, fmt.format(message))
-
+        file.write("[" + message.channel.name + "] " +
+                   message.author.name + ": " + message.clean_content + "\n")
 
 @client.event
 async def on_member_join(member):
@@ -253,16 +227,13 @@ async def on_member_join(member):
                 await client.remove_roles(target, role)
         await client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
 
-
 async def fear_of_death(freq):
     global timezone
     while not client.is_closed:
         # os.system("date >> ping.log")
         # os.system("ping discordapp.com -c 1 >> ping.log")
-
         os.system("rm kill.sh 2>> /dev/null")
         await asyncio.sleep(freq)
-
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
     global timezone
@@ -295,14 +266,12 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
         finally:
             await asyncio.sleep(freq)
 
-
 async def alias_peribot():
     # fp = open("peribot.png", 'rb')
     # filestream = fp.read()
     # await client.edit_profile(avatar=filestream)
     # fp.close()
     await client.change_nickname(rubybot_member, "Peribot")
-
 
 async def alias_rubybot():
     # fp = open("rubybot.png", 'rb')
@@ -311,14 +280,12 @@ async def alias_rubybot():
     # fp.close()
     await client.change_nickname(rubybot_member, "rubybot")
 
-
 async def alias_sapphy():
     # fp = open("sapphire.jpg", 'rb')
     # filestream = fp.read()
     # await client.edit_profile(avatar=filestream)
     # fp.close()
     await client.change_nickname(rubybot_member, "sapphy")
-
 
 async def alias_peribot():
     # fp = open("peribot.png", 'rb')
@@ -327,18 +294,13 @@ async def alias_peribot():
     # fp.close()
     await client.change_nickname(rubybot_member, "Peribot")
 
-# ismod boolean (modrole[message.server] in user.roles)
-
-
 async def bad(target, source, channel):
     global rubybot_member
     global modchat
     if source == None:
         source = rubybot_member
-
     badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
     verified = discord.utils.get(lwu_server.roles, id='275764022547316736')
-
     i = 1
     while (badr not in target.roles):
         i = i + 1
@@ -346,32 +308,16 @@ async def bad(target, source, channel):
     while (verified in target.roles):
         i = i + 1
         await client.remove_roles(target, verified)
-    # if verified in target.roles:
-        # eprint("unverifying")
-        # await client.remove_roles(target, verified)
-    # else:
-        # eprint("Already unverified?")
-        # await client.send_message(modchat, "For unknown reasons, badding may not have removed verified frogs role. Please check. ")
-
-    # if badr not in target.roles:
-        # eprint("badding")
-        # await client.add_roles(target, badr)
-    # else:
-        # eprint("Already bad?")
-
     await alias_peribot()
     await client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
     await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
     # await client.send_message(target, "You have been a bad frog." )
-
     await alias_rubybot()
-
 
 async def unbad(target, source):
     global modchat
     badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
     verified = discord.utils.get(lwu_server.roles, id='275764022547316736')
-
     # await client.remove_roles(target, badr)
     i = 1
     while (badr in target.roles):
@@ -380,22 +326,10 @@ async def unbad(target, source):
     while (verified not in target.roles):
         i = i + 1
         await client.add_roles(target, verified)
-
-    # if badr in target.roles:
-        # await client.remove_roles(target, badr)
-    # else:
-        # eprint("Already unbadded?")
-
-    # if verified not in target.roles:
-        # await client.add_roles(target, verified)
-    # else:
-        # eprint("Already verified?")
-
     await alias_sapphy()
     # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
     await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
     await alias_rubybot()
-
 
 def rollplain(rolls, limit):
     resultarray = [(random.randint(1, limit)) for r in range(rolls)]
@@ -403,22 +337,17 @@ def rollplain(rolls, limit):
     resultarray.sort()
     return resultarray
 
-
 def totalDelimitedList(list, number):
     total = 0
-
     #array2 = [int(i) for i in list.split(',')]
     array2 = list
     array2.sort()
     print(array2)
     array2 = array2[number:]
-
     print(array2)
-
     for i in array2:
         total += i
     return total
-
 
 async def rollcmd(dice, message):
     print(dice)
@@ -448,13 +377,11 @@ async def rollcmd(dice, message):
     except Exception:
         await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN")
         return
-
     bonus = int(bonus)
     drops = int(drops)
     if rolls + limit > 200:
         await client.send_message(message.channel, "Hey, I'm really sorry " + message.author.mention + ", but I can't do that in my head. :c")
         return
-
     try:
         result = rollplain(rolls, limit)
         resultsstr = ', '.join(str(result[r]) for r in range(rolls))
@@ -463,13 +390,11 @@ async def rollcmd(dice, message):
             await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + "\nTotal: " + str(total) + "+ " + str(bonus) + " = " + str(total + bonus))
         else:
             await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
-
     except Exception:
         await client.send_message(message.channel, message.author.mention + "  :? ")
         return
     if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
         await client.send_message(message.channel, "you meme-loving degenerates.")
-
 
 def isMod(server, member):
     global gio
@@ -484,9 +409,6 @@ def isMod(server, member):
     # eprint(ismod)
     return ismod
 
-# Main reacion loop
-
-
 @client.event
 async def on_message(message):
     #print("" + message.author.name + ": " + message.content)
@@ -494,7 +416,6 @@ async def on_message(message):
     # we do not want the bot to react to itself
     if message.author == client.user:
         return
-
     global gio
     global server
     global rulestxt
@@ -509,12 +430,11 @@ async def on_message(message):
     global emotes
     global blushemote
 
-    # if message.server != None:
-
     if message.server != None:  # Generic Server
         with open(logpath(message), 'a+') as file:
-            file.write("[" + message.channel.name +"] " + message.author.name + ": " + message.clean_content + "\n")
-        #print("[" + message.channel.server.name + "]\t" + )
+            file.write("[" + message.channel.name + "] " +
+                       message.author.name + ": " + message.clean_content + "\n")
+        # print("[" + message.channel.server.name + "]\t" + )
         if message.content.startswith('!frog refresh') and isMod(message.server, message.author):
             await loadfrogs()
             await client.delete_message(message)
@@ -679,7 +599,6 @@ async def on_message(message):
             await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
 
     if message.server == lwu_server:
-
         if message.content.startswith('!rules'):
             await client.send_typing(message.channel)
             await client.send_message(message.channel, rulestxt)
@@ -831,7 +750,8 @@ async def on_message(message):
 
     if message.server == None:  # Private Message
         with open(logpath(message), 'a+') as file:
-            file.write("[" + message.author.name +"]: " + message.clean_content + "\n")
+            file.write("[" + message.author.name + "]: " +
+                       message.clean_content + "\n")
 
         if message.content.startswith('!emoji'):
             for s in client.get_all_emojis():
@@ -841,7 +761,6 @@ async def on_message(message):
             await client.send_message(message.author, helpstr)
 
         if message.author == gio:
-
             if message.content.startswith('!mention'):
                 print(message.author.mention)
             if message.content.startswith('!hardreboot'):
@@ -922,10 +841,6 @@ async def on_message(message):
                                 ' ' + json.dumps(message.attachments) + '\n')  # python will convert \n to os.linesep
                     f.close()
                 print("done")
-
-    #toc = time.clock()
-    #print("Message processing time: " + str(toc - tic))
-
 
 eprint("Parsed Code")
 
