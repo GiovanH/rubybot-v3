@@ -9,4 +9,4 @@ echo Crashed at `date`
 
 cp rubybot_v3.py rubybot_v3.post.bak
 
-bash rubybot.sh 
+bash rubybot.sh &
