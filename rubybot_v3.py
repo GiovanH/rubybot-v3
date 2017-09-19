@@ -158,6 +158,17 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
     # await client.change_presence(game=discord.Game(name="[gio pls add meme]",type=1))
 
+    for s in client.servers:
+        authed_servers = [
+        358806463139020810, #Moderation United
+        232218346999775232, #lwu
+        245789672842723329, #TABUU
+        290270624558088192 #Minda
+        ]
+        if s.id not in authed_servers:
+            await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! Leaving. ")
+            await client.leave_server(s)
+
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
