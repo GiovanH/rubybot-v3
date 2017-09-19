@@ -11,7 +11,7 @@ import json
 import os
 import time
 from time import gmtime, strftime
-from datetime import datetime
+import datetime
 import sys
 
 #TODO: Make sure all image assets point to the asset folder
@@ -38,7 +38,7 @@ sys.stderr = Unbuffered(sys.stderr)
 
 def eprint(*args, **kwargs):
     #global gio
-    t = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # print(t, file=sys.stderr, **kwargs)
     # print(*args, file=sys.stderr, **kwargs)
     print("[Logging:]" + t)
@@ -60,7 +60,6 @@ def pickleSave(object, filename):
 
 #TODO: Load tokens from file instead
 client = discord.Client()
-token = 'MjQzMjczMDY4MTI5MTU3MTIw.CvslNg.7BCNEfVTd03zqmwHJdtEFIdOhoQ'
 helpstr = "Generic commands:\n```!rules\n!frog\n!callvote option1, option2[, option3...]\n!roll NdN\n!roll NdN[ droplowest N] | [ - N] [ +N]\n!help```\nAdmin:\n```!restart```\nLoreweaver Universe commands:\n```!pronoun [F|M|T|He|She|They|Him|Her|Them|Other] (This is a toggle!)\n!rules```\nAdmin:\n```!bad @user [@user2...]\n!shadowbad @user [@user2...]\n!frug @user [@user2...]\n!frugnuke N\n!unbad @user\n!unbad @user1 [user2...]\n!verify @user1 [user2...]```\nMinda Chat Commands:\nNone.\nTaboo commands:\n```!sortinghat```\nAdmin:\n```!reteam\n!unteam```\nList of PM commands:\n```!help```"
 rulestxt = "**No politics, no porn, and no spoilers!**\n\nPlease keep discussion of things Lore hasn't seen yet to the spoilerchat! \n\nPlease don't push Lore on when he's doing an episode. It's stressful and unnecessary. Be polite! \n\n**Current important spoiler topics:** \n==No Undertale discussion *at all* outside the spoilerchat until he finishes the game\n==No Steven Universe past his latest liveblog\n==No Over the Garden Wall or Madoka Magica until he starts those liveblogs.\n if you're not certain about other things he could get spoiled on, go ahead and ask!\n\nPlease also keep all Homestuck talk to the Homestuck chat, as Minda is liveblogging it, and we all know how spoilery that can get.\n\nKeep nonsense-posting to The Pit, and **above all be excellent to each other.**"
 # client.get_channel('243261625304481793')
@@ -129,6 +128,16 @@ eprint("Parsing rubybot core routines")
 
 # Initialization
 
+def logpath(message):
+    if message.server != None:
+        _dir = "~/logs/" + message.channel.server.name + "/" + message.channel.name
+    else:
+        _dir = "~/logs/direct_messages/" + message.author.name
+    try:
+        os.makedirs(_dir)
+    except:
+        pass
+    return _dir + "/" + str(datetime.date.today()) + ".log"
 
 @client.event
 async def on_ready():
@@ -213,17 +222,22 @@ async def on_ready():
 
 @client.event
 async def on_message_edit(before, after):
-    global gio
-    fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|'
-    print(fmt.format(after, before))
+    message = after
+    fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
+    with open(logpath(message), 'a+') as file:
+        file.write(fmt.format(after, before))
+        file.write("[" + message.channel.name +"] " + message.author.name + ": " + message.clean_content + "\n")
+
     # await client.send_message(gio, fmt.format(after, before))
 
 
 @client.event
 async def on_message_delete(message):
-    global gio
-    fmt = '{0.author.name} has deleted the message: |{0.content}|'
-    print(fmt.format(message))
+    fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
+    with open(logpath(message), 'a+') as file:
+        file.write(fmt.format(message))
+        file.write("[" + message.channel.name +"] " + message.author.name + ": " + message.clean_content + "\n")
+
 # await client.send_message(gio, fmt.format(message))
 
 
@@ -500,8 +514,9 @@ async def on_message(message):
     # if message.server != None:
 
     if message.server != None:  # Generic Server
-        print("[" + message.channel.server.name + "]\t" + "[" + message.channel.name +
-              "] " + message.author.name + ": " + message.clean_content)
+        with open(logpath(message), 'a+') as file:
+            file.write("[" + message.channel.name +"] " + message.author.name + ": " + message.clean_content + "\n")
+        #print("[" + message.channel.server.name + "]\t" + )
         if message.content.startswith('!frog refresh') and isMod(message.server, message.author):
             await loadfrogs()
             await client.delete_message(message)
@@ -817,7 +832,8 @@ async def on_message(message):
             return
 
     if message.server == None:  # Private Message
-        print("PM [" + message.author.name + "]: " + message.content)
+        with open(logpath(message), 'a+') as file:
+            file.write("[" + message.author.name +"]: " + message.clean_content + "\n")
 
         if message.content.startswith('!emoji'):
             for s in client.get_all_emojis():
@@ -914,6 +930,10 @@ async def on_message(message):
 
 
 eprint("Parsed Code")
+
+filehandler = open("token", 'rb')
+token = pickle.load(filehandler)
+filehandler.close()
 
 while True:
     try:
