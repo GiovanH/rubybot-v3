@@ -205,6 +205,7 @@ async def on_ready():
     print("Only frogs now")
     await loadfrogs()
     print("Fully loaded.")
+    await client.send_message(gio, "I just came online. ")
 
 # IM GOING TO REPORT THIS
 @client.event
