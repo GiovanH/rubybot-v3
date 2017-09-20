@@ -869,8 +869,10 @@ while True:
     except RuntimeError:
         eprint("Major fault - Runtime error")
         traceback.print_exc(file=sys.stdout)
+        await client.send_message(gio, traceback.format_exc())
         os.system("killall python3")
     except Exception:
         eprint("Major fault - unknown cause")
         traceback.print_exc(file=sys.stdout)
+        await client.send_message(gio, traceback.format_exc())
         #os.system("killall python3")
