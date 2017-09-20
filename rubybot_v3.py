@@ -19,17 +19,19 @@ import sys
 # TODO: !throw command to make a general error
 # TODO: Rewrite exception handling
 
-class Unbuffered(object):
-    def __init__(self, stream):
-        self.stream = stream
-    def write(self, data):
-        self.stream.write(data)
-        self.stream.flush()
-    def __getattr__(self, attr):
-        return getattr(self.stream, attr)
-
-sys.stdout = Unbuffered(sys.stdout)
-sys.stderr = Unbuffered(sys.stderr)
+#Unbuffered technique
+#May no longer be required?
+# class Unbuffered(object):
+#     def __init__(self, stream):
+#         self.stream = stream
+#     def write(self, data):
+#         self.stream.write(data)
+#         self.stream.flush()
+#     def __getattr__(self, attr):
+#         return getattr(self.stream, attr)
+#
+# sys.stdout = Unbuffered(sys.stdout)
+# sys.stderr = Unbuffered(sys.stderr)
 
 def eprint(*args, **kwargs):
     #global gio
@@ -108,6 +110,7 @@ eprint("Parsing rubybot core routines")
 
 # Initialization
 def logpath(message):
+    """Given a message, returns a filepath for logging that message."""
     if message.server != None:
         _dir = "logs/" + message.channel.server.name + "/" + message.channel.name
     else:
@@ -120,6 +123,7 @@ def logpath(message):
 
 @client.event
 async def on_ready():
+    """Called when discord logs in. Initializes things. """
     print('Initializing rubybot listeners')
     global gio
     gio = await client.get_user_info('233017800854077441')
