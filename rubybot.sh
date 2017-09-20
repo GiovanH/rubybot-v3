@@ -12,6 +12,7 @@ do
 	echo Crashed at `date`
 
 	cp rubybot_v3.py rubybot_v3.post.bak
-	
+
+	echo Reloading git
 	sh git.sh
 done

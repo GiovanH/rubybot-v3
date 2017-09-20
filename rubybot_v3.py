@@ -227,7 +227,7 @@ async def on_message_delete(message):
 @client.event
 async def on_member_join(member):
     if member.server is taboo_server:
-        eprint("setting manual team")
+        eprint("setting team in taboo")
         target = member
         newteam = random.choice(taboo_teams)
         await client.add_roles(target, newteam)
@@ -260,9 +260,9 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
             mostRecentID = re.search(
                 'article.* data-post-id="(.*)"', r).group(1)
             if mostRecentID != lastPostID:
-                eprint(lastPostID + " -> " + mostRecentID)
-                print(lastPostID + " -> " + mostRecentID)
                 if '0' != lastPostID:
+                    eprint(lastPostID + " -> " + mostRecentID)
+                    print(lastPostID + " -> " + mostRecentID)
                     print(mostRecentID)
                     print("Update")
                     print(lastPostID)
@@ -427,19 +427,19 @@ async def on_message(message):
     # we do not want the bot to react to itself
     if message.author == client.user:
         return
-    global gio
-    global server
-    global rulestxt
-    global workingChan
+    # global gio
+    # global server
+    # global rulestxt
+    # global workingChan
     #global lastPostID
-    global rubybot_member
-    global lwu_server
-
-    global taboo_server
-    global taboo_teams
-
-    global emotes
-    global blushemote
+    # global rubybot_member
+    # global lwu_server
+    #
+    # global taboo_server
+    # global taboo_teams
+    #
+    # global emotes
+    # global blushemote
 
     if message.server != None:  # Generic Server
         with open(logpath(message), 'a+') as file:
@@ -549,10 +549,11 @@ async def on_message(message):
             if isMod(message.server, message.author):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
                 await client.delete_message(message)
+                eprint("Restarting rubybot at request of " + message.author.name)
                 os.system("killall python3")
             return
         if message.content.startswith('!permissions'):
-            eprint("!permissions called")
+            #eprint("!permissions called")
             if isMod(message.server, message.author):
                 await client.send_message(message.channel, "Administrator")
             else:
@@ -780,7 +781,7 @@ async def on_message(message):
                 return
             if message.content.startswith('!restart') or message.content.startswith('!reload'):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
-                await client.delete_message(message)
+                eprint("Restarting rubybot at request of " + message.author.name)
                 os.system("killall python3")
                 return
             if message.content.startswith('!eval'):
@@ -869,6 +870,6 @@ while True:
         traceback.print_exc(file=sys.stdout)
         os.system("killall python3")
     except Exception:
-        eprint("Major fault")
+        eprint("Major fault - unknown cause")
         traceback.print_exc(file=sys.stdout)
         #os.system("killall python3")
