@@ -858,9 +858,8 @@ async def on_message(message):
 
 eprint("Parsed Code")
 
-filehandler = open("token", 'rb')
-token = pickle.load(filehandler)
-filehandler.close()
+with open("token", 'rb') as filehandler:
+    token = pickle.load(filehandler)
 
 while True:
     try:
@@ -870,10 +869,10 @@ while True:
     except RuntimeError:
         eprint("Major fault - Runtime error")
         traceback.print_exc(file=sys.stdout)
-        await client.send_message(gio, traceback.format_exc())
+        traceback.print_exc(file=last_trace.log)
         os.system("killall python3")
     except Exception:
         eprint("Major fault - unknown cause")
         traceback.print_exc(file=sys.stdout)
-        await client.send_message(gio, traceback.format_exc())
+        traceback.print_exc(file=last_trace.log)
         #os.system("killall python3")
