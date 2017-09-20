@@ -16,7 +16,8 @@ import sys
 
 # TODO: Make sure all image assets point to the asset folder
 # TODO: Modular command system
-
+# TODO: !throw command to make a general error
+# TODO: Rewrite exception handling
 
 class Unbuffered(object):
     def __init__(self, stream):
