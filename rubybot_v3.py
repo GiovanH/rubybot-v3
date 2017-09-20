@@ -206,7 +206,9 @@ async def on_ready():
     print("Only frogs now")
     await loadfrogs()
     print("Fully loaded.")
-    await client.send_message(gio, "I just came online. ")
+    await client.send_message(gio, "I just came online. Last error:")
+    with open("last_trace.log") as f:
+        await client.send_message(gio, f.read())
 
 # IM GOING TO REPORT THIS
 @client.event
