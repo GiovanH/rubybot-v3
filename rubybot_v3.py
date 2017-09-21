@@ -883,6 +883,8 @@ while True:
         with open("last_trace.log","w") as f:
             f.write(tb)
         break
+    except SystemExit as e:
+        break
     except BaseException as e:
         eprint("Major fault - unknown cause")
         eprint(e.message)
