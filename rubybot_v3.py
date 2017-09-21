@@ -884,6 +884,7 @@ while True:
             f.write(tb)
         break
     except SystemExit as e:
+        eprint("Exiting peacefully")
         break
     except BaseException as e:
         eprint("Major fault - unknown cause")
