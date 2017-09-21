@@ -19,8 +19,8 @@ import sys
 # TODO: !throw command to make a general error
 # TODO: Rewrite exception handling
 
-#Unbuffered technique
-#May no longer be required?
+# Unbuffered technique
+# May no longer be required?
 # class Unbuffered(object):
 #     def __init__(self, stream):
 #         self.stream = stream
@@ -33,6 +33,7 @@ import sys
 # sys.stdout = Unbuffered(sys.stdout)
 # sys.stderr = Unbuffered(sys.stderr)
 
+
 def eprint(*args, **kwargs):
     #global gio
     t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -42,14 +43,17 @@ def eprint(*args, **kwargs):
     print(*args, **kwargs)
     # await client.send_message(gio, *args)
 
+
 def pickleLoad(filename):
     filehandler = open("pickle/" + filename + ".obj", 'rb')
     object = pickle.load(filehandler)
     return object
 
+
 def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
+
 
 # TODO: Load tokens from file instead
 client = discord.Client()
@@ -59,6 +63,7 @@ rulestxt = "**No politics, no porn, and no spoilers!**\n\nPlease keep discussion
 
 global froggos
 froggos = ["Not ready yet! Try again!"]
+
 
 async def loadfrogs():
     global froggos
@@ -109,6 +114,8 @@ async def loadfrogs():
 eprint("Parsing rubybot core routines")
 
 # Initialization
+
+
 def logpath(message):
     """Given a message, returns a filepath for logging that message."""
     if message.server != None:
@@ -120,6 +127,7 @@ def logpath(message):
     except:
         pass
     return _dir + "/" + str(datetime.date.today()) + ".log"
+
 
 @client.event
 async def on_ready():
@@ -165,10 +173,10 @@ async def on_ready():
 
     for s in client.servers:
         authed_servers = [
-        "358806463139020810", #Moderation United
-        "232218346999775232", #lwu
-        "245789672842723329", #TABUU
-        "290270624558088192" #Minda
+            "358806463139020810",  # Moderation United
+            "232218346999775232",  # lwu
+            "245789672842723329",  # TABUU
+            "290270624558088192"  # Minda
         ]
         if s.id not in authed_servers:
             await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
@@ -205,13 +213,16 @@ async def on_ready():
     #print("Only frogs now")
     await loadfrogs()
     print("Fully loaded.")
-    with open("last_trace.log","r") as tracefile:
+    #import pdb; pdb.set_trace()
+    with open("last_trace.log", "r") as tracefile:
         await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
-        # with open("last_trace.log",'w', newline='\r\n') as tracefile2:
-        #     tracefile2.write("Nothing known! No exception written to file!")
-        #     tracefile2.write("Sorry.")
+    with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
+        tracefile2.write("Nothing known! No exception written to file!")
+        tracefile2.flush()
 
 # IM GOING TO REPORT THIS
+
+
 @client.event
 async def on_message_edit(before, after):
     message = after
@@ -221,6 +232,7 @@ async def on_message_edit(before, after):
         file.write("[" + message.channel.name + "] " +
                    message.author.name + ": " + message.clean_content + "\n")
 
+
 @client.event
 async def on_message_delete(message):
     fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
@@ -228,6 +240,7 @@ async def on_message_delete(message):
         file.write(fmt.format(message))
         file.write("[" + message.channel.name + "] " +
                    message.author.name + ": " + message.clean_content + "\n")
+
 
 @client.event
 async def on_member_join(member):
@@ -243,6 +256,7 @@ async def on_member_join(member):
                 await client.remove_roles(target, role)
         await client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
 
+
 async def fear_of_death(freq):
     global timezone
     while not client.is_closed:
@@ -250,6 +264,7 @@ async def fear_of_death(freq):
         # os.system("ping discordapp.com -c 1 >> ping.log")
         os.system("rm kill.sh 2>> /dev/null")
         await asyncio.sleep(freq)
+
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
     global timezone
@@ -282,12 +297,14 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
         finally:
             await asyncio.sleep(freq)
 
+
 async def alias_peribot():
     # fp = open("peribot.png", 'rb')
     # filestream = fp.read()
     # await client.edit_profile(avatar=filestream)
     # fp.close()
     await client.change_nickname(rubybot_member, "Peribot")
+
 
 async def alias_rubybot():
     # fp = open("rubybot.png", 'rb')
@@ -296,6 +313,7 @@ async def alias_rubybot():
     # fp.close()
     await client.change_nickname(rubybot_member, "rubybot")
 
+
 async def alias_sapphy():
     # fp = open("sapphire.jpg", 'rb')
     # filestream = fp.read()
@@ -303,12 +321,14 @@ async def alias_sapphy():
     # fp.close()
     await client.change_nickname(rubybot_member, "sapphy")
 
+
 async def alias_peribot():
     # fp = open("peribot.png", 'rb')
     # filestream = fp.read()
     # await client.edit_profile(avatar=filestream)
     # fp.close()
     await client.change_nickname(rubybot_member, "Peribot")
+
 
 async def bad(target, source, channel):
     global rubybot_member
@@ -330,6 +350,7 @@ async def bad(target, source, channel):
     # await client.send_message(target, "You have been a bad frog." )
     await alias_rubybot()
 
+
 async def unbad(target, source):
     global modchat
     badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
@@ -347,11 +368,13 @@ async def unbad(target, source):
     await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
     await alias_rubybot()
 
+
 def rollplain(rolls, limit):
     resultarray = [(random.randint(1, limit)) for r in range(rolls)]
     #result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     resultarray.sort()
     return resultarray
+
 
 def totalDelimitedList(list, number):
     total = 0
@@ -364,6 +387,7 @@ def totalDelimitedList(list, number):
     for i in array2:
         total += i
     return total
+
 
 async def rollcmd(dice, message):
     print(dice)
@@ -412,6 +436,7 @@ async def rollcmd(dice, message):
     if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
         await client.send_message(message.channel, "you meme-loving degenerates.")
 
+
 def isMod(server, member):
     global gio
     global modrole
@@ -424,6 +449,7 @@ def isMod(server, member):
     ismod = (modrole[server] in member.roles)
     # eprint(ismod)
     return ismod
+
 
 @client.event
 async def on_message(message):
@@ -466,8 +492,8 @@ async def on_message(message):
 
         if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
             reaction_dict = random.choice(
-                ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇'])
-            # reaction_dict = random.choice(['🇦🇧🇨🇩🇪🇫🇬🇭', '💛💚💙💜🖤💔','🐶🐰🐍🐘🐭🐸🐿',🍅🍑🍒🍌🍉🍆🍓🍇'])
+                ['ðŸ‡¦ðŸ‡§ðŸ‡¨ðŸ‡©ðŸ‡ªðŸ‡«ðŸ‡¬ðŸ‡­', 'â¤ðŸ’›ðŸ’šðŸ’™ðŸ’œðŸ–¤ðŸ’”', 'ðŸ¶ðŸ°ðŸðŸ˜ðŸ­ðŸ¸', 'ðŸ…ðŸ‘ðŸ’ðŸŒðŸ‰ðŸ†ðŸ“ðŸ‡'])
+            # reaction_dict = random.choice(['ðŸ‡¦ðŸ‡§ðŸ‡¨ðŸ‡©ðŸ‡ªðŸ‡«ðŸ‡¬ðŸ‡­', 'ðŸ’›ðŸ’šðŸ’™ðŸ’œðŸ–¤ðŸ’”','ðŸ¶ðŸ°ðŸðŸ˜ðŸ­ðŸ¸ðŸ¿',ðŸ…ðŸ‘ðŸ’ðŸŒðŸ‰ðŸ†ðŸ“ðŸ‡'])
 
             msg = ' '.join(message.content.split()[1:])  # Remove first word
             options = msg.split(', ')  # Create list from CSV
@@ -555,8 +581,9 @@ async def on_message(message):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
                 await client.delete_message(message)
                 eprint("Restarting rubybot at request of " + message.author.name)
-                with open("last_trace.log","w") as f:
+                with open("last_trace.log", "w") as f:
                     f.write("Restarted at request of " + message.author.name)
+                    f.flush()
                 sys.exit(0)
             return
         if message.content.startswith('!permissions'):
@@ -789,8 +816,9 @@ async def on_message(message):
             if message.content.startswith('!restart') or message.content.startswith('!reload'):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
                 eprint("Restarting rubybot at request of " + message.author.name)
-                with open("last_trace.log","w") as f:
+                with open("last_trace.log", "w") as f:
                     f.write("Restarted at request of " + message.author.name)
+                    f.flush()
                 sys.exit(0)
                 return
             if message.content.startswith('!eval'):
@@ -874,26 +902,25 @@ while True:
         client.run(token)
         eprint("Successful completion?")
     except RuntimeError as e:
-        if (e.message == "Event loop is closed"): break
         eprint("Major fault - Runtime error")
-        eprint(e.message)
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
-        with open("last_trace.log","w") as f:
+        with open("last_trace.log", "w") as f:
             f.write(tb)
+            f.flush()
         break
     except SystemExit as e:
         eprint("Exiting peacefully")
         break
     except BaseException as e:
         eprint("Major fault - unknown cause")
-        eprint(e.message)
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
-        with open("last_trace.log","w") as f:
+        with open("last_trace.log", "w") as f:
             f.write(tb)
-        #break
+            f.flush()
+        # break
 
 eprint("Program terminated: Ran over edge of file")
