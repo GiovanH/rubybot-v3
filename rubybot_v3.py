@@ -556,6 +556,8 @@ async def on_message(message):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
                 await client.delete_message(message)
                 eprint("Restarting rubybot at request of " + message.author.name)
+                with open("last_trace.log","w") as f:
+                    f.write("Restarted at request of " + message.author.name)
                 os.system("killall python3")
             return
         if message.content.startswith('!permissions'):
