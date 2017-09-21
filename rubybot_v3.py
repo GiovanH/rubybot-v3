@@ -207,14 +207,17 @@ async def on_ready():
     print("Fully loaded.")
     with open("last_trace.log",'r') as tracefile:
         brk = tracefile.read()
-        eprint(brk)
+        print("BREAK:")
+        print(brk)
         tracefile.seek(0)
         brk = tracefile.read()
-        eprint(brk)
+        print("BREAK2:")
+        print(brk)
         await client.send_message(gio, "I just came online. Last error: \n" + brk)
     with open("last_trace.log",'rb') as tracefile:
         brk = tracefile.read()
-        eprint(brk)
+        print("BREAK3:")
+        print(brk)
         await client.send_message(gio, "I just-ish came online. Last error: \n" + brk)
     with open("last_trace.log",'w') as tracefile2:
         tracefile2.write("Nothing known! No exception written to file!")
