@@ -208,8 +208,11 @@ async def on_ready():
     await client.send_message(gio, "I just came online. Last error:")
     with open("last_trace.log") as f:
         await client.send_message(gio, f.read())
-    with open("last_trace.log","w") as f:
-        f.write("Nothing known!")
+    try:
+        with open("last_trace.log","w") as f:
+            f.write("Nothing known!")
+    except discord.errors.HTTPException:
+        pass #Don't worry about bad requests based on last_trace being empty
 
 # IM GOING TO REPORT THIS
 @client.event
