@@ -431,21 +431,20 @@ async def on_message(message):
     #tic = time.clock()
     # we do not want the bot to react to itself
     if message.author == client.user:
-        #return
-        break
-    # global gio
-    # global server
-    # global rulestxt
-    # global workingChan
-    #global lastPostID
-    # global rubybot_member
-    # global lwu_server
-    #
-    # global taboo_server
-    # global taboo_teams
-    #
-    # global emotes
-    # global blushemote
+        return
+    global gio
+    global server
+    global rulestxt
+    global workingChan
+    global lastPostID
+    global rubybot_member
+    global lwu_server
+
+    global taboo_server
+    global taboo_teams
+
+    global emotes
+    global blushemote
 
     if message.server != None:  # Generic Server
         with open(logpath(message), 'a+') as file:
