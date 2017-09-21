@@ -876,13 +876,13 @@ while True:
         eprint(tb)
         with open("last_trace.log","w") as f:
             f.write(tb)
-        #os.system("killall python3")
+        break
     except BaseException:
         eprint("Major fault - unknown cause")
         tb = traceback.format_exc()
         eprint(tb)
         with open("last_trace.log","w") as f:
             f.write(tb)
-        #os.system("killall python3")
+        #break
 
-eprint("Major fault - unknown cause? program terminated?")
+eprint("Program terminated: Ran over edge of file")
