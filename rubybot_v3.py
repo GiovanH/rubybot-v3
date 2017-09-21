@@ -878,6 +878,7 @@ while True:
     except RuntimeError:
         eprint("Major fault - Runtime error")
         tb = traceback.format_exc()
+        tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
         with open("last_trace.log","w") as f:
             f.write(tb)
@@ -885,6 +886,7 @@ while True:
     except BaseException:
         eprint("Major fault - unknown cause")
         tb = traceback.format_exc()
+        tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
         with open("last_trace.log","w") as f:
             f.write(tb)
