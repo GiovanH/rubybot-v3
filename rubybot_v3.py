@@ -206,9 +206,7 @@ async def on_ready():
     await loadfrogs()
     print("Fully loaded.")
     with open("last_trace.log",'r') as tracefile:
-        braek = tracefile.read()
-        eprint(braek)
-        await client.send_message(gio, "I just came online. Last error: \n" + braek)
+        await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
     with open("last_trace.log",'w') as tracefile:
         tracefile.write("Nothing known! No exception written to file!")
 
