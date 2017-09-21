@@ -206,13 +206,14 @@ async def on_ready():
     await loadfrogs()
     print("Fully loaded.")
     await client.send_message(gio, "I just came online. Last error:")
-    with open("last_trace.log") as f:
-        await client.send_message(gio, f.read())
     try:
-        with open("last_trace.log","w") as f:
-            f.write("Nothing known!")
+        with open("last_trace.log") as f:
+            await client.send_message(gio, f.read())
     except discord.errors.HTTPException:
+        await client.send_message(gio, "Nothing known! File is empty!")
         pass #Don't worry about bad requests based on last_trace being empty
+    with open("last_trace.log","w") as f:
+        f.write("Nothing known! No exception written to file!")
 
 # IM GOING TO REPORT THIS
 @client.event
