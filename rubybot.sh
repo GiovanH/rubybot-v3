@@ -7,6 +7,7 @@ do
 	echo starting up at `date`
 	python3 rubybot_v3.py
 	echo Crashed at `date`
+	cat "last_trace.log"
 	cp rubybot_v3.py rubybot_v3.post.bak
 	echo Reloading git
 	sh git.sh
