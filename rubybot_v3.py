@@ -207,8 +207,10 @@ async def on_ready():
     print("Fully loaded.")
     await client.send_message(gio, "I just came online. Last error:")
     try:
-        with open("last_trace.log") as f:
-            await client.send_message(gio, f.read())
+        with open("last_trace.log","r") as f:
+            braek = f.read()
+            eprint(braek)
+            await client.send_message(gio, braek)
     except discord.errors.HTTPException:
         await client.send_message(gio, "Nothing known! File is empty!")
         pass #Don't worry about bad requests based on last_trace being empty
