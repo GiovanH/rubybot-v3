@@ -205,7 +205,7 @@ async def on_ready():
     #print("Only frogs now")
     await loadfrogs()
     print("Fully loaded.")
-    with open("last_trace.log") as tracefile:
+    with open("last_trace.log","r") as tracefile:
         brk = tracefile.read()
         eprint(brk)
         await client.send_message(gio, "I just came online. Last error: \n" + brk)
@@ -559,7 +559,7 @@ async def on_message(message):
                 eprint("Restarting rubybot at request of " + message.author.name)
                 with open("last_trace.log","w") as f:
                     f.write("Restarted at request of " + message.author.name)
-                os.system("killall python3")
+                sys.exit(0)
             return
         if message.content.startswith('!permissions'):
             #eprint("!permissions called")
