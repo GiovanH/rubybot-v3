@@ -876,7 +876,7 @@ while True:
         with open("last_trace.log","w") as f:
             f.write(tb)
         #os.system("killall python3")
-    except Exception:
+    except BaseException:
         eprint("Major fault - unknown cause")
         tb = traceback.format_exc()
         eprint(tb)
