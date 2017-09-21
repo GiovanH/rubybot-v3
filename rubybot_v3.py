@@ -791,7 +791,9 @@ async def on_message(message):
             if message.content.startswith('!restart') or message.content.startswith('!reload'):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
                 eprint("Restarting rubybot at request of " + message.author.name)
-                os.system("killall python3")
+                with open("last_trace.log","w") as f:
+                    f.write("Restarted at request of " + message.author.name)
+                sys.exit(0)
                 return
             if message.content.startswith('!eval'):
                 msg = message.content[6:]
