@@ -209,7 +209,7 @@ async def on_ready():
     with open("last_trace.log") as f:
         await client.send_message(gio, f.read())
     with open("last_trace.log","w") as f:
-        file.write("Nothing known!")
+        f.write("Nothing known!")
 
 # IM GOING TO REPORT THIS
 @client.event
