@@ -886,3 +886,5 @@ while True:
         with open("last_trace.log","w") as f:
             file.write(tb)
         #os.system("killall python3")
+
+eprint("Major fault - unknown cause? program terminated?")
