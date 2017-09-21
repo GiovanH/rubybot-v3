@@ -431,7 +431,8 @@ async def on_message(message):
     #tic = time.clock()
     # we do not want the bot to react to itself
     if message.author == client.user:
-        return
+        #return
+        break
     # global gio
     # global server
     # global rulestxt
@@ -875,7 +876,7 @@ while True:
         eprint(tb)
         with open("last_trace.log","w") as f:
             f.write(tb)
-        os.system("killall python3")
+        #os.system("killall python3")
     except Exception:
         eprint("Major fault - unknown cause")
         tb = traceback.format_exc()
