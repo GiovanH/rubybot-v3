@@ -208,8 +208,9 @@ async def on_ready():
     with open("last_trace.log") as tracefile:
         brk = tracefile.read()
         await client.send_message(gio, "I just came online. Last error: \n" + brk)
-        with open("last_trace.log",'w') as tracefile2:
+        with open("last_trace.log",'w', newline='\r\n') as tracefile2:
             tracefile2.write("Nothing known! No exception written to file!")
+            tracefile2.write("Sorry.")
 
 # IM GOING TO REPORT THIS
 @client.event
