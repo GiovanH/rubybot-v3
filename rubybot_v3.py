@@ -874,11 +874,15 @@ while True:
         eprint("Successful completion?")
     except RuntimeError:
         eprint("Major fault - Runtime error")
-        traceback.print_exc(file=sys.stdout)
-        traceback.print_exc(file=last_trace.log)
+        tb = traceback.format_exc(file=f)
+        eprint(tb)
+        with open("last_trace.log","w") as f:
+            file.write(tb)
         os.system("killall python3")
     except Exception:
         eprint("Major fault - unknown cause")
-        traceback.print_exc(file=sys.stdout)
-        traceback.print_exc(file=last_trace.log)
+        tb = traceback.format_exc(file=f)
+        eprint(tb)
+        with open("last_trace.log","w") as f:
+            file.write(tb)
         #os.system("killall python3")
