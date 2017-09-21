@@ -206,9 +206,18 @@ async def on_ready():
     await loadfrogs()
     print("Fully loaded.")
     with open("last_trace.log",'r') as tracefile:
-        await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
-    with open("last_trace.log",'w') as tracefile:
-        tracefile.write("Nothing known! No exception written to file!")
+        brk = tracefile.read()
+        eprint(brk)
+        tracefile.seek(0)
+        brk = tracefile.read()
+        eprint(brk)
+        await client.send_message(gio, "I just came online. Last error: \n" + brk)
+    with open("last_trace.log",'rb') as tracefile:
+        brk = tracefile.read()
+        eprint(brk)
+        await client.send_message(gio, "I just-ish came online. Last error: \n" + brk)
+    with open("last_trace.log",'w') as tracefile2:
+        tracefile2.write("Nothing known! No exception written to file!")
 
 # IM GOING TO REPORT THIS
 @client.event
