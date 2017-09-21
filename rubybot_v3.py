@@ -1,4 +1,4 @@
-from __future__ import print_function
+#from __future__ import print_function
 import discord
 from discord.ext import commands
 import random
@@ -205,11 +205,11 @@ async def on_ready():
     #print("Only frogs now")
     await loadfrogs()
     print("Fully loaded.")
-    with open("last_trace.log",'r') as tracefile:
+    with open("last_trace.log") as tracefile:
         brk = tracefile.read()
         await client.send_message(gio, "I just came online. Last error: \n" + brk)
-    with open("last_trace.log",'w') as tracefile2:
-        tracefile2.write("Nothing known! No exception written to file!")
+        with open("last_trace.log",'w') as tracefile2:
+            tracefile2.write("Nothing known! No exception written to file!")
 
 # IM GOING TO REPORT THIS
 @client.event
