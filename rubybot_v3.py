@@ -874,14 +874,14 @@ while True:
         tb = traceback.format_exc()
         eprint(tb)
         with open("last_trace.log","w") as f:
-            file.write(tb)
+            f.write(tb)
         os.system("killall python3")
     except Exception:
         eprint("Major fault - unknown cause")
         tb = traceback.format_exc()
         eprint(tb)
         with open("last_trace.log","w") as f:
-            file.write(tb)
+            f.write(tb)
         #os.system("killall python3")
 
 eprint("Major fault - unknown cause? program terminated?")
