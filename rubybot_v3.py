@@ -207,7 +207,6 @@ async def on_ready():
     print("Fully loaded.")
     with open("last_trace.log","r") as tracefile:
         await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
-        await client.send_message(gio, "I just came online. Last error: \n" + os.system("cat last_trace.log") )
         # with open("last_trace.log",'w', newline='\r\n') as tracefile2:
         #     tracefile2.write("Nothing known! No exception written to file!")
         #     tracefile2.write("Sorry.")
@@ -874,16 +873,19 @@ while True:
         eprint("Running client")
         client.run(token)
         eprint("Successful completion?")
-    except RuntimeError:
+    except RuntimeError as e:
+        if (e.message == "Event loop is closed"): break
         eprint("Major fault - Runtime error")
+        eprint(e.message)
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
         with open("last_trace.log","w") as f:
             f.write(tb)
         break
-    except BaseException:
+    except BaseException as e:
         eprint("Major fault - unknown cause")
+        eprint(e.message)
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
