@@ -174,12 +174,7 @@ async def on_ready():
             await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
             await client.leave_server(s)
 
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-    print(workingChan)
-    print('------')
+    print('Logged in as ' + client.user.name + "<" + client.user.id + ">")
     # await client.send_message(gio, "Can you hear me?")
     #gameplayed = MAIN.get("gameplayed", "github/freiheit/discord_rss_bot")
     # await client.change_status(game=discord.Game(name=gameplayed))
@@ -207,7 +202,7 @@ async def on_ready():
     modrole = dict()
     modrole.update({minda_server:  discord.utils.get(minda_server.roles, id='298390405169283072'),
                     lwu_server: discord.utils.get(lwu_server.roles, id='282703165269213184')})
-    print("Only frogs now")
+    #print("Only frogs now")
     await loadfrogs()
     print("Fully loaded.")
     await client.send_message(gio, "I just came online. Last error:")
