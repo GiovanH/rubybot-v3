@@ -193,7 +193,7 @@ async def on_ready():
                                            client.get_channel('232218346999775232'), client.get_channel('243542820189765633'), 90))
     loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
-    loop.create_task(fear_of_death(1800))
+    loop.create_task(fear_of_death(550))
 
     print("Defining localization enumerations")
     global emotes
@@ -262,8 +262,9 @@ async def fear_of_death(freq):
     while not client.is_closed:
         # os.system("date >> ping.log")
         # os.system("ping discordapp.com -c 1 >> ping.log")
-        os.system("rm kill.sh 2>> /dev/null")
+        # os.system("rm kill.sh 2>> /dev/null")
         await asyncio.sleep(freq)
+    print("Oh no, the client closed???")
 
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
