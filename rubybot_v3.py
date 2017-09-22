@@ -70,7 +70,6 @@ async def loadfrogs():
     froggos = []
     with open('frogs.frog') as f:
         for line in f:
-            # print(line[:-1])
             froggos.append(line[:-1])
     try:
         r = urllib.request.urlopen(
@@ -111,8 +110,6 @@ async def loadfrogs():
         eprint("frog error, continuing")
     froggos = list(set(froggos))
 
-eprint("Parsing rubybot core routines")
-
 # Initialization
 
 
@@ -132,7 +129,6 @@ def logpath(message):
 @client.event
 async def on_ready():
     """Called when discord logs in. Initializes things. """
-    print('Initializing rubybot listeners')
     global gio
     gio = await client.get_user_info('233017800854077441')
 
@@ -182,12 +178,11 @@ async def on_ready():
             await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
             await client.leave_server(s)
 
-    print('Logged in as ' + client.user.name + "<" + client.user.id + ">")
+    print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
     # await client.send_message(gio, "Can you hear me?")
     #gameplayed = MAIN.get("gameplayed", "github/freiheit/discord_rss_bot")
     # await client.change_status(game=discord.Game(name=gameplayed))
 
-    print("Creating event loops")
     loop = asyncio.get_event_loop()
     loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
                                            client.get_channel('232218346999775232'), client.get_channel('243542820189765633'), 90))
@@ -195,7 +190,6 @@ async def on_ready():
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
     loop.create_task(fear_of_death(550))
 
-    print("Defining localization enumerations")
     global emotes
     emotes = dict()
     emotes.update({minda_server: ':smolrubes:300822291229442048',
@@ -210,9 +204,7 @@ async def on_ready():
     modrole = dict()
     modrole.update({minda_server:  discord.utils.get(minda_server.roles, id='298390405169283072'),
                     lwu_server: discord.utils.get(lwu_server.roles, id='282703165269213184')})
-    #print("Only frogs now")
     await loadfrogs()
-    print("Fully loaded.")
     #import pdb; pdb.set_trace()
     with open("last_trace.log", "r") as tracefile:
         await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
@@ -282,11 +274,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                 'article.* data-post-id="(.*)"', r).group(1)
             if mostRecentID != lastPostID:
                 if '0' != lastPostID:
-                    eprint(lastPostID + " -> " + mostRecentID)
-                    print(lastPostID + " -> " + mostRecentID)
-                    print(mostRecentID)
-                    print("Update")
-                    print(lastPostID)
+                    print(feedurl + " update: " + lastPostID + " -> " + mostRecentID)
                     await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
                     # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
                     await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ Update! ]]")
@@ -382,16 +370,13 @@ def totalDelimitedList(list, number):
     #array2 = [int(i) for i in list.split(',')]
     array2 = list
     array2.sort()
-    print(array2)
     array2 = array2[number:]
-    print(array2)
     for i in array2:
         total += i
     return total
 
 
 async def rollcmd(dice, message):
-    print(dice)
     bonus = 0
     drops = 0
     """Rolls a dice in NdN format."""
@@ -441,20 +426,14 @@ async def rollcmd(dice, message):
 def isMod(server, member):
     global gio
     global modrole
-    #eprint("checking mod status of " + member.name + " on " + server.name)
-    # eprint(member.id)
-    # eprint(gio.id)
     if (member.id == gio.id):
-        #eprint("gio override, all hail")
         return True
     ismod = (modrole[server] in member.roles)
-    # eprint(ismod)
     return ismod
 
 
 @client.event
 async def on_message(message):
-    #print("" + message.author.name + ": " + message.content)
     #tic = time.clock()
     # we do not want the bot to react to itself
     if message.author == client.user:
@@ -477,7 +456,6 @@ async def on_message(message):
         with open(logpath(message), 'a+') as file:
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
-        # print("[" + message.channel.server.name + "]\t" + )
         if message.content.startswith('!frog refresh') and isMod(message.server, message.author):
             await loadfrogs()
             await client.delete_message(message)
@@ -537,7 +515,6 @@ async def on_message(message):
             return
         elif message.content.startswith('!addfrog '):
             msg = message.content[9:]
-            eprint("trying to add " + msg)
             if isMod(message.server, message.author):
                 frogfile = 'frogs.frog'
                 try:
@@ -589,7 +566,6 @@ async def on_message(message):
                 sys.exit(0)
             return
         if message.content.startswith('!permissions'):
-            #eprint("!permissions called")
             if isMod(message.server, message.author):
                 await client.send_message(message.channel, "Administrator")
             else:
@@ -616,7 +592,6 @@ async def on_message(message):
 
     if message.server == taboo_server:
         if message.content.startswith('!reteam') and isMod(message.server, message.author):
-            eprint("setting manual team")
             for target in message.mentions:
                 newteam = random.choice(taboo_teams)
                 await client.add_roles(target, newteam)
@@ -628,7 +603,6 @@ async def on_message(message):
                 await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
             await client.delete_message(message)
         elif message.content.startswith('!unteam') and isMod(message.server, message.author):
-            eprint("unsetting manual team")
             for target in message.mentions:
                 for role in taboo_teams:
                     if (role in target.roles):
@@ -763,10 +737,6 @@ async def on_message(message):
                 verified = discord.utils.get(
                     lwu_server.roles, id='275764022547316736')
                 for member in message.mentions:
-                    # eprint(member.name)
-                    # for role in member.roles:
-                        # eprint(member.name)
-                        # eprint(role.name)
                     if verified not in member.roles:
                         await client.add_roles(member, verified)
                         await client.send_message(message.channel, "Verified user " + member.name)
@@ -838,7 +808,6 @@ async def on_message(message):
                     await client.send_message(message.author, str(e))
             elif message.content.startswith('!say'):
                 msg = message.content[5:]
-                print(type(msg))
                 await client.send_message(workingChan, msg)
 
             elif message.content.startswith('!avatar'):
@@ -853,7 +822,6 @@ async def on_message(message):
                 await client.change_nickname(rubybot_member, nickname)
 
             elif message.content.startswith('!smol'):
-                print("sending one smol")
                 await client.send_message(workingChan, "<" + emotes[lwu_server] + ">")
 
                 # await client.send_message(workingChan, "<:smolrubes:243554386549276672>")
@@ -891,9 +859,6 @@ async def on_message(message):
                         f.write(str(message.timestamp) + " " + message.author.name + ": " + message.content +
                                 ' ' + json.dumps(message.attachments) + '\n')  # python will convert \n to os.linesep
                     f.close()
-                print("done")
-
-eprint("Parsed Code")
 
 with open("token", 'rb') as filehandler:
     token = pickle.load(filehandler)
