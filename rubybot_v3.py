@@ -493,8 +493,8 @@ async def on_message(message):
 
         if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
             reaction_dict = random.choice(
-                ['ðŸ‡¦ðŸ‡§ðŸ‡¨ðŸ‡©ðŸ‡ªðŸ‡«ðŸ‡¬ðŸ‡­', 'â¤ðŸ’›ðŸ’šðŸ’™ðŸ’œðŸ–¤ðŸ’”', 'ðŸ¶ðŸ°ðŸðŸ˜ðŸ­ðŸ¸', 'ðŸ…ðŸ‘ðŸ’ðŸŒðŸ‰ðŸ†ðŸ“ðŸ‡'])
-            # reaction_dict = random.choice(['ðŸ‡¦ðŸ‡§ðŸ‡¨ðŸ‡©ðŸ‡ªðŸ‡«ðŸ‡¬ðŸ‡­', 'ðŸ’›ðŸ’šðŸ’™ðŸ’œðŸ–¤ðŸ’”','ðŸ¶ðŸ°ðŸðŸ˜ðŸ­ðŸ¸ðŸ¿',ðŸ…ðŸ‘ðŸ’ðŸŒðŸ‰ðŸ†ðŸ“ðŸ‡'])
+                ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
+            )
 
             msg = ' '.join(message.content.split()[1:])  # Remove first word
             options = msg.split(', ')  # Create list from CSV
@@ -503,6 +503,7 @@ async def on_message(message):
             polltext = message.author.name + " has called a vote:"
             for o in options:
                 polltext = polltext + "\n" + reaction_dict[i] + ": " + o
+                print(reaction_dict[i])
                 await client.add_reaction(pollmsg, reaction_dict[i])
                 i = i + 1
             await client.edit_message(pollmsg, new_content=polltext)
