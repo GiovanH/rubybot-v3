@@ -26,7 +26,7 @@ class Server:
         self.commands = []
         
     def add_cmd(self,c):
-        if str(type(c)) == "<class 'rubybot_classes.Command'>:
+        if str(type(c)) == "<class 'rubybot_classes.Command'>":
             self.commands.append(c)
         else:
             raise TypeError(c,str(type(c)) + " is not a rubybot class!")

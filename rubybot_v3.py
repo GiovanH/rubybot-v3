@@ -220,7 +220,7 @@ async def on_ready():
     test_command = rbot.Command()
     test_server = rbot.Server(client,232218346999775232)
     test_server.add_cmd(test_command)
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
 
 # IM GOING TO REPORT THIS
 
