@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 def permissionLevel(user,server):
-
+    return 0
 
 class Command:
     """A rubybot message commands
@@ -13,14 +13,14 @@ class Command:
     permlevel : A permission level. 0 = everyone, 1 = mod, 2 = admin, 3 = gio"""
     def __init__(self,name,cb,helpstr,permlevel):
         self.name = name
-        self.function = function
+        self.function = cb
         self.helpstr = helpstr
         self.permlevel = permlevel
-    def execute(self,message):
+    async def run(self,message):
         """Attempt to execute command on behalf of message author
         Arg: Message: a discord.Message"""
         if permissionLevel(message.author,message.server) >= self.permlevel:
-            self.function()
+            await self.function(message)
         else:
             raise NameError('User ' + message.author.name + ' has insufficient permissions to perform command ' + self.name)
 
@@ -57,3 +57,7 @@ class Server:
             self.commands.append(c)
         else:
             raise TypeError(c,str(type(c)) + " is not a rubybot class!")
+
+    def add_cmds(self,cs):
+        for c in cs:
+            self.add_cmd(c)

@@ -55,10 +55,10 @@ def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
 
-# rubybot = {
-#     'servers': {},
-#     'commands': {}
-# }
+rubybot = {
+    'servers': [],
+    'commands': []
+}
 
 # TODO: Load tokens from file instead
 client = discord.Client()
@@ -148,6 +148,13 @@ async def on_ready():
 
     global taboo_server
     taboo_server = client.get_server('245789672842723329')
+    
+    rubybot['servers'] = [
+        rbot.Server(client,358806463139020810),  # Moderation United
+        rbot.Server(client,232218346999775232),  # lwu
+        rbot.Server(client,245789672842723329),  # TABUU
+        rbot.Server(client,290270624558088192)  # Minda
+    ]
 
     global taboo_teams
     taboo_teams = []
@@ -213,7 +220,7 @@ async def on_ready():
     with open("last_trace.log", "r") as tracefile:
         await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
     with open("git.log", "r") as _file:
-            await client.send_message(gio, "Latest git revision: \n" + _file.read())
+        await client.send_message(gio, "Latest git revision: \n" + _file.read())
     with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
         tracefile2.write("Nothing known! No exception written to file!")
         tracefile2.flush()
@@ -222,12 +229,11 @@ async def on_ready():
 
 # IM GOING TO REPORT THIS
 
-test_command = rbot.Command('test', (lambda message: await client.send_message(gio, "Message")), 'Test command', 0)
+test_command = rbot.Command('test', (lambda message: client.send_message(gio, "Message")), 'Test command', 0)
 
 @client.event
 async def on_message_edit(before, after):
     message = after
-    test_command.execute(message)
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
     with open(logpath(message), 'a+') as file:
         file.write(fmt.format(after, before))
