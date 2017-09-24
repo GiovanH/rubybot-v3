@@ -1,1 +1,12 @@
-Nothing known! No exception written to file!
+Traceback (most recent call last):
+  File "rubybot_v3.py", line 876, in <module>
+    client.run(token)
+  File "C:\Users\Seth\AppData\Local\Programs\Python\Python36\lib\site-packages\discord\client.py", line 519, in run
+    self.loop.run_until_complete(self.start(*args, **kwargs))
+  File "C:\Users\Seth\AppData\Local\Programs\Python\Python36\lib\asyncio\base_events.py", line 443, in run_until_complete
+    self._check_closed()
+  File "C:\Users\Seth\AppData\Local\Programs\Python\Python36\lib\asyncio\base_events.py", line 357, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+2017-09-23 20:11:01

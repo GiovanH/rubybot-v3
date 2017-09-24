@@ -13,6 +13,7 @@ import time
 from time import gmtime, strftime
 import datetime
 import sys
+import rubybot_classes as rbot
 
 # TODO: Make sure all image assets point to the asset folder
 # TODO: Modular command system
@@ -209,7 +210,6 @@ async def on_ready():
     modrole.update({minda_server:  discord.utils.get(minda_server.roles, id='298390405169283072'),
                     lwu_server: discord.utils.get(lwu_server.roles, id='282703165269213184')})
     await loadfrogs()
-    #import pdb; pdb.set_trace()
     with open("last_trace.log", "r") as tracefile:
         await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
     with open("git.log", "r") as _file:
@@ -217,6 +217,10 @@ async def on_ready():
     with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
         tracefile2.write("Nothing known! No exception written to file!")
         tracefile2.flush()
+    test_command = rbot.Command()
+    test_server = rbot.Server(client,232218346999775232)
+    test_server.add_cmd(test_command)
+    import pdb; pdb.set_trace()
 
 # IM GOING TO REPORT THIS
 
