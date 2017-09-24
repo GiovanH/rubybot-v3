@@ -54,10 +54,10 @@ def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
 
-rubybot = {
-    servers: {},
-    commands: {}
-}
+# rubybot = {
+#     'servers': {},
+#     'commands': {}
+# }
 
 # TODO: Load tokens from file instead
 client = discord.Client()
