@@ -54,10 +54,6 @@ def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
 
-rubybot = {
-    servers: {},
-    commands: {}
-}
 
 # TODO: Load tokens from file instead
 client = discord.Client()
@@ -65,12 +61,12 @@ helpstr = "Generic commands:\n```!rules\n!frog\n!callvote option1, option2[, opt
 rulestxt = "**No politics, no porn, and no spoilers!**\n\nPlease keep discussion of things Lore hasn't seen yet to the spoilerchat! \n\nPlease don't push Lore on when he's doing an episode. It's stressful and unnecessary. Be polite! \n\n**Current important spoiler topics:** \n==No Undertale discussion *at all* outside the spoilerchat until he finishes the game\n==No Steven Universe past his latest liveblog\n==No Over the Garden Wall, Madoka Magica, Star vs the forces of evil, the new Ducktales, Samurai Jack or RWBY S2 until he starts those liveblogs.\n if you're not certain about other things he could get spoiled on, go ahead and ask!\n\nPlease also keep all Homestuck talk to the Homestuck chat, as Minda is liveblogging it, and we all know how spoilery that can get.\n\nKeep nonsense-posting to The Pit, and **above all be excellent to each other.**"
 # client.get_channel('243261625304481793')
 
-#global froggos
+global froggos
 froggos = ["Not ready yet! Try again!"]
 
 
 async def loadfrogs():
-    #global froggos
+    global froggos
     froggos = []
     with open('frogs.frog') as f:
         for line in f:
@@ -254,7 +250,7 @@ async def on_member_join(member):
 
 
 async def fear_of_death(freq):
-    #global timezone
+    global timezone
     while not client.is_closed:
         # os.system("date >> ping.log")
         # os.system("ping discordapp.com -c 1 >> ping.log")
@@ -264,7 +260,7 @@ async def fear_of_death(freq):
 
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
-    #global timezone
+    global timezone
     mostRecentID = '1'
     lastPostID = '0'
     # Basically run forever
@@ -324,8 +320,8 @@ async def alias_peribot():
 
 
 async def bad(target, source, channel):
-    #global rubybot_member
-    #global modchat
+    global rubybot_member
+    global modchat
     if source == None:
         source = rubybot_member
     badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
@@ -345,7 +341,7 @@ async def bad(target, source, channel):
 
 
 async def unbad(target, source):
-    #global modchat
+    global modchat
     badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
     verified = discord.utils.get(lwu_server.roles, id='275764022547316736')
     # await client.remove_roles(target, badr)
@@ -428,8 +424,8 @@ async def rollcmd(dice, message):
 
 
 def isMod(server, member):
-    #global gio
-    #global modrole
+    global gio
+    global modrole
     if (member.id == gio.id):
         return True
     ismod = (modrole[server] in member.roles)
@@ -442,19 +438,19 @@ async def on_message(message):
     # we do not want the bot to react to itself
     if message.author == client.user:
         return
-    #global gio
-    #global server
-    #global rulestxt
-    #global workingChan
-    #global lastPostID
-    #global rubybot_member
-    #global lwu_server
+    global gio
+    global server
+    global rulestxt
+    global workingChan
+    global lastPostID
+    global rubybot_member
+    global lwu_server
 
-    #global taboo_server
-    #global taboo_teams
+    global taboo_server
+    global taboo_teams
 
-    #global emotes
-    #global blushemote
+    global emotes
+    global blushemote
 
     if message.server != None:  # Generic Server
         with open(logpath(message), 'a+') as file:
@@ -510,7 +506,7 @@ async def on_message(message):
 
         if message.content.startswith('!frog') or message.content.startswith('!contraband'):
             await client.send_typing(message.channel)
-            #global froggos
+            global froggos
             frogi = (random.randint(1, len(froggos) - 1))
             froggo = froggos[frogi]
             #froggo = random.choice(froggos)
