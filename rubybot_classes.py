@@ -1,10 +1,29 @@
 import discord
 from discord.ext import commands
 
+def permissionLevel(user,server):
+
+
 class Command:
-    """A simple example class"""
-    def __init__(self,cb,permlevel):
-      self.data = []
+    """A rubybot message commands
+    Arguments:
+    Name : String representing a human-readable command name
+    CB   : Callback function. Must take one argument, a discord.message
+    helpstr : A human-readable help document documenting the command
+    permlevel : A permission level. 0 = everyone, 1 = mod, 2 = admin, 3 = gio"""
+    def __init__(self,name,cb,helpstr,permlevel):
+        self.name = name
+        self.function = function
+        self.helpstr = helpstr
+        self.permlevel = permlevel
+    def execute(self,message):
+        """Attempt to execute command on behalf of message author
+        Arg: Message: a discord.Message"""
+        if permissionLevel(message.author,message.server) >= self.permlevel:
+            self.function()
+        else:
+            raise NameError('User ' + message.author.name + ' has insufficient permissions to perform command ' + self.name)
+
 
 class Server:
     """Represents an instance of an actionable rubybot class

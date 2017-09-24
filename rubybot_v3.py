@@ -217,17 +217,17 @@ async def on_ready():
     with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
         tracefile2.write("Nothing known! No exception written to file!")
         tracefile2.flush()
-    test_command = rbot.Command()
     test_server = rbot.Server(client,232218346999775232)
-    test_server.add_cmd(test_command)
     #import pdb; pdb.set_trace()
 
 # IM GOING TO REPORT THIS
 
+test_command = rbot.Command('test', (lambda message: await client.send_message(gio, "Message")), 'Test command', 0)
 
 @client.event
 async def on_message_edit(before, after):
     message = after
+    test_command.execute(message)
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
     with open(logpath(message), 'a+') as file:
         file.write(fmt.format(after, before))
