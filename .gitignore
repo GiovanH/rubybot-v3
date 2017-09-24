@@ -1,6 +1,5 @@
 token
-frogs.frog
-~/*
 *.bak
 logs
 logs/*
+*.log
