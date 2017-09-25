@@ -353,7 +353,7 @@ async def on_ready():
         '232218346999775232': '<:smolrubes:243554386549276672>'
         }
         try:
-            chan = client.get_channel(message.content[7:25])
+            chan = client.get_channel(message.content[6:25])
             await client.send_message(chan, emotes[chan.server.id])
         except AttributeError:
             await client.send_message(message.author, "No such channel as " + message.content[7:25])
@@ -380,7 +380,7 @@ async def on_ready():
 
     async def cmd_sayat_func(message): #TODO: Gotta localize the emotes
         try:
-            await client.send_message(client.get_channel(message.content[8:26]), message.content[23:])
+            await client.send_message(client.get_channel(message.content[10:28]), message.content[23:])
         except discord.errors.InvalidArgument:
             await client.send_message(message.author, "No such channel as " + message.content[5:23])
     cmd_sayat = rbot.Command('say', cmd_sayat_func,
