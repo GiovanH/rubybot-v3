@@ -355,7 +355,7 @@ async def on_ready():
         try:
             chan = client.get_channel(message.content[7:25])
             await client.send_message(chan, emotes[chan.server.id])
-        except discord.errors.InvalidArgument:
+        except AttributeError:
             await client.send_message(message.author, "No such channel as " + message.content[7:25])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
     'Sends a smol to channel by ID',  # helpstr
@@ -433,7 +433,7 @@ async def on_ready():
 
     async def cmd_setrules_func(message):
         with open("rules/" + message.server.id, 'w') as rulefile:
-            rulefile.write(message.content[7:])
+            rulefile.write(message.content[10:])
             rulefile.flush()
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     cmd_setrules = rbot.Command('setrules', cmd_setrules_func,
