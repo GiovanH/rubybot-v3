@@ -235,11 +235,13 @@ async def on_ready():
         tracefile2.flush()
 
     lwu_newserver = rbot.Server(client, 232218346999775232)
+
     cmd_test = rbot.Command('test', (lambda message:
         client.send_message(gio, "Message")
     ),
     'Test command',  # helpstr
     0)  # Permission Level
+
     def cmd_error_func(message):
         m = [1]
         print(m[3])
@@ -250,22 +252,53 @@ async def on_ready():
         reaction_dict = random.choice(
             ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
         )
-        msg = ' '.join(message.content.split()[1:])  # Remove first word
-        options = msg.split(', ')  # Create list from CSV
+        options = ' '.join(message.content.split()[1:]).split(', ')  # Remove first word, Create list
         pollmsg = await client.send_message(message.channel, "Loading...")
-        i = 0
         polltext = message.author.name + " has called a vote:"
+        i = 0
         for o in options:
             polltext = polltext + "\n" + reaction_dict[i] + ": " + o
             print(reaction_dict[i])
             await client.add_reaction(pollmsg, reaction_dict[i])
             i = i + 1
         await client.edit_message(pollmsg, new_content=polltext)
-
     cmd_vote = rbot.Command('callvote', cmd_vote_func,
-    'Test command',  # helpstr
+    'List options seperated by \' ,\' to prompt a vote. ',  # helpstr
     0)  # Permission Level
-    lwu_newserver.add_cmds([cmd_vote])
+
+    async def cmd_listroles_func(message):
+        for role in message.server.roles:
+            await client.send_message(message.author, str(role.name) + ": " + str(role.id))
+    cmd_listroles = rbot.Command('listroles', cmd_listroles_func,
+    'Messages you with all roles from a server',  # helpstr
+    2)  # Permission Level
+
+    async def cmd_sayhere_func(message):
+        text = message.content[9:]
+        await client.delete_message(message)
+        await client.send_message(message.channel, text)
+    cmd_sayhere = rbot.Command('sayhere', cmd_sayhere_func,
+    'Echos your message back where you post this command',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_frog_func(message):
+        await client.send_typing(message.channel)
+        #frogi = (random.randint(1, len(froggos) - 1))
+        #froggo = froggos[frogi]
+        froggo = random.choice(froggos)
+        await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
+        await client.delete_message(message)
+        return
+    cmd_frog = rbot.Command('frog', cmd_frog_func,
+    'Gives a froggo',  # helpstr
+    0)  # Permission Level
+
+    # async def cmd__func(message):
+    # cmd_ = rbot.Command('', cmd__func,
+    # '',  # helpstr
+    # 0)  # Permission Level
+
+    lwu_newserver.add_cmds(list(rbot.commands.values())) #Temporary: All commands to LWU
     #import pdb; pdb.set_trace()
 
 # IM GOING TO REPORT THIS
@@ -562,34 +595,35 @@ async def on_message(message):
         #         await client.add_reaction(pollmsg, reaction_dict[i])
         #         i = i + 1
         #     await client.edit_message(pollmsg, new_content=polltext)
+        #
+        # if message.content.startswith('!roles'):
+        #     for role in message.server.roles:
+        #         await client.send_message(message.author, str(role.name) + ": " + str(role.id))
 
-        if message.content.startswith('!roles'):
-            for role in message.server.roles:
-                await client.send_message(message.author, str(role.name) + ": " + str(role.id))
+        # #Depreciated
+        # if message.content.startswith('!serverdata'):
+        #     await client.send_message(message.author, message.server.name)
+        #     await client.send_message(message.author, message.server.id)
+        #     await client.send_message(message.author, message.server.icon)
+        #     await client.delete_message(message)
+        #     return
 
-        if message.content.startswith('!serverdata'):
-            await client.send_message(message.author, message.server.name)
-            await client.send_message(message.author, message.server.id)
-            await client.send_message(message.author, message.server.icon)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!sayhere'):
-            msg = message.content[9:]
-            print(type(msg))
-            await client.send_message(message.channel, msg)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!frog') or message.content.startswith('!contraband'):
-            await client.send_typing(message.channel)
-            #global froggos
-            frogi = (random.randint(1, len(froggos) - 1))
-            froggo = froggos[frogi]
-            #froggo = random.choice(froggos)
-            await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
-            await client.delete_message(message)
-            return
+        # if message.content.startswith('!sayhere'):
+        #     msg = message.content[9:]
+        #     print(type(msg))
+        #     await client.send_message(message.channel, msg)
+        #     await client.delete_message(message)
+        #     return
+        #
+        # if message.content.startswith('!frog') or message.content.startswith('!contraband'):
+        #     await client.send_typing(message.channel)
+        #     #global froggos
+        #     frogi = (random.randint(1, len(froggos) - 1))
+        #     froggo = froggos[frogi]
+        #     #froggo = random.choice(froggos)
+        #     await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
+        #     await client.delete_message(message)
+        #     return
         elif message.content.startswith('!addfrog '):
             msg = message.content[9:]
             if isMod(message.server, message.author):
