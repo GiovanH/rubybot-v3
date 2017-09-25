@@ -82,6 +82,7 @@ class Server:
     def add_cmd(self, c):
         if str(type(c)) == "<class 'rubybot_classes.Command'>":
             self.commands.append(c)
+            self.commands = list(set(self.commands))
         else:
             raise TypeError(c, str(type(c)) +
                             " is not a rubybot command class!")
@@ -89,3 +90,10 @@ class Server:
     def add_cmds(self, cs):
         for c in cs:
             self.add_cmd(c)
+    def remove_cmds(self, cs):
+        for c in cs:
+            try:
+                self.commands.remove(c)
+            except Exception:
+                pass
+        self.commands = list(set(self.commands))

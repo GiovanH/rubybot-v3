@@ -15,26 +15,6 @@ import datetime
 import sys
 import rubybot_classes as rbot
 
-# TODO: Make sure all image assets point to the asset folder
-# TODO: Modular command system
-# TODO: !throw command to make a general error
-# TODO: Rewrite exception handling
-
-# Unbuffered technique
-# May no longer be required?
-# class Unbuffered(object):
-#     def __init__(self, stream):
-#         self.stream = stream
-#     def write(self, data):
-#         self.stream.write(data)
-#         self.stream.flush()
-#     def __getattr__(self, attr):
-#         return getattr(self.stream, attr)
-#
-# sys.stdout = Unbuffered(sys.stdout)
-# sys.stderr = Unbuffered(sys.stderr)
-
-
 def eprint(*args, **kwargs):
     #global gio
     t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -55,27 +35,27 @@ def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
 
-
-rubybot = {
-    'servers': [],
-    'commands': []
-}
-
 rbot.permissions = {
     '232218346999775232': {  # LWU
-        '282703165269213184': 1  # "mod"
+        '282703165269213184': 1,  # "mod"
+        '233020731779317761': 2  #Bossman
+    },
+    '290270624558088192':{ #Minda
+        '298390405169283072': 1,
+        '290270933304999936': 2
+    },
+    '358806463139020810':{ #MU
+        '358829062233260032': 1
+    },
+    '245789672842723329':{ #Tabuu
+        '258320487698923520': 1,
+        '245790823499825153': 2
     }
 }
 
-# TODO: Load tokens from file instead
 client = discord.Client()
-helpstr = "Generic commands:\n```!rules\n!frog\n!callvote option1, option2[, option3...]\n!roll NdN\n!roll NdN[ droplowest N] | [ - N] [ +N]\n!help```\nAdmin:\n```!restart```\nLoreweaver Universe commands:\n```!pronoun [F|M|T|He|She|They|Him|Her|Them|Other] (This is a toggle!)\n!rules```\nAdmin:\n```!bad @user [@user2...]\n!shadowbad @user [@user2...]\n!frug @user [@user2...]\n!frugnuke N\n!unbad @user\n!unbad @user1 [user2...]\n!verify @user1 [user2...]```\nMinda Chat Commands:\nNone.\nTaboo commands:\n```!sortinghat```\nAdmin:\n```!reteam\n!unteam```\nList of PM commands:\n```!help```"
-rulestxt = "**No politics, no porn, and no spoilers!**\n\nPlease keep discussion of things Lore hasn't seen yet to the spoilerchat! \n\nPlease don't push Lore on when he's doing an episode. It's stressful and unnecessary. Be polite! \n\n**Current important spoiler topics:** \n==No Undertale discussion *at all* outside the spoilerchat until he finishes the game\n==No Steven Universe past his latest liveblog\n==No Over the Garden Wall, Madoka Magica, Star vs the forces of evil, the new Ducktales, Samurai Jack or RWBY S2 until he starts those liveblogs.\n if you're not certain about other things he could get spoiled on, go ahead and ask!\n\nPlease also keep all Homestuck talk to the Homestuck chat, as Minda is liveblogging it, and we all know how spoilery that can get.\n\nKeep nonsense-posting to The Pit, and **above all be excellent to each other.**"
-# client.get_channel('243261625304481793')
 
-#global froggos
 froggos = ["Not ready yet! Try again!"]
-
 
 async def loadfrogs():
     global froggos
@@ -123,8 +103,6 @@ async def loadfrogs():
     froggos = list(set(froggos))
 
 # Initialization
-
-
 def logpath(message):
     """Given a message, returns a filepath for logging that message."""
     if message.server != None:
@@ -137,71 +115,29 @@ def logpath(message):
         pass
     return _dir + "/" + str(datetime.date.today()) + ".log"
 
-
 @client.event
 async def on_ready():
-    """Called when discord logs in. Initializes things. """
+    await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
+
     global gio
     gio = await client.get_user_info('233017800854077441')
 
-    global workingChan
-    workingChan = client.get_channel('232218346999775232')
+    """Called when discord logs in. Initializes things. """
 
-    global modchat
-    modchat = client.get_channel('243461266687918081')
+    server_mu = rbot.Server(client, 358806463139020810)  # Moderation United
+    server_lwu = rbot.Server(client, 232218346999775232)  # lwu
+    server_tabuu = rbot.Server(client, 245789672842723329)  # TABUU
+    server_minda = rbot.Server(client, 290270624558088192)  # Minda
 
-    global lwu_server
-    lwu_server = client.get_server('232218346999775232')
-
-    global taboo_server
-    taboo_server = client.get_server('245789672842723329')
-
-    rubybot['servers'] = [
-        rbot.Server(client, 358806463139020810),  # Moderation United
-        rbot.Server(client, 232218346999775232),  # lwu
-        rbot.Server(client, 245789672842723329),  # TABUU
-        rbot.Server(client, 290270624558088192)  # Minda
-    ]
-
-    global taboo_teams
-    taboo_teams = []
-    taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                         id='246194661763317761'))  # red team
-    taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                         id='246194717946019840'))  # blue team
-    taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                         id='246194772253999104'))  # wildcats
-    taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                         id='246194825370533889'))  # the real illuminati
-    taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                         id='246194907302199296'))  # cool and new team
-    taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                         id='254164527271247872'))  # number one
-
-    global minda_server
-    minda_server = client.get_server('290270624558088192')
-
-    global rubybot_member
-    rubybot_member = lwu_server.get_member('243273068129157120')
-    await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
-    # await client.change_presence(game=discord.Game(name="[gio pls add meme]",type=1))
-
-    for s in client.servers:
-        authed_servers = [
-            "358806463139020810",  # Moderation United
-            "232218346999775232",  # lwu
-            "245789672842723329",  # TABUU
-            "290270624558088192"  # Minda
-        ]
-        if s.id not in authed_servers:
+    for c in client.servers:
+        allowed = False
+        for s in rbot.servers:
+            if s == c.id: allowed = True
+        if not allowed:
             await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
             await client.leave_server(s)
 
-    print('Logged in as ' + client.user.name +
-          " @<" + client.user.id + ">")
-    # await client.send_message(gio, "Can you hear me?")
-    #gameplayed = MAIN.get("gameplayed", "github/freiheit/discord_rss_bot")
-    # await client.change_status(game=discord.Game(name=gameplayed))
+    print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
 
     loop = asyncio.get_event_loop()
     loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
@@ -210,42 +146,28 @@ async def on_ready():
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
     loop.create_task(fear_of_death(550))
 
-    global emotes
-    emotes = dict()
-    emotes.update({minda_server: ':smolrubes:300822291229442048',
-                   lwu_server: ':smolrubes:243554386549276672'})
-
-    global blushemote
-    blushemote = dict()
-    blushemote.update({minda_server: ':smolrubes:300822291229442048',
-                       lwu_server: ':thatsmywife:244688656911171585'})
-
-    global modrole
-    modrole = dict()
-    modrole.update({minda_server:  discord.utils.get(minda_server.roles, id='298390405169283072'),
-                    lwu_server: discord.utils.get(lwu_server.roles, id='282703165269213184')})
     await loadfrogs()
-    with open("last_trace.log", "r") as tracefile:
-        await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
-    with open("git.log", "r") as _file:
-        await client.send_message(gio, "Latest git revision: \n" + _file.read())
-    with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
-        tracefile2.write(
-            "Nothing known! No exception written to file!")
-        tracefile2.flush()
-
-    lwu_newserver = rbot.Server(client, 232218346999775232)
+    try:
+        with open("last_trace.log", "r") as tracefile:
+            await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
+        with open("git.log", "r") as _file:
+            await client.send_message(gio, "Latest git revision: \n" + _file.read())
+        with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
+            tracefile2.write(
+                "Nothing known! No exception written to file!")
+            tracefile2.flush()
+    except:
+        pass
 
     cmd_test = rbot.Command('test', (lambda message:
         client.send_message(gio, "Message")
     ),
     'Test command',  # helpstr
-    0)  # Permission Level
+    3)  # Permission Level
 
     def cmd_error_func(message):
         m = [1]
         print(m[3])
-
     cmd_error = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
 
     async def cmd_vote_func(message):
@@ -283,7 +205,6 @@ async def on_ready():
 
     async def cmd_frog_func(message):
         await client.send_typing(message.channel)
-        print(froggos)
         print(len(froggos))
         frogi = random.randint(1, len(froggos))
         froggo = froggos[frogi-1]
@@ -294,16 +215,369 @@ async def on_ready():
     'Gives a froggo',  # helpstr
     0)  # Permission Level
 
+    async def cmd_addfrog_func(message):
+        msg = message.content[9:]
+        if isMod(message.server, message.author):
+            frogfile = 'frogs.frog'
+            try:
+                urllib.request.urlopen(msg).read()
+            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+                await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
+                traceback.print_exc(file=sys.stdout)
+                # return
+            fh = open(frogfile, 'a')
+            fh.write(msg + "\n")
+            froggos.extend(msg)
+            uniqlines = set(open(frogfile).readlines())
+            open(frogfile, 'w').writelines(set(uniqlines))
+            await loadfrogs()
+            await client.send_message(message.channel, "Added frog.")
+        else:
+            await client.send_message(message.channel, "You do not have permissions to add a frog!")
+    cmd_addfrog = rbot.Command('addfrog', cmd_addfrog_func,
+    'Adds a frog to the frog dictionary',  # helpstr
+    2)  # Permission Level
+
+    async def cmd_listemotes_func(message):
+        for s in message.server.emojis:
+            await client.send_message(message.author, s.name + ", " + s.id)
+    cmd_listemotes = rbot.Command('listemotes', (cmd_listemotes_func),
+    'Messages you the server\'s emotes',  # helpstr
+    1)  # Permission Level
+
+    async def cmd_pm_func(message):
+        for m in message.mentions:
+            target = m
+            if target == None:
+                await client.send_message(message.channel, "No such person")
+                break
+            content = message.content[27:]
+            await client.send_message(target, content)
+        await client.delete_message(message)
+    cmd_ = rbot.Command('pm', cmd_pm_func,
+    'Sends a PM to one person mentioned',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_restart_func(message):
+        await client.change_presence(game=discord.Game(name="swords", type=1))
+        await client.delete_message(message)
+        eprint("Restarting rubybot at request of " +
+               message.author.name)
+        with open("last_trace.log", "w") as f:
+            f.write("Restarted at request of " +
+                    message.author.name)
+            f.flush()
+        sys.exit(0)
+    cmd_restart = rbot.Command('restart', cmd_restart_func,
+    'Restarts rubybot',  # helpstr
+    2)  # Permission Level
+    cmd_reload = rbot.Command('reload', cmd_restart_func,
+    'Alias of restart',  # helpstr
+    2)
+
+    async def cmd_permissions_func(message):
+        p = rbot.permissionLevel(message.author, message.server)
+        pss = ['Everyone', 'Moderator', 'Admin', 'Super Admin']
+        ps = pss[p]
+        await client.send_message(message.channel, message.author.name + ", your permission level in this server is " + str(p) + " (" + ps + ")")
+    cmd_permissions = rbot.Command('permissions', cmd_permissions_func,
+    'Tells you your permissions level in context',  # helpstr
+    0)  # Permission Level
+
+    async def cmd_roll_func(message):
+        dice = message.content[6:]
+        bonus = 0
+        drops = 0
+        try:
+            if "+" in dice:
+                dice, bonus = map(str, dice.split(' +'))
+            if "droplowest" in dice:
+                dice, drops = map(str, dice.split(' droplowest '))
+            elif "-" in dice:
+                dice, drops = map(str, dice.split(' -'))
+            rolls, limit = map(int, dice.split('d'))
+        except Exception:
+            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N")
+            return
+        bonus = int(bonus)
+        drops = int(drops)
+        if rolls + limit > 200:
+            await client.send_message(message.channel, "Hey, I'm really sorry " + message.author.mention + ", but I can't do that in my head. :c")
+            return
+        result = rollplain(rolls, limit)
+        resultsstr = ', '.join(str(result[r]) for r in range(rolls))
+        if rolls > 1:
+            total = totalDelimitedList(result, drops)
+            await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + "\nTotal: " + str(total) + "+ " + str(bonus) + " = " + str(total + bonus))
+        else:
+            await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
+        if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
+            await client.send_message(message.channel, "you meme-loving degenerates.")
+    cmd_roll = rbot.Command('roll', cmd_roll_func,
+    'Rolls fancy dice',  # helpstr
+    0)  # Permission Level
+
+    async def cmd_reteam_func(message):
+
+        taboo_teams = []
+        taboo_server = get_server(245789672842723329)
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194661763317761'))  # red team
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194717946019840'))  # blue team
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194772253999104'))  # wildcats
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194825370533889'))  # the real illuminati
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194907302199296'))  # cool and new team
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='254164527271247872'))  # number one
+        for target in message.mentions:
+            newteam = random.choice(taboo_teams)
+            await client.add_roles(target, newteam)
+            for role in taboo_teams:
+                # await client.send_message(message.channel, "Checking role " + role.name)
+                if (role in target.roles) and (role is not newteam):
+                    # await client.send_message(message.channel, "Removing role " + role.name)
+                    await client.remove_roles(target, role)
+            await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
+        await client.delete_message(message)
+    cmd_ = rbot.Command('reteam', cmd_reteam_func,
+    'Re-teams a member on taboo',  # helpstr
+    1)  # Permission Level
+
+    async def cmd_smolmote_func(message): #TODO: Gotta localize the emotes
+        emotes = {
+        '290270624558088192':  '<:smolrubes:300822291229442048>',
+        '232218346999775232': '<:smolrubes:243554386549276672>'
+        }
+        try:
+            chan = client.get_channel(message.content[6:24])
+            await client.send_message(chan, emotes[chan.server.id])
+        except Exception:
+            pass
+    cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
+    'Sends a smol to channel by ID',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_nickname_func(message):
+        nickname = message.content[6:]
+        await client.change_nickname(rubybot_member, nickname)
+    cmd_nickname = rbot.Command('nick', cmd_nickname_func,
+    'Changes nickname',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_avatar_func(message):
+        msg = message.content[8:]
+        fp = open(msg, 'rb')
+        filestream = fp.read()
+        await client.edit_profile(avatar=filestream)
+        fp.close()
+    cmd_avatar = rbot.Command('avatar', cmd_avatar_func,
+    'Sets avatar',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_sayat_func(message): #TODO: Gotta localize the emotes
+        try:
+            await client.send_message(client.get_channel(message.content[5:23]), message.content[23:])
+        except discord.errors.InvalidArgument:
+            await client.send_message(message.author, "No such channel as " + message.content[5:23])
+    cmd_sayat = rbot.Command('say', cmd_sayat_func,
+    'Says a message at a channel by ID',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_hardreboot_func(message):
+        await client.send_message(message.author, "Here goes!")
+        await client.send_message(message.author, os.system("sudo reboot"))
+    cmd_hardreboot = rbot.Command('hardreboot', cmd_hardreboot_func,
+    'sudo reboot',  # helpstr
+    3)  # Permission Level
+
+    async def cmd_help_func(message):
+        helpstr = message.author.name + "'s list of availible commands (in context):"
+        if message.server:
+            for command in rbot.servers[message.server.id].commands:
+                if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
+                    helpstr += "\n!" + command.name + "\n\t\t\t\t: " + command.helpstr
+            await client.send_message(message.channel, helpstr)
+        else:
+            for command in rbot.direct_commands:
+                if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
+                    helpstr += "\n!" + command.name + "\n\t\t\t\t: " + command.helpstr
+            await client.send_message(message.author, helpstr)
+    cmd_help = rbot.Command('help', cmd_help_func,
+    'List availible commands and their functions',  # helpstr
+    0)  # Permission Level
+
+    async def cmd_allhelp_func(message):
+        helpstr = message.author.name + "'s list of availible commands (in context):"
+        if message.server:
+            for command in rbot.servers[message.server.id].commands:
+                helpstr += "\n!" + command.name + "\n\t" + str(command.permlevel) + "\t\t\t: " + command.helpstr
+            await client.send_message(message.channel, helpstr)
+        else:
+            for command in rbot.direct_commands:
+                helpstr += "\n!" + command.name + "\n\t" + str(command.permlevel) + "\t\t\t: " + command.helpstr
+            await client.send_message(message.author, helpstr)
+    cmd_allhelp = rbot.Command('allhelp', cmd_allhelp_func,
+    'List all commands and their permission level',  # helpstr
+    1)  # Permission Level
+
+    async def cmd_rules_func(message):
+        with open("rules/" + message.server.id, 'r') as rulefile:
+            await client.send_message(message.channel, rulefile.read())
+            # tracefile2.write("Nothing known! No exception written to file!")
+            # tracefile2.flush()
+    cmd_rules = rbot.Command('rules', cmd_rules_func,
+    'Lists the server\'s rules',  # helpstr
+    0)  # Permission Level
+
+    async def cmd_setrules_func(message):
+        with open("rules/" + message.server.id, 'w') as rulefile:
+            tracefile2.write(message.content[7:])
+            tracefile2.flush()
+            await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
+    cmd_setrules = rbot.Command('setrules', cmd_setrules_func,
+    'Modifies the server\'s rules',  # helpstr
+    2)  # Permission Level
+
+    async def cmd_pins_func(message):
+        await client.send_typing(message.channel)
+        pins = await client.logs_from(client.get_channel('278819870106451969'), limit=400)
+        pinmsg = random.choice(list(pins))
+        pinurl = pinmsg.content
+        for a in pinmsg.attachments:
+            pinurl += "\n" + a.get('url')
+        await client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
+        await client.delete_message(message)
+    cmd_pins = rbot.Command('pins', cmd_pins_func,
+    'Posts a random pinned message',  # helpstr
+    0)  # Permission Level
+
+    async def cmd_bad_func(message):
+        for m in message.mentions:
+            #msg = message.content[5:]
+            if (modrole[message.server] in message.author.roles) and not message.channel.permissions_for(m).ban_members:
+                target = m
+            else:
+                target = message.author
+            if target == None:
+                await client.send_message(message.channel, "No such person")
+                await client.delete_message(message)
+                return
+            await bad(target, message.author, message.channel)
+        await client.delete_message(message)
+    cmd_bad = rbot.Command('bad', cmd_bad_func,
+    'Bad them to the pit!',  # helpstr
+    1)  # Permission Level
+
+    async def cmd_unbad_func(message):
+        for m in message.mentions:
+            #msg = message.content[5:]
+            if (modrole[message.server] in message.author.roles) and not message.channel.permissions_for(m).ban_members:
+                target = m
+            else:
+                target = message.author
+            if target == None:
+                await client.send_message(message.channel, "No such person")
+                await client.delete_message(message)
+                return
+            await bad(target, message.author, message.channel)
+        await client.delete_message(message)
+    cmd_unbad = rbot.Command('unbad', cmd_unbad_func,
+    'unBad them from the pit!',  # helpstr
+    1)  # Permission Level
+
+    async def cmd_pronoun_func(message):
+        pronoun = message.content[9:]
+        r_him = discord.utils.get(message.server.roles, id='285628551229603841')
+        r_her = discord.utils.get(message.server.roles, id='285628637045063680')
+        r_they = discord.utils.get(message.server.roles, id='285628689876647937')
+
+        if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
+            role = r_him
+        if ((pronoun.upper() == "HER") or (pronoun.upper() == "SHE") or (pronoun.upper() == "FEMALE") or (pronoun.upper() == "WOMAN") or (pronoun.upper() == "F") or (pronoun.upper() == "S")):
+            role = r_her
+        if ((pronoun.upper() == "THEM") or (pronoun.upper() == "THEY") or (pronoun.upper() == "IT") or (pronoun.upper() == "OTHER") or (pronoun.upper() == "T")):
+            role = r_they
+        try:
+            if role in message.author.roles:
+                await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
+                eprint(message.author.name + " has role " +
+                       role.name + ", removing.")
+                await client.remove_roles(message.author, role)
+            else:
+                if role not in message.author.roles:
+                    await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
+                    eprint(message.author.name +
+                           " does not have role " + role.name + ", adding.")
+                    await client.add_roles(message.author, role)
+        except BaseException as e:
+            await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
+        await client.delete_message(message)
+    cmd_pronoun = rbot.Command('pronoun', cmd_pronoun_func,
+    'Gives you a pronoun role so people know what to call you. Specify a pronoun after the command',  # helpstr
+    0)  # Permission Level
+
+    async def cmd_verify_func(message):
+        workingChan = client.get_channel('232218346999775232')
+        verified = discord.utils.get(message.server.roles, id='275764022547316736')
+        for member in message.mentions:
+            if verified not in member.roles:
+                await client.add_roles(member, verified)
+                await client.send_message(message.channel, "Verified user " + member.name)
+            else:
+                await client.send_message(message.channel, "User is already verified: " + member.name)
+        await client.send_message(workingChan, "Please welcome new user " + member.mention + " to the server!")
+        await client.delete_message(message)
+    cmd_verify = rbot.Command('verify', cmd_verify_func,
+    'Verifies a user',  # helpstr
+    1)  # Permission Level
+
     # async def cmd__func(message):
     # cmd_ = rbot.Command('', cmd__func,
     # '',  # helpstr
     # 0)  # Permission Level
-
-    lwu_newserver.add_cmds(list(rbot.commands.values())) #Temporary: All commands to LWU
+    cmdlist_base =    [
+        cmd_vote,
+        cmd_listroles,
+        cmd_sayhere,
+        cmd_frog,
+        cmd_listemotes,
+        cmd_restart,
+        cmd_reload,
+        cmd_permissions,
+        cmd_roll,
+        cmd_nickname,
+        cmd_avatar,
+        cmd_sayat,
+        cmd_help,
+        cmd_allhelp,
+        cmd_rules,
+        cmd_setrules
+    ]
+    cmdlist_util =    [
+        cmd_test,
+        cmd_error,
+        cmd_hardreboot
+    ]
+    cmdlist_lwu_extras =    [
+        cmd_addfrog,
+        cmd_smolmote,
+        cmd_pins,
+        cmd_bad,
+        cmd_unbad,
+        cmd_pronoun,
+        cmd_verify
+    ]
+    server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras) #Temporary: All commands to LWU
+    server_minda.add_cmds(cmdlist_base) #Temporary: All commands to LWU
+    server_tabuu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
+    server_mu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
+    server_mu.remove_cmds([cmd_frog])
+    rbot.direct_commands = list(cmdlist_base + cmdlist_util) #Temporary: All commands to PM
     #import pdb; pdb.set_trace()
-
-# IM GOING TO REPORT THIS
-
 
 @client.event
 async def on_message_edit(before, after):
@@ -320,7 +594,6 @@ async def on_message_edit(before, after):
             file.write(message.author.name + ": " +
                        message.clean_content + "\n")
 
-
 @client.event
 async def on_message_delete(message):
     if message.server:
@@ -336,12 +609,26 @@ async def on_message_delete(message):
             file.write(message.author.name + ": " +
                        message.clean_content + "\n")
 
-
 @client.event
 async def on_member_join(member):
     if member.server is taboo_server:
         eprint("setting team in taboo")
         target = member
+
+        taboo_teams = []
+        taboo_server = get_server(245789672842723329)
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194661763317761'))  # red team
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194717946019840'))  # blue team
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194772253999104'))  # wildcats
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194825370533889'))  # the real illuminati
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='246194907302199296'))  # cool and new team
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='254164527271247872'))  # number one
         newteam = random.choice(taboo_teams)
         await client.add_roles(target, newteam)
         for role in taboo_teams:
@@ -390,39 +677,6 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
         finally:
             await asyncio.sleep(freq)
 
-
-async def alias_peribot():
-    # fp = open("peribot.png", 'rb')
-    # filestream = fp.read()
-    # await client.edit_profile(avatar=filestream)
-    # fp.close()
-    await client.change_nickname(rubybot_member, "Peribot")
-
-
-async def alias_rubybot():
-    # fp = open("rubybot.png", 'rb')
-    # filestream = fp.read()
-    # await client.edit_profile(avatar=filestream)
-    # fp.close()
-    await client.change_nickname(rubybot_member, "rubybot")
-
-
-async def alias_sapphy():
-    # fp = open("sapphire.jpg", 'rb')
-    # filestream = fp.read()
-    # await client.edit_profile(avatar=filestream)
-    # fp.close()
-    await client.change_nickname(rubybot_member, "sapphy")
-
-
-async def alias_peribot():
-    # fp = open("peribot.png", 'rb')
-    # filestream = fp.read()
-    # await client.edit_profile(avatar=filestream)
-    # fp.close()
-    await client.change_nickname(rubybot_member, "Peribot")
-
-
 async def bad(target, source, channel):
     #global rubybot_member
     #global modchat
@@ -439,11 +693,9 @@ async def bad(target, source, channel):
     while (verified in target.roles):
         i = i + 1
         await client.remove_roles(target, verified)
-    await alias_peribot()
     await client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
     await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
     # await client.send_message(target, "You have been a bad frog." )
-    await alias_rubybot()
 
 
 async def unbad(target, source):
@@ -460,18 +712,14 @@ async def unbad(target, source):
     while (verified not in target.roles):
         i = i + 1
         await client.add_roles(target, verified)
-    await alias_sapphy()
     # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
     await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
-    await alias_rubybot()
-
 
 def rollplain(rolls, limit):
     resultarray = [(random.randint(1, limit)) for r in range(rolls)]
     #result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     resultarray.sort()
     return resultarray
-
 
 def totalDelimitedList(list, number):
     total = 0
@@ -483,54 +731,6 @@ def totalDelimitedList(list, number):
         total += i
     return total
 
-
-async def rollcmd(dice, message):
-    bonus = 0
-    drops = 0
-    """Rolls a dice in NdN format."""
-    if "+" in dice:
-        try:
-            dice, bonus = map(str, dice.split(' +'))
-        except Exception:
-            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N")
-            return
-    if "droplowest" in dice:
-        try:
-            dice, drops = map(str, dice.split(' droplowest '))
-        except Exception:
-            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N droplowest N")
-            return
-    elif "-" in dice:
-        try:
-            dice, drops = map(str, dice.split(' -'))
-        except Exception:
-            await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN +N -N")
-            return
-    try:
-        rolls, limit = map(int, dice.split('d'))
-    except Exception:
-        await client.send_message(message.channel, "I don't understand that dice notation! The format is NdN")
-        return
-    bonus = int(bonus)
-    drops = int(drops)
-    if rolls + limit > 200:
-        await client.send_message(message.channel, "Hey, I'm really sorry " + message.author.mention + ", but I can't do that in my head. :c")
-        return
-    try:
-        result = rollplain(rolls, limit)
-        resultsstr = ', '.join(str(result[r]) for r in range(rolls))
-        if rolls > 1:
-            total = totalDelimitedList(result, drops)
-            await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + "\nTotal: " + str(total) + "+ " + str(bonus) + " = " + str(total + bonus))
-        else:
-            await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
-    except Exception:
-        await client.send_message(message.channel, message.author.mention + "  :? ")
-        return
-    if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
-        await client.send_message(message.channel, "you meme-loving degenerates.")
-
-
 def isMod(server, member):
     #global gio
     #global modrole
@@ -539,27 +739,12 @@ def isMod(server, member):
     ismod = (modrole[server] in member.roles)
     return ismod
 
-
 @client.event
 async def on_message(message):
     #tic = time.clock()
     # we do not want the bot to react to itself
     if message.author == client.user:
         return
-
-    #global gio
-    #global server
-    #global rulestxt
-    #global workingChan
-    #global lastPostID
-    #global rubybot_member
-    #global lwu_server
-
-    #global taboo_server
-    #global taboo_teams
-
-    #global emotes
-    #global blushemote
 
     if message.server != None:  # Generic Server
         with open(logpath(message), 'a+') as file:
@@ -569,170 +754,24 @@ async def on_message(message):
             await loadfrogs()
             await client.delete_message(message)
             return
-        # if message.content.startswith('!error'):
-        #     m = [1]
-        #     print(m[3])
-
-        # if message.content.startswith('!react'):
-        #     msg = await client.send_message(message.channel, 'React to me')
-        #     res = await client.wait_for_reaction(message=msg)
-        #     await client.send_message(message.channel, '{0.reaction.emoji} {0.reaction.emoji.id} {0.reaction.emoji.name} {0.reaction.emoji.url}!'.format(res))
-
-        # if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
-        #     reaction_dict = random.choice(
-        #         ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
-        #     )
-        #
-        #     msg = ' '.join(message.content.split()[
-        #                    1:])  # Remove first word
-        #     options = msg.split(', ')  # Create list from CSV
-        #     pollmsg = await client.send_message(message.channel, "Loading...")
-        #     i = 0
-        #     polltext = message.author.name + " has called a vote:"
-        #     for o in options:
-        #         polltext = polltext + "\n" + \
-        #             reaction_dict[i] + ": " + o
-        #         print(reaction_dict[i])
-        #         await client.add_reaction(pollmsg, reaction_dict[i])
-        #         i = i + 1
-        #     await client.edit_message(pollmsg, new_content=polltext)
-        #
-        # if message.content.startswith('!roles'):
-        #     for role in message.server.roles:
-        #         await client.send_message(message.author, str(role.name) + ": " + str(role.id))
-
-        # #Depreciated
-        # if message.content.startswith('!serverdata'):
-        #     await client.send_message(message.author, message.server.name)
-        #     await client.send_message(message.author, message.server.id)
-        #     await client.send_message(message.author, message.server.icon)
-        #     await client.delete_message(message)
-        #     return
-
-        # if message.content.startswith('!sayhere'):
-        #     msg = message.content[9:]
-        #     print(type(msg))
-        #     await client.send_message(message.channel, msg)
-        #     await client.delete_message(message)
-        #     return
-        #
-        # if message.content.startswith('!frog') or message.content.startswith('!contraband'):
-        #     await client.send_typing(message.channel)
-        #     #global froggos
-        #     frogi = (random.randint(1, len(froggos) - 1))
-        #     froggo = froggos[frogi]
-        #     #froggo = random.choice(froggos)
-        #     await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
-        #     await client.delete_message(message)
-        #     return
-        elif message.content.startswith('!addfrog '):
-            msg = message.content[9:]
-            if isMod(message.server, message.author):
-                frogfile = 'frogs.frog'
-                try:
-                    urllib.request.urlopen(msg).read()
-                except (urllib.error.HTTPError, urllib.error.URLError) as e:
-                    await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
-                    traceback.print_exc(file=sys.stdout)
-                    # return
-                fh = open(frogfile, 'a')
-                fh.write(msg + "\n")
-                froggos.extend(msg)
-                uniqlines = set(open(frogfile).readlines())
-                open(frogfile, 'w').writelines(set(uniqlines))
-                await loadfrogs()
-                await client.send_message(message.channel, "Added frog.")
-            else:
-                await client.send_message(message.channel, "You do not have permissions to add a frog!")
-        # if message.content.startswith('!love'):
-            # await client.send_message(message.channel, "You both love me and I love both of you! <:smolrubes:243554386549276672>")
-            # await client.delete_message(message)
-
-        if message.content.startswith('!emoji'):
-            for s in message.server.emojis:
-                await client.send_message(message.author, s.name + ", " + s.id)
-
-        if message.content.startswith('!pm '):
-            if (modrole[message.server] in message.author.roles):
-                for m in message.mentions:
-                    target = m
-                    if target == None:
-                        await client.send_message(message.channel, "No such person")
-                        await clientF.delete_message(message)
-                        return
-                    print(message.content)
-                    content = message.content[27:]
-                    print(content)
-                    await client.send_message(target, content)
-                await client.delete_message(message)
-            return
-
-        if message.content.startswith('!restart') or message.content.startswith('!reload'):
-            if isMod(message.server, message.author):
-                await client.change_presence(game=discord.Game(name="swords", type=1))
-                await client.delete_message(message)
-                eprint("Restarting rubybot at request of " +
-                       message.author.name)
-                with open("last_trace.log", "w") as f:
-                    f.write("Restarted at request of " +
-                            message.author.name)
-                    f.flush()
-                sys.exit(0)
-            return
-        if message.content.startswith('!permissions'):
-            if isMod(message.server, message.author):
-                await client.send_message(message.channel, "Administrator")
-            else:
-                await client.send_message(message.channel, "User")
-            return
-
-        # and message.channel == client.get_channel('240266528417775617'):
-        if message.content.startswith('!roll'):
-            dice = message.content[6:]
-            await alias_peribot()
-            await rollcmd(dice, message)
-            await alias_rubybot()
-            return
 
         if "rubybot" in message.content.lower():
+            emotes = {
+            '290270624558088192':  ':smolrubes:300822291229442048',
+            '232218346999775232': ':smolrubes:243554386549276672'
+            }
             print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, emotes[message.server])
+            await client.add_reaction(message, emotes[message.server.id])
             return
 
         if "boobybot" in message.content.lower():
+            blushemote = {
+            '290270624558088192':  ':smolrubes:300822291229442048',
+            '232218346999775232': ':thatsmywife:244688656911171585'
+            }
             print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, blushemote[message.server])
+            await client.add_reaction(message, blushemote[message.server.id])
             return
-
-    if message.server == taboo_server:
-        if message.content.startswith('!reteam') and isMod(message.server, message.author):
-            for target in message.mentions:
-                newteam = random.choice(taboo_teams)
-                await client.add_roles(target, newteam)
-                for role in taboo_teams:
-                    # await client.send_message(message.channel, "Checking role " + role.name)
-                    if (role in target.roles) and (role is not newteam):
-                        # await client.send_message(message.channel, "Removing role " + role.name)
-                        await client.remove_roles(target, role)
-                await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
-            await client.delete_message(message)
-        elif message.content.startswith('!unteam') and isMod(message.server, message.author):
-            for target in message.mentions:
-                for role in taboo_teams:
-                    if (role in target.roles):
-                        await client.remove_roles(target, role)
-            await client.delete_message(message)
-        elif message.content.startswith('!sortinghat'):
-            await client.send_message(message.channel, "I will now determine your alignment.")
-            target = message.author
-            newteam = random.choice(taboo_teams)
-            for role in taboo_teams:
-                # await client.send_message(message.channel, "Checking role " + role.name)
-                if (role in target.roles):
-                    await client.send_message(message.channel, "It is too late. The die has been cast.")
-                    return
-            await client.add_roles(target, newteam)
-            await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
 
     if message.server:
         with open(logpath(message), 'a+') as file:
@@ -746,248 +785,6 @@ async def on_message(message):
                        ": " + message.clean_content + "\n")
         for command in rbot.direct_commands:
             await command.run(message)
-
-    if message.server == lwu_server:
-        if message.content.startswith('!rules'):
-            await client.send_typing(message.channel)
-            await client.send_message(message.channel, rulestxt)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!pins'):
-            await client.send_typing(message.channel)
-            pins = await client.logs_from(client.get_channel('278819870106451969'), limit=400)
-            pinmsg = random.choice(list(pins))
-            pinurl = pinmsg.content
-            print(pinmsg.timestamp)
-            for a in pinmsg.attachments:
-                pinurl += "\n" + a.get('url')
-            await client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!bad'):
-            for m in message.mentions:
-                #msg = message.content[5:]
-                if (modrole[message.server] in message.author.roles) and not message.channel.permissions_for(m).ban_members:
-                    target = m
-                else:
-                    target = message.author
-                if target == None:
-                    await client.send_message(message.channel, "No such person")
-                    await client.delete_message(message)
-                    return
-                await bad(target, message.author, message.channel)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!shadowbad'):
-            for m in message.mentions:
-                #msg = message.content[5:]
-                if (modrole[message.server] in message.author.roles) and not message.channel.permissions_for(m).ban_members:
-                    target = m
-                else:
-                    target = message.author
-                if target == None:
-                    await client.send_message(message.channel, "No such person")
-                    await client.delete_message(message)
-                    return
-                await bad(target, None, message.channel)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!unbad'):
-            for m in message.mentions:
-                if (modrole[message.server] in message.author.roles):
-                    #msg = message.content[7:]
-                    target = m
-                    if target == None:
-                        await client.send_message(message.channel, "No such person")
-                        await client.delete_message(message)
-                        return
-                    await unbad(target, message.author)
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!frug '):
-            if (modrole[message.server] in message.author.roles):
-                for m in message.mentions:
-                    target = m
-                    if target == None:
-                        await client.send_message(message.channel, "No such person")
-                        await client.delete_message(message)
-                        return
-                    await client.change_nickname(target, "frug")
-                await client.delete_message(message)
-            return
-
-        if message.content.startswith('!pronoun'):
-            pronoun = message.content[9:]
-            #eprint("pronoun: " + pronoun);
-            r_him = discord.utils.get(
-                lwu_server.roles, id='285628551229603841')
-            r_her = discord.utils.get(
-                lwu_server.roles, id='285628637045063680')
-            r_they = discord.utils.get(
-                lwu_server.roles, id='285628689876647937')
-
-            if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
-                role = r_him
-            if ((pronoun.upper() == "HER") or (pronoun.upper() == "SHE") or (pronoun.upper() == "FEMALE") or (pronoun.upper() == "WOMAN") or (pronoun.upper() == "F") or (pronoun.upper() == "S")):
-                role = r_her
-            if ((pronoun.upper() == "THEM") or (pronoun.upper() == "THEY") or (pronoun.upper() == "IT") or (pronoun.upper() == "OTHER") or (pronoun.upper() == "T")):
-                role = r_they
-
-            #eprint("pronoun role: " + role.name);
-            try:
-                if role in message.author.roles:
-                    await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
-                    eprint(message.author.name + " has role " +
-                           role.name + ", removing.")
-                    await client.remove_roles(message.author, role)
-                else:
-                    if role not in message.author.roles:
-                        await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
-                        eprint(message.author.name +
-                               " does not have role " + role.name + ", adding.")
-                        await client.add_roles(message.author, role)
-            except BaseException as e:
-                await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!help'):
-            await client.send_message(message.author, helpstr)
-            await client.delete_message(message)
-        if message.content.startswith('!verify'):
-            if (modrole[message.server] in message.author.roles):
-                verified = discord.utils.get(
-                    lwu_server.roles, id='275764022547316736')
-                for member in message.mentions:
-                    if verified not in member.roles:
-                        await client.add_roles(member, verified)
-                        await client.send_message(message.channel, "Verified user " + member.name)
-                    else:
-                        await client.send_message(message.channel, "User is already verified: " + member.name)
-            await client.send_message(workingChan, "Please welcome new user " + member.mention + " to the server!")
-            await client.delete_message(message)
-            return
-
-        if message.content.startswith('!frugnuke '):
-            if (modrole[message.server] in message.author.roles):
-                msg = message.content[10:]
-                print("Getting logs ")
-                logs = await client.logs_from(message.channel, int(msg))
-
-                print("Itterating  logs ")
-                for logmessage in logs:
-                         # python will convert \n to os.linesep
-                    # await client.send_message(gio, message.author.name)
-
-                    try:
-                        print("Targetting " + logmessage.author.name)
-                        await client.change_nickname(logmessage.author, "frug")
-                    except BaseException as e:
-                        print("error")
-
-                await client.delete_message(message)
-            return
-
-    if message.server == None:  # Private Message
-        with open(logpath(message), 'a+') as file:
-            file.write("[" + message.author.name + "]: " +
-                       message.clean_content + "\n")
-
-        if message.content.startswith('!emoji'):
-            for s in client.get_all_emojis():
-                print(s.name + ", " + s.id)
-
-        if message.content.startswith('!help'):
-            await client.send_message(message.author, helpstr)
-
-        if message.author == gio:
-            if message.content.startswith('!mention'):
-                print(message.author.mention)
-            if message.content.startswith('!hardreboot'):
-                await client.send_message(message.author, "Here goes!")
-                await client.send_message(message.author, os.system("sudo reboot"))
-                return
-            if message.content.startswith('!restart') or message.content.startswith('!reload'):
-                await client.change_presence(game=discord.Game(name="swords", type=1))
-                eprint("Restarting rubybot at request of " +
-                       message.author.name)
-                with open("last_trace.log", "w") as f:
-                    f.write("Restarted at request of " +
-                            message.author.name)
-                    f.flush()
-                sys.exit(0)
-                return
-            if message.content.startswith('!eval'):
-                msg = message.content[6:]
-                try:
-                    eval(msg)
-                except BaseException as e:
-                    await client.send_message(message.author, str(e))
-
-            elif message.content.startswith('!syseval'):
-                msg = message.content[9:]
-                try:
-                    os.system(msg)
-                except BaseException as e:
-                    await client.send_message(message.author, str(e))
-            elif message.content.startswith('!say'):
-                msg = message.content[5:]
-                await client.send_message(workingChan, msg)
-
-            elif message.content.startswith('!avatar'):
-                msg = message.content[8:]
-                fp = open(msg, 'rb')
-                filestream = fp.read()
-                await client.edit_profile(avatar=filestream)
-                fp.close()
-
-            elif message.content.startswith('!nick'):
-                nickname = message.content[6:]
-                await client.change_nickname(rubybot_member, nickname)
-
-            elif message.content.startswith('!smol'):
-                await client.send_message(workingChan, "<" + emotes[lwu_server] + ">")
-
-                # await client.send_message(workingChan, "<:smolrubes:243554386549276672>")
-
-            # elif message.content.startswith('!fakeupdate'):
-                #lastPostID = '1'
-
-            # elif message.content.startswith('!updebug'):
-                # r = urllib.request.urlopen(feedurl).read()
-                # r = r.decode()
-                # #re.search('article', r)
-                # mostRecentID = re.search('article.* data-post-id="(.*)"', r).group(1)
-                # await client.send_message(message.author, "```" + str(lastPostID) + "/" + str(mostRecentID) + "```")
-
-            elif message.content.startswith('!peribot'):
-                await alias_peribot()
-            elif message.content.startswith('!rubybot'):
-                await alias_rubybot()
-            elif message.content.startswith('!sapphire'):
-                await alias_sapphy()
-
-            elif message.content.startswith('!chan'):
-                msg = message.content[6:]
-                workingChan = client.get_channel(msg)
-                await client.send_message(message.author, workingChan.name)
-
-            elif message.content.startswith('!log'):
-                logno = int(message.content[5:])
-                for channel in lwu_server.channels:
-                    logs = await client.logs_from(channel, logno)
-                    f = open('/media/bluebook/logs/' +
-                             channel.name + '.log', 'w')
-                    await client.send_message(message.author, "Logged " + channel.name)
-                    for message in logs:
-                        f.write(str(message.timestamp) + " " + message.author.name + ": " + message.content +
-                                ' ' + json.dumps(message.attachments) + '\n')  # python will convert \n to os.linesep
-                    f.close()
 
 with open("token", 'rb') as filehandler:
     token = pickle.load(filehandler)
