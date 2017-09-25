@@ -55,14 +55,15 @@ def pickleSave(object, filename):
     filehandler = open("pickle/" + filename + ".obj", 'wb')
     pickle.dump(object, filehandler)
 
+
 rubybot = {
     'servers': [],
     'commands': []
 }
 
 rbot.permissions = {
-    '232218346999775232': { #LWU
-        '282703165269213184': 1 #"mod"
+    '232218346999775232': {  # LWU
+        '282703165269213184': 1  # "mod"
     }
 }
 
@@ -156,10 +157,10 @@ async def on_ready():
     taboo_server = client.get_server('245789672842723329')
 
     rubybot['servers'] = [
-        rbot.Server(client,358806463139020810),  # Moderation United
-        rbot.Server(client,232218346999775232),  # lwu
-        rbot.Server(client,245789672842723329),  # TABUU
-        rbot.Server(client,290270624558088192)  # Minda
+        rbot.Server(client, 358806463139020810),  # Moderation United
+        rbot.Server(client, 232218346999775232),  # lwu
+        rbot.Server(client, 245789672842723329),  # TABUU
+        rbot.Server(client, 290270624558088192)  # Minda
     ]
 
     global taboo_teams
@@ -196,7 +197,8 @@ async def on_ready():
             await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
             await client.leave_server(s)
 
-    print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
+    print('Logged in as ' + client.user.name +
+          " @<" + client.user.id + ">")
     # await client.send_message(gio, "Can you hear me?")
     #gameplayed = MAIN.get("gameplayed", "github/freiheit/discord_rss_bot")
     # await client.change_status(game=discord.Game(name=gameplayed))
@@ -228,14 +230,44 @@ async def on_ready():
     with open("git.log", "r") as _file:
         await client.send_message(gio, "Latest git revision: \n" + _file.read())
     with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
-        tracefile2.write("Nothing known! No exception written to file!")
+        tracefile2.write(
+            "Nothing known! No exception written to file!")
         tracefile2.flush()
-    
-    lwu_newserver = rbot.Server(client,232218346999775232)
-    test_command = rbot.Command('test', (lambda message: client.send_message(gio, "Message")), 'Test command', 0)
-    lwu_newserver.add_cmd(test_command)
-    print(rbot.servers)
-    #import pdb; pdb.set_trace() 
+
+    lwu_newserver = rbot.Server(client, 232218346999775232)
+    cmd_test = rbot.Command('test', (lambda message:
+        client.send_message(gio, "Message")
+    ),
+    'Test command',  # helpstr
+    0)  # Permission Level
+
+    cmd_error = rbot.Command('raise', (lambda message:
+        m = [1]
+        print(m[3])
+    ),
+    'Throws an error',  # helpstr
+    0)  # Permission Level
+
+    cmd_vote = rbot.Command('callvote', (lambda message:
+        reaction_dict = random.choice(
+            ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
+        )
+        msg = ' '.join(message.content.split()[1:])  # Remove first word
+        options = msg.split(', ')  # Create list from CSV
+        pollmsg = await client.send_message(message.channel, "Loading...")
+        i = 0
+        polltext = message.author.name + " has called a vote:"
+        for o in options:
+            polltext = polltext + "\n" + reaction_dict[i] + ": " + o
+            print(reaction_dict[i])
+            await client.add_reaction(pollmsg, reaction_dict[i])
+            i = i + 1
+        await client.edit_message(pollmsg, new_content=polltext)
+    ),
+    'Test command',  # helpstr
+    0)  # Permission Level
+    lwu_newserver.add_cmds([cmd_vote])
+    #import pdb; pdb.set_trace()
 
 # IM GOING TO REPORT THIS
 
@@ -247,11 +279,14 @@ async def on_message_edit(before, after):
     if message.server:
         with open(logpath(message), 'a+') as file:
             file.write(fmt.format(after, before))
-            file.write("[" + message.channel.name + "] " + message.author.name + ": " + message.clean_content + "\n")
+            file.write("[" + message.channel.name + "] " +
+                       message.author.name + ": " + message.clean_content + "\n")
     else:
         with open(logpath(message), 'a+') as file:
             file.write(fmt.format(after, before))
-            file.write(message.author.name + ": " + message.clean_content + "\n")
+            file.write(message.author.name + ": " +
+                       message.clean_content + "\n")
+
 
 @client.event
 async def on_message_delete(message):
@@ -259,12 +294,14 @@ async def on_message_delete(message):
         fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
         with open(logpath(message), 'a+') as file:
             file.write(fmt.format(message))
-            file.write("[" + message.channel.name + "] " + message.author.name + ": " + message.clean_content + "\n")
+            file.write("[" + message.channel.name + "] " +
+                       message.author.name + ": " + message.clean_content + "\n")
     else:
         fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
         with open(logpath(message), 'a+') as file:
             file.write(fmt.format(message))
-            file.write(message.author.name + ": " + message.clean_content + "\n")
+            file.write(message.author.name + ": " +
+                       message.clean_content + "\n")
 
 
 @client.event
@@ -307,7 +344,8 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                 'article.* data-post-id="(.*)"', r).group(1)
             if mostRecentID != lastPostID:
                 if '0' != lastPostID:
-                    print(feedurl + " update: " + lastPostID + " -> " + mostRecentID)
+                    print(feedurl + " update: " +
+                          lastPostID + " -> " + mostRecentID)
                     await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
                     # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
                     await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ Update! ]]")
@@ -357,8 +395,10 @@ async def bad(target, source, channel):
     #global modchat
     if source == None:
         source = rubybot_member
-    badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
-    verified = discord.utils.get(lwu_server.roles, id='275764022547316736')
+    badr = discord.utils.get(
+        lwu_server.roles, id='242853719882858496')
+    verified = discord.utils.get(
+        lwu_server.roles, id='275764022547316736')
     i = 1
     while (badr not in target.roles):
         i = i + 1
@@ -375,8 +415,10 @@ async def bad(target, source, channel):
 
 async def unbad(target, source):
     #global modchat
-    badr = discord.utils.get(lwu_server.roles, id='242853719882858496')
-    verified = discord.utils.get(lwu_server.roles, id='275764022547316736')
+    badr = discord.utils.get(
+        lwu_server.roles, id='242853719882858496')
+    verified = discord.utils.get(
+        lwu_server.roles, id='275764022547316736')
     # await client.remove_roles(target, badr)
     i = 1
     while (badr in target.roles):
@@ -471,7 +513,7 @@ async def on_message(message):
     # we do not want the bot to react to itself
     if message.author == client.user:
         return
-    
+
     #global gio
     #global server
     #global rulestxt
@@ -494,31 +536,33 @@ async def on_message(message):
             await loadfrogs()
             await client.delete_message(message)
             return
-        if message.content.startswith('!error'):
-            m = [1]
-            print(m[3])
+        # if message.content.startswith('!error'):
+        #     m = [1]
+        #     print(m[3])
 
-        if message.content.startswith('!react'):
-            msg = await client.send_message(message.channel, 'React to me')
-            res = await client.wait_for_reaction(message=msg)
-            await client.send_message(message.channel, '{0.reaction.emoji} {0.reaction.emoji.id} {0.reaction.emoji.name} {0.reaction.emoji.url}!'.format(res))
+        # if message.content.startswith('!react'):
+        #     msg = await client.send_message(message.channel, 'React to me')
+        #     res = await client.wait_for_reaction(message=msg)
+        #     await client.send_message(message.channel, '{0.reaction.emoji} {0.reaction.emoji.id} {0.reaction.emoji.name} {0.reaction.emoji.url}!'.format(res))
 
-        if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
-            reaction_dict = random.choice(
-                ['🇦🇧🇨🇩🇪🇫🇬🇭','❤💛💚💙💜🖤💔','🐶🐰🐍🐘🐭🐸','🍅🍑🍒🍌🍉🍆🍓🍇']
-            )
-
-            msg = ' '.join(message.content.split()[1:])  # Remove first word
-            options = msg.split(', ')  # Create list from CSV
-            pollmsg = await client.send_message(message.channel, "Loading...")
-            i = 0
-            polltext = message.author.name + " has called a vote:"
-            for o in options:
-                polltext = polltext + "\n" + reaction_dict[i] + ": " + o
-                print(reaction_dict[i])
-                await client.add_reaction(pollmsg, reaction_dict[i])
-                i = i + 1
-            await client.edit_message(pollmsg, new_content=polltext)
+        # if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
+        #     reaction_dict = random.choice(
+        #         ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
+        #     )
+        #
+        #     msg = ' '.join(message.content.split()[
+        #                    1:])  # Remove first word
+        #     options = msg.split(', ')  # Create list from CSV
+        #     pollmsg = await client.send_message(message.channel, "Loading...")
+        #     i = 0
+        #     polltext = message.author.name + " has called a vote:"
+        #     for o in options:
+        #         polltext = polltext + "\n" + \
+        #             reaction_dict[i] + ": " + o
+        #         print(reaction_dict[i])
+        #         await client.add_reaction(pollmsg, reaction_dict[i])
+        #         i = i + 1
+        #     await client.edit_message(pollmsg, new_content=polltext)
 
         if message.content.startswith('!roles'):
             for role in message.server.roles:
@@ -593,9 +637,11 @@ async def on_message(message):
             if isMod(message.server, message.author):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
                 await client.delete_message(message)
-                eprint("Restarting rubybot at request of " + message.author.name)
+                eprint("Restarting rubybot at request of " +
+                       message.author.name)
                 with open("last_trace.log", "w") as f:
-                    f.write("Restarted at request of " + message.author.name)
+                    f.write("Restarted at request of " +
+                            message.author.name)
                     f.flush()
                 sys.exit(0)
             return
@@ -662,10 +708,11 @@ async def on_message(message):
             await command.run(message)
     else:
         with open(logpath(message), 'a+') as file:
-            file.write("[" + message.author.name + "] " + ": " + message.clean_content + "\n")
+            file.write("[" + message.author.name + "] " +
+                       ": " + message.clean_content + "\n")
         for command in rbot.direct_commands:
             await command.run(message)
-    
+
     if message.server == lwu_server:
         if message.content.startswith('!rules'):
             await client.send_typing(message.channel)
@@ -833,9 +880,11 @@ async def on_message(message):
                 return
             if message.content.startswith('!restart') or message.content.startswith('!reload'):
                 await client.change_presence(game=discord.Game(name="swords", type=1))
-                eprint("Restarting rubybot at request of " + message.author.name)
+                eprint("Restarting rubybot at request of " +
+                       message.author.name)
                 with open("last_trace.log", "w") as f:
-                    f.write("Restarted at request of " + message.author.name)
+                    f.write("Restarted at request of " +
+                            message.author.name)
                     f.flush()
                 sys.exit(0)
                 return
