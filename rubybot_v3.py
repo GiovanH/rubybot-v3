@@ -246,7 +246,7 @@ async def on_ready():
 
     cmd_error = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
 
-    def cmd_vote_func(message):
+    async def cmd_vote_func(message):
         reaction_dict = random.choice(
             ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
         )
