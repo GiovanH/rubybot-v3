@@ -352,8 +352,11 @@ async def on_ready():
         '290270624558088192':  '<:smolrubes:300822291229442048>',
         '232218346999775232': '<:smolrubes:243554386549276672>'
         }
-        chan = client.get_channel(message.content[4:22])
-        await client.send_message(chan, emotes[chan.server.id])
+        try:
+            chan = client.get_channel(message.content[7:25])
+            await client.send_message(chan, emotes[chan.server.id])
+    except discord.errors.InvalidArgument:
+        await client.send_message(message.author, "No such channel as " + message.content[7:25])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
     'Sends a smol to channel by ID',  # helpstr
     3)  # Permission Level
@@ -377,7 +380,7 @@ async def on_ready():
 
     async def cmd_sayat_func(message): #TODO: Gotta localize the emotes
         try:
-            await client.send_message(client.get_channel(message.content[5:23]), message.content[23:])
+            await client.send_message(client.get_channel(message.content[8:26]), message.content[23:])
         except discord.errors.InvalidArgument:
             await client.send_message(message.author, "No such channel as " + message.content[5:23])
     cmd_sayat = rbot.Command('say', cmd_sayat_func,
@@ -424,16 +427,14 @@ async def on_ready():
     async def cmd_rules_func(message):
         with open("rules/" + message.server.id, 'r') as rulefile:
             await client.send_message(message.channel, rulefile.read())
-            # tracefile2.write("Nothing known! No exception written to file!")
-            # tracefile2.flush()
     cmd_rules = rbot.Command('rules', cmd_rules_func,
     'Lists the server\'s rules',  # helpstr
     0)  # Permission Level
 
     async def cmd_setrules_func(message):
         with open("rules/" + message.server.id, 'w') as rulefile:
-            tracefile2.write(message.content[7:])
-            tracefile2.flush()
+            rulefile.write(message.content[7:])
+            rulefile.flush()
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     cmd_setrules = rbot.Command('setrules', cmd_setrules_func,
     'Modifies the server\'s rules',  # helpstr
@@ -569,6 +570,7 @@ async def on_ready():
         cmd_verify
     ]
     server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras) #Temporary: All commands to LWU
+    server_minda.add_cmd(cmd_smolmote) #Temporary: All commands to LWU
     server_minda.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_tabuu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
