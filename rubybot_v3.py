@@ -78,7 +78,7 @@ froggos = ["Not ready yet! Try again!"]
 
 
 async def loadfrogs():
-    #global froggos
+    global froggos
     froggos = []
     with open('frogs.frog') as f:
         for line in f:
@@ -283,9 +283,10 @@ async def on_ready():
 
     async def cmd_frog_func(message):
         await client.send_typing(message.channel)
-        #frogi = (random.randint(1, len(froggos) - 1))
-        #froggo = froggos[frogi]
-        froggo = random.choice(froggos)
+        print(froggos)
+        print(len(froggos))
+        frogi = random.randint(1, len(froggos))
+        froggo = froggos[frogi-1]
         await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
         await client.delete_message(message)
         return
