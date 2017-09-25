@@ -380,9 +380,9 @@ async def on_ready():
 
     async def cmd_sayat_func(message): #TODO: Gotta localize the emotes
         try:
-            await client.send_message(client.get_channel(message.content[10:28]), message.content[23:])
+            await client.send_message(client.get_channel(message.content[8:25]), message.content[23:])
         except discord.errors.InvalidArgument:
-            await client.send_message(message.author, "No such channel as " + message.content[5:23])
+            await client.send_message(message.author, "No such channel as " + message.content[8:25])
     cmd_sayat = rbot.Command('say', cmd_sayat_func,
     'Says a message at a channel by ID',  # helpstr
     3)  # Permission Level
