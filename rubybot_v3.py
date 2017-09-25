@@ -240,15 +240,13 @@ async def on_ready():
     ),
     'Test command',  # helpstr
     0)  # Permission Level
-
-    cmd_error = rbot.Command('raise', (lambda message:
+    def cmd_error_func(message):
         m = [1]
         print(m[3])
-    ),
-    'Throws an error',  # helpstr
-    0)  # Permission Level
 
-    cmd_vote = rbot.Command('callvote', (lambda message:
+    cmd_error = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
+
+    def cmd_vote_func(message):
         reaction_dict = random.choice(
             ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
         )
@@ -263,7 +261,8 @@ async def on_ready():
             await client.add_reaction(pollmsg, reaction_dict[i])
             i = i + 1
         await client.edit_message(pollmsg, new_content=polltext)
-    ),
+
+    cmd_vote = rbot.Command('callvote', cmd_vote_func,
     'Test command',  # helpstr
     0)  # Permission Level
     lwu_newserver.add_cmds([cmd_vote])
