@@ -1,5 +1,5 @@
 #/bin/bash
-git commit frogs.frog -m "routine frog update"
+git commit frogs.frog rules rules/* -m "routine frog update"
 git push
 git fetch --all
 git reset --hard origin/master
