@@ -60,6 +60,12 @@ rubybot = {
     'commands': []
 }
 
+rbot.permissions = {
+    '232218346999775232': { #LWU
+        '282703165269213184': 1 #"mod"
+    }
+}
+
 # TODO: Load tokens from file instead
 client = discord.Client()
 helpstr = "Generic commands:\n```!rules\n!frog\n!callvote option1, option2[, option3...]\n!roll NdN\n!roll NdN[ droplowest N] | [ - N] [ +N]\n!help```\nAdmin:\n```!restart```\nLoreweaver Universe commands:\n```!pronoun [F|M|T|He|She|They|Him|Her|Them|Other] (This is a toggle!)\n!rules```\nAdmin:\n```!bad @user [@user2...]\n!shadowbad @user [@user2...]\n!frug @user [@user2...]\n!frugnuke N\n!unbad @user\n!unbad @user1 [user2...]\n!verify @user1 [user2...]```\nMinda Chat Commands:\nNone.\nTaboo commands:\n```!sortinghat```\nAdmin:\n```!reteam\n!unteam```\nList of PM commands:\n```!help```"
@@ -148,7 +154,7 @@ async def on_ready():
 
     global taboo_server
     taboo_server = client.get_server('245789672842723329')
-    
+
     rubybot['servers'] = [
         rbot.Server(client,358806463139020810),  # Moderation United
         rbot.Server(client,232218346999775232),  # lwu
@@ -224,30 +230,41 @@ async def on_ready():
     with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
         tracefile2.write("Nothing known! No exception written to file!")
         tracefile2.flush()
-    test_server = rbot.Server(client,232218346999775232)
-    #import pdb; pdb.set_trace()
+    
+    lwu_newserver = rbot.Server(client,232218346999775232)
+    test_command = rbot.Command('test', (lambda message: client.send_message(gio, "Message")), 'Test command', 0)
+    lwu_newserver.add_cmd(test_command)
+    print(rbot.servers)
+    #import pdb; pdb.set_trace() 
 
 # IM GOING TO REPORT THIS
 
-test_command = rbot.Command('test', (lambda message: client.send_message(gio, "Message")), 'Test command', 0)
 
 @client.event
 async def on_message_edit(before, after):
     message = after
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
-    with open(logpath(message), 'a+') as file:
-        file.write(fmt.format(after, before))
-        file.write("[" + message.channel.name + "] " +
-                   message.author.name + ": " + message.clean_content + "\n")
-
+    if message.server:
+        with open(logpath(message), 'a+') as file:
+            file.write(fmt.format(after, before))
+            file.write("[" + message.channel.name + "] " + message.author.name + ": " + message.clean_content + "\n")
+    else:
+        with open(logpath(message), 'a+') as file:
+            file.write(fmt.format(after, before))
+            file.write(message.author.name + ": " + message.clean_content + "\n")
 
 @client.event
 async def on_message_delete(message):
-    fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
-    with open(logpath(message), 'a+') as file:
-        file.write(fmt.format(message))
-        file.write("[" + message.channel.name + "] " +
-                   message.author.name + ": " + message.clean_content + "\n")
+    if message.server:
+        fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
+        with open(logpath(message), 'a+') as file:
+            file.write(fmt.format(message))
+            file.write("[" + message.channel.name + "] " + message.author.name + ": " + message.clean_content + "\n")
+    else:
+        fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
+        with open(logpath(message), 'a+') as file:
+            file.write(fmt.format(message))
+            file.write(message.author.name + ": " + message.clean_content + "\n")
 
 
 @client.event
@@ -454,6 +471,7 @@ async def on_message(message):
     # we do not want the bot to react to itself
     if message.author == client.user:
         return
+    
     #global gio
     #global server
     #global rulestxt
@@ -487,7 +505,7 @@ async def on_message(message):
 
         if message.content.startswith('!strawpoll') or message.content.startswith('!callvote'):
             reaction_dict = random.choice(
-                ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
+                ['🇦🇧🇨🇩🇪🇫🇬🇭','❤💛💚💙💜🖤💔','🐶🐰🐍🐘🐭🐸','🍅🍑🍒🍌🍉🍆🍓🍇']
             )
 
             msg = ' '.join(message.content.split()[1:])  # Remove first word
@@ -636,6 +654,18 @@ async def on_message(message):
             await client.add_roles(target, newteam)
             await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
 
+    if message.server:
+        with open(logpath(message), 'a+') as file:
+            file.write("[" + message.channel.name + "] " +
+                       message.author.name + ": " + message.clean_content + "\n")
+        for command in rbot.servers[message.server.id].commands:
+            await command.run(message)
+    else:
+        with open(logpath(message), 'a+') as file:
+            file.write("[" + message.author.name + "] " + ": " + message.clean_content + "\n")
+        for command in rbot.direct_commands:
+            await command.run(message)
+    
     if message.server == lwu_server:
         if message.content.startswith('!rules'):
             await client.send_typing(message.channel)
