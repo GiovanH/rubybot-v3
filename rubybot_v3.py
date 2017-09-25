@@ -353,7 +353,7 @@ async def on_ready():
         '232218346999775232': '<:smolrubes:243554386549276672>'
         }
         try:
-            chan = client.get_channel(message.content[6:24])
+            chan = client.get_channel(message.content[4:22])
             await client.send_message(chan, emotes[chan.server.id])
         except Exception:
             pass
