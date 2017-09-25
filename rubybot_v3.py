@@ -53,6 +53,24 @@ rbot.permissions = {
     }
 }
 
+emotes = {
+    'smol': {
+        '290270624558088192':  '<:smolrubes:300822291229442048>',
+        '232218346999775232': '<:smolrubes:243554386549276672>'
+    },
+    'blush': {
+        '290270624558088192':  ':smolrubes:300822291229442048',
+        '232218346999775232': ':thatsmywife:244688656911171585'
+    }
+}
+async def emote(server, match):
+    for e in server.emojis:
+        print e.name
+    try:
+        return emotes['match']['server']
+    except:
+        pass
+
 client = discord.Client()
 
 froggos = ["Not ready yet! Try again!"]
@@ -140,8 +158,10 @@ async def on_ready():
     print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
 
     loop = asyncio.get_event_loop()
+    print('Creating update loop for LWU')
     loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
                                            client.get_channel('232218346999775232'), client.get_channel('243542820189765633'), 90))
+    print('Creating update loop for Minda')
     loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
     loop.create_task(fear_of_death(550))
@@ -189,8 +209,10 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_listroles_func(message):
+        m = ""
         for role in message.server.roles:
-            await client.send_message(message.author, str(role.name) + ": " + str(role.id))
+            m += str(role.name) + ": " + str(role.id) + "\n"
+        await client.send_message(message.author, m)
     cmd_listroles = rbot.Command('listroles', cmd_listroles_func,
     'Messages you with all roles from a server',  # helpstr
     2)  # Permission Level
@@ -239,8 +261,10 @@ async def on_ready():
     2)  # Permission Level
 
     async def cmd_listemotes_func(message):
+        m = ""
         for s in message.server.emojis:
-            await client.send_message(message.author, s.name + ", " + s.id)
+            m += s.name + ", " + s.id "\n"
+        await client.send_message(message.author, m)
     cmd_listemotes = rbot.Command('listemotes', (cmd_listemotes_func),
     'Messages you the server\'s emotes',  # helpstr
     1)  # Permission Level
@@ -348,13 +372,10 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_smolmote_func(message): #TODO: Gotta localize the emotes
-        emotes = {
-        '290270624558088192':  '<:smolrubes:300822291229442048>',
-        '232218346999775232': '<:smolrubes:243554386549276672>'
-        }
+        
         try:
             chan = client.get_channel(message.content[6:25])
-            await client.send_message(chan, emotes[chan.server.id])
+            await client.send_message(chan, "<" + emote(chan.server, 'smolrubes') + ">")
         except AttributeError:
             await client.send_message(message.author, "No such channel as " + message.content[7:25])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
@@ -656,25 +677,27 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
     while not client.is_closed:
         # And tries to catch all the exceptions and just keep going
         # (but see list of except/finally stuff below)
-        try:
-            r = urllib.request.urlopen(feedurl).read()
-            r = r.decode()
-            mostRecentID = re.search(
-                'article.* data-post-id="(.*)"', r).group(1)
-            if mostRecentID != lastPostID:
-                if '0' != lastPostID:
-                    print(feedurl + " update: " +
-                          lastPostID + " -> " + mostRecentID)
-                    await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
-                    # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
-                    await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ Update! ]]")
+    # try:
+        r = urllib.request.urlopen(feedurl).read()
+        r = r.decode()
+        mostRecentID = re.search(
+            'article.* data-post-id="(.*)"', r).group(1)
+        if mostRecentID != lastPostID:
+            print(feedurl + " change: " +
+                  lastPostID + " =/= " + mostRecentID)
+            if '0' != lastPostID:
+                print(feedurl + " update: " +
+                      lastPostID + " -> " + mostRecentID)
+                await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
+                # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
+                await client.send_message(workingChan, "<" + emote(workingChan.server, 'smolrubes') + "> [[ Update! ]]")
             lastPostID = mostRecentID
-        except:
-            eprint("error fetching status for " + feedurl)
-            # raise
+            print(lastPostID)
+    # except:
+        # eprint("error fetching status for " + feedurl)
         # No matter what goes wrong, wait same time and try again
-        finally:
-            await asyncio.sleep(freq)
+    #finally:
+        await asyncio.sleep(freq)
 
 async def bad(target, source, channel):
     #global rubybot_member
@@ -755,21 +778,13 @@ async def on_message(message):
             return
 
         if "rubybot" in message.content.lower():
-            emotes = {
-            '290270624558088192':  ':smolrubes:300822291229442048',
-            '232218346999775232': ':smolrubes:243554386549276672'
-            }
             print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, emotes[message.server.id])
+            await client.add_reaction(message, emote(message.server, 'smolrubes'))
             return
 
         if "boobybot" in message.content.lower():
-            blushemote = {
-            '290270624558088192':  ':smolrubes:300822291229442048',
-            '232218346999775232': ':thatsmywife:244688656911171585'
-            }
             print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, blushemote[message.server.id])
+            await client.add_reaction(message, emote(message.server, 'smolrubes'))
             return
 
     if message.server:
