@@ -352,11 +352,8 @@ async def on_ready():
         '290270624558088192':  '<:smolrubes:300822291229442048>',
         '232218346999775232': '<:smolrubes:243554386549276672>'
         }
-        try:
-            chan = client.get_channel(message.content[4:22])
-            await client.send_message(chan, emotes[chan.server.id])
-        except Exception:
-            pass
+        chan = client.get_channel(message.content[4:22])
+        await client.send_message(chan, emotes[chan.server.id])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
     'Sends a smol to channel by ID',  # helpstr
     3)  # Permission Level
