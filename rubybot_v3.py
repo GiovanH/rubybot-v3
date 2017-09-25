@@ -355,7 +355,7 @@ async def on_ready():
     async def cmd_reteam_func(message):
 
         taboo_teams = []
-        taboo_server = get_server(245789672842723329)
+        taboo_server = await client.get_server(245789672842723329)
         taboo_teams.append(discord.utils.get(taboo_server.roles,
                                           id='246194661763317761'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
@@ -642,12 +642,12 @@ async def on_message_delete(message):
 
 @client.event
 async def on_member_join(member):
-    if member.server is taboo_server:
+    if rbot.servers.get('245789672842723329') and member.server is rbot.servers['245789672842723329'].server:
         eprint("setting team in taboo")
         target = member
 
         taboo_teams = []
-        taboo_server = get_server(245789672842723329)
+        taboo_server = await client.get_server(245789672842723329)
         taboo_teams.append(discord.utils.get(taboo_server.roles,
                                           id='246194661763317761'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
