@@ -53,24 +53,35 @@ rbot.permissions = {
     }
 }
 
-emotes = {
-    'smol': {
-        '290270624558088192':  '<:smolrubes:300822291229442048>',
-        '232218346999775232': '<:smolrubes:243554386549276672>'
-    },
-    'blush': {
-        '290270624558088192':  ':smolrubes:300822291229442048',
-        '232218346999775232': ':thatsmywife:244688656911171585'
-    }
-}
-async def emote(server, match):
-    for e in server.emojis:
-        print e.name
+emotes = {}
+async def emote(server, match, braces):
+    default = "smolrubes"
+    fallback = None
+    m = None
     try:
-        return emotes['match']['server']
-    except:
-        pass
-
+        m = emotes[match][server.id]
+    except KeyError as exception:
+        for e in server.emojis:
+            if default == e.name:
+                fallback = e
+            if match == e.name:
+                m = e
+        if m: #matched perfectly
+            pass
+        elif fallback:
+            m = fallback
+        else:
+            with open("asset/" + default + ".png", 'rb') as fp:
+                bytes = fp.read()
+                m = await client.create_custom_emoji(server=server, name=default, image=bytes)
+        if emotes.get(match) == None: emotes[match] = {}
+        emotes[match][server.id] = m
+    s = ":" + m.name + ":" + m.id
+    if braces:
+        return "<" + s + ">"
+    else:
+        return s
+        
 client = discord.Client()
 
 froggos = ["Not ready yet! Try again!"]
@@ -263,7 +274,7 @@ async def on_ready():
     async def cmd_listemotes_func(message):
         m = ""
         for s in message.server.emojis:
-            m += s.name + ", " + s.id "\n"
+            m += s.name + ", " + s.id + "\n"
         await client.send_message(message.author, m)
     cmd_listemotes = rbot.Command('listemotes', (cmd_listemotes_func),
     'Messages you the server\'s emotes',  # helpstr
@@ -375,7 +386,7 @@ async def on_ready():
         
         try:
             chan = client.get_channel(message.content[6:25])
-            await client.send_message(chan, "<" + emote(chan.server, 'smolrubes') + ">")
+            await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
         except AttributeError:
             await client.send_message(message.author, "No such channel as " + message.content[7:25])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
@@ -690,7 +701,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                       lastPostID + " -> " + mostRecentID)
                 await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
                 # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
-                await client.send_message(workingChan, "<" + emote(workingChan.server, 'smolrubes') + "> [[ Update! ]]")
+                await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
             lastPostID = mostRecentID
             print(lastPostID)
     # except:
@@ -779,12 +790,12 @@ async def on_message(message):
 
         if "rubybot" in message.content.lower():
             print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, emote(message.server, 'smolrubes'))
+            await client.add_reaction(message, await emote(message.server, 'smolrubes',False))
             return
 
         if "boobybot" in message.content.lower():
             print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, emote(message.server, 'smolrubes'))
+            await client.add_reaction(message, await emote(message.server, 'rubyblush', False))
             return
 
     if message.server:
