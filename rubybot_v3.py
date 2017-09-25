@@ -355,8 +355,8 @@ async def on_ready():
         try:
             chan = client.get_channel(message.content[7:25])
             await client.send_message(chan, emotes[chan.server.id])
-    except discord.errors.InvalidArgument:
-        await client.send_message(message.author, "No such channel as " + message.content[7:25])
+        except discord.errors.InvalidArgument:
+            await client.send_message(message.author, "No such channel as " + message.content[7:25])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
     'Sends a smol to channel by ID',  # helpstr
     3)  # Permission Level
