@@ -73,6 +73,7 @@ async def emote(server, match, braces):
         else:
             with open("asset/" + default + ".png", 'rb') as fp:
                 bytes = fp.read()
+                print("I'm being forced to add an emoji to " + server.name)
                 m = await client.create_custom_emoji(server=server, name=default, image=bytes)
         if emotes.get(match) == None: emotes[match] = {}
         emotes[match][server.id] = m
@@ -246,6 +247,9 @@ async def on_ready():
         return
     cmd_frog = rbot.Command('frog', cmd_frog_func,
     'Gives a froggo',  # helpstr
+    0)  # Permission Level
+    cmd_contraband = rbot.Command('contraband', cmd_frog_func,
+    'Alias for frog',  # helpstr
     0)  # Permission Level
 
     async def cmd_addfrog_func(message):
@@ -564,12 +568,24 @@ async def on_ready():
     cmd_verify = rbot.Command('verify', cmd_verify_func,
     'Verifies a user',  # helpstr
     1)  # Permission Level
+    
+    async def cmd_fund_func(message):
+        # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
+        await client.send_message(message.channel,embed=discord.Embed(title="Keep me alive!",url="https://www.patreon.com/giovan").set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png"))
+    cmd_fund = rbot.Command('fund', cmd_fund_func,
+    'Gives information about patreon',  # helpstr
+    0)  # Permission Level
+    cmd_patreon = rbot.Command('patreon', cmd_fund_func,
+    'Alias for fund',  # helpstr
+    0)  # Permission Level
 
     # async def cmd__func(message):
     # cmd_ = rbot.Command('', cmd__func,
     # '',  # helpstr
     # 0)  # Permission Level
     cmdlist_base =    [
+        cmd_fund,
+        cmd_patreon,
         cmd_vote,
         cmd_listroles,
         cmd_sayhere,
@@ -604,6 +620,7 @@ async def on_ready():
     server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras) #Temporary: All commands to LWU
     server_minda.add_cmd(cmd_smolmote) #Temporary: All commands to LWU
     server_minda.add_cmds(cmdlist_base) #Temporary: All commands to LWU
+    server_minda.add_cmd(cmd_contraband)
     server_tabuu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.remove_cmds([cmd_frog])
