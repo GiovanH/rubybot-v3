@@ -82,7 +82,7 @@ async def emote(server, match, braces):
         return "<" + s + ">"
     else:
         return s
-        
+
 client = discord.Client()
 
 froggos = ["Not ready yet! Try again!"]
@@ -387,7 +387,7 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_smolmote_func(message): #TODO: Gotta localize the emotes
-        
+
         try:
             chan = client.get_channel(message.content[6:25])
             await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
@@ -435,12 +435,12 @@ async def on_ready():
         if message.server:
             for command in rbot.servers[message.server.id].commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
-                    helpstr += "\n!" + command.name + "\n\t\t\t\t: " + command.helpstr
+                    helpstr += "\n!" + command.name + " : " + command.helpstr
             await client.send_message(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
-                    helpstr += "\n!" + command.name + "\n\t\t\t\t: " + command.helpstr
+                    helpstr += "\n!" + command.name + " : " + command.helpstr
             await client.send_message(message.author, helpstr)
     cmd_help = rbot.Command('help', cmd_help_func,
     'List availible commands and their functions',  # helpstr
@@ -568,7 +568,7 @@ async def on_ready():
     cmd_verify = rbot.Command('verify', cmd_verify_func,
     'Verifies a user',  # helpstr
     1)  # Permission Level
-    
+
     async def cmd_fund_func(message):
         # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel,embed=discord.Embed(title="Keep me alive!",url="https://www.patreon.com/giovan").set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png"))
