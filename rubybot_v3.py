@@ -299,7 +299,10 @@ async def on_ready():
 
     async def cmd_restart_func(message):
         await client.change_presence(game=discord.Game(name="swords", type=1))
-        await client.delete_message(message)
+        try:
+            await client.add_reaction(message, await emote(message.server, 'smolrubes',False))
+        except:
+            pass
         eprint("Restarting rubybot at request of " +
                message.author.name)
         with open("last_trace.log", "w") as f:
