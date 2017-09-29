@@ -702,33 +702,34 @@ async def fear_of_death(freq):
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
     #global timezone
+    import time
     mostRecentID = '1'
     lastPostID = '0'
+    time_lastupdate = time.time()
     # Basically run forever
     while not client.is_closed:
-        # And tries to catch all the exceptions and just keep going
-        # (but see list of except/finally stuff below)
-    # try:
-        r = urllib.request.urlopen(feedurl).read()
-        r = r.decode()
-        mostRecentID = re.search(
-            'article.* data-post-id="(.*)"', r).group(1)
-        if mostRecentID != lastPostID:
-            print(feedurl + " change: " +
-                  lastPostID + " =/= " + mostRecentID)
-            if '0' != lastPostID:
-                print(feedurl + " update: " +
-                      lastPostID + " -> " + mostRecentID)
-                await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
-                # await client.send_message(workingChan, "<" + emotes[workingChan.server] + "> [[ " + "Update! (" + lastPostID + " -> " + mostRecentID + ") ]]")
-                await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
-            lastPostID = mostRecentID
-            print(lastPostID)
-    # except:
-        # eprint("error fetching status for " + feedurl)
-        # No matter what goes wrong, wait same time and try again
-    #finally:
-        await asyncio.sleep(freq)
+        try:
+            r = urllib.request.urlopen(feedurl).read()
+            r = r.decode()
+            mostRecentID = re.search(
+                'article.* data-post-id="(.*)"', r).group(1)
+            if mostRecentID != lastPostID:
+                print(feedurl + " change: " + lastPostID + " =/= " + mostRecentID)
+                if '0' != lastPostID:
+                    print(feedurl + " update: " +
+                          lastPostID + " -> " + mostRecentID)
+                    print("Time since last update: " str(time_lastupdate - time.time() + " sec")
+                    time_lastupdate = time.time()
+                    await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
+                    await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
+                lastPostID = mostRecentID
+                print(lastPostID)
+        except:
+            eprint("error fetching status for " + feedurl)
+            traceback.print_exc()
+            # No matter what goes wrong, wait same time and try again
+        finally:
+            await asyncio.sleep(freq)
 
 async def bad(target, source, channel):
     #global rubybot_member
