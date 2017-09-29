@@ -718,7 +718,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                 if '0' != lastPostID:
                     print(feedurl + " update: " +
                           lastPostID + " -> " + mostRecentID)
-                    print("Time since last update: " + str(time_lastupdate - time.time() + " sec")
+                    print("Time since last update: " + str(time_lastupdate - time.time()) + " sec")
                     time_lastupdate = time.time()
                     await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
                     await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
