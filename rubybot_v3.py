@@ -510,8 +510,8 @@ async def on_ready():
             while (verified in target.roles):
                 i = i + 1
                 await client.remove_roles(target, verified)
-            await client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
-            await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
+            await client.send_message(message.channel, target.name + " has been badded to the pit by " + source.name + ".")
+            #await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
         await client.delete_message(message)
     cmd_bad = rbot.Command('bad', cmd_bad_func,
     'Bad them to the pit!',  # helpstr
@@ -537,7 +537,7 @@ async def on_ready():
                 i = i + 1
                 await client.add_roles(target, verified)
             # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
-            await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
+            await client.send_message(message.channel, "Log: " + target.name + " has been unbadded by " + source.name + ".")
         await client.delete_message(message)
     cmd_unbad = rbot.Command('unbad', cmd_unbad_func,
     'unBad them from the pit!',  # helpstr
