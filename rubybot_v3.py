@@ -254,23 +254,20 @@ async def on_ready():
 
     async def cmd_addfrog_func(message):
         msg = message.content[9:]
-        if isMod(message.server, message.author):
-            frogfile = 'frogs.frog'
-            try:
-                urllib.request.urlopen(msg).read()
-            except (urllib.error.HTTPError, urllib.error.URLError) as e:
-                await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
-                traceback.print_exc(file=sys.stdout)
-                # return
-            fh = open(frogfile, 'a')
-            fh.write(msg + "\n")
-            froggos.extend(msg)
-            uniqlines = set(open(frogfile).readlines())
-            open(frogfile, 'w').writelines(set(uniqlines))
-            await loadfrogs()
-            await client.send_message(message.channel, "Added frog.")
-        else:
-            await client.send_message(message.channel, "You do not have permissions to add a frog!")
+        frogfile = 'frogs.frog'
+        try:
+            urllib.request.urlopen(msg).read()
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
+            traceback.print_exc(file=sys.stdout)
+            # return
+        fh = open(frogfile, 'a')
+        fh.write(msg + "\n")
+        froggos.extend(msg)
+        uniqlines = set(open(frogfile).readlines())
+        open(frogfile, 'w').writelines(set(uniqlines))
+        await loadfrogs()
+        await client.send_message(message.channel, "Added frog.")
     cmd_addfrog = rbot.Command('addfrog', cmd_addfrog_func,
     'Adds a frog to the frog dictionary',  # helpstr
     2)  # Permission Level
@@ -493,12 +490,8 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_bad_func(message):
-        for m in message.mentions:
+        for target in message.mentions:
             #msg = message.content[5:]
-            if (modrole[message.server] in message.author.roles) and not message.channel.permissions_for(m).ban_members:
-                target = m
-            else:
-                target = message.author
             if target == None:
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
@@ -510,12 +503,7 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_unbad_func(message):
-        for m in message.mentions:
-            #msg = message.content[5:]
-            if (modrole[message.server] in message.author.roles) and not message.channel.permissions_for(m).ban_members:
-                target = m
-            else:
-                target = message.author
+        for target in message.mentions:
             if target == None:
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
@@ -785,14 +773,6 @@ def totalDelimitedList(list, number):
         total += i
     return total
 
-def isMod(server, member):
-    #global gio
-    #global modrole
-    if (member.id == gio.id):
-        return True
-    ismod = (modrole[server] in member.roles)
-    return ismod
-
 @client.event
 async def on_message(message):
     #tic = time.clock()
@@ -804,11 +784,6 @@ async def on_message(message):
         with open(logpath(message), 'a+') as file:
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
-        if message.content.startswith('!frog refresh') and isMod(message.server, message.author):
-            await loadfrogs()
-            await client.delete_message(message)
-            return
-
         if "rubybot" in message.content.lower():
             print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'smolrubes',False))
