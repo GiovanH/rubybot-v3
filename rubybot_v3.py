@@ -490,6 +490,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_bad_func(message):
+        source = message.author
         for target in message.mentions:
             #msg = message.content[5:]
             if target == None:
@@ -517,6 +518,7 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_unbad_func(message):
+        source = message.author
         for target in message.mentions:
             if target == None:
                 await client.send_message(message.channel, "No such person")
