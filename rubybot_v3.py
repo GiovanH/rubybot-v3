@@ -746,15 +746,6 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
         finally:
             await asyncio.sleep(freq)
 
-async def bad(target, source, channel):
-    #global rubybot_member
-    #global modchat
-    # await client.send_message(target, "You have been a bad frog." )
-
-
-async def unbad(target, source):
-    #global modchat
-
 def rollplain(rolls, limit):
     resultarray = [(random.randint(1, limit)) for r in range(rolls)]
     #result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
