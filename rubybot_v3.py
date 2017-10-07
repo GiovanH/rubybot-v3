@@ -496,7 +496,21 @@ async def on_ready():
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
                 return
-            await bad(target, message.author, message.channel)
+            if source == None:
+                source = rubybot_member
+            badr = discord.utils.get(
+                server_lwu.server.roles, id='242853719882858496')
+            verified = discord.utils.get(
+                server_lwu.server.roles, id='275764022547316736')
+            i = 1
+            while (badr not in target.roles):
+                i = i + 1
+                await client.add_roles(target, badr)
+            while (verified in target.roles):
+                i = i + 1
+                await client.remove_roles(target, verified)
+            await client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
+            await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
         await client.delete_message(message)
     cmd_bad = rbot.Command('bad', cmd_bad_func,
     'Bad them to the pit!',  # helpstr
@@ -508,7 +522,20 @@ async def on_ready():
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
                 return
-            await bad(target, message.author, message.channel)
+            badr = discord.utils.get(
+                server_lwu.server.roles, id='242853719882858496')
+            verified = discord.utils.get(
+                server_lwu.server.roles, id='275764022547316736')
+            # await client.remove_roles(target, badr)
+            i = 1
+            while (badr in target.roles):
+                i = i + 1
+                await client.remove_roles(target, badr)
+            while (verified not in target.roles):
+                i = i + 1
+                await client.add_roles(target, verified)
+            # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
+            await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
         await client.delete_message(message)
     cmd_unbad = rbot.Command('unbad', cmd_unbad_func,
     'unBad them from the pit!',  # helpstr
@@ -722,40 +749,11 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
 async def bad(target, source, channel):
     #global rubybot_member
     #global modchat
-    if source == None:
-        source = rubybot_member
-    badr = discord.utils.get(
-        lwu_server.roles, id='242853719882858496')
-    verified = discord.utils.get(
-        lwu_server.roles, id='275764022547316736')
-    i = 1
-    while (badr not in target.roles):
-        i = i + 1
-        await client.add_roles(target, badr)
-    while (verified in target.roles):
-        i = i + 1
-        await client.remove_roles(target, verified)
-    await client.send_message(channel, target.name + " has been badded to the pit by " + source.name + ".")
-    await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
     # await client.send_message(target, "You have been a bad frog." )
 
 
 async def unbad(target, source):
     #global modchat
-    badr = discord.utils.get(
-        lwu_server.roles, id='242853719882858496')
-    verified = discord.utils.get(
-        lwu_server.roles, id='275764022547316736')
-    # await client.remove_roles(target, badr)
-    i = 1
-    while (badr in target.roles):
-        i = i + 1
-        await client.remove_roles(target, badr)
-    while (verified not in target.roles):
-        i = i + 1
-        await client.add_roles(target, verified)
-    # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
-    await client.send_message(modchat, "Log: " + target.name + " has been unbadded by " + source.name + ".")
 
 def rollplain(rolls, limit):
     resultarray = [(random.randint(1, limit)) for r in range(rolls)]
