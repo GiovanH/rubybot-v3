@@ -811,10 +811,6 @@ while True:
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         eprint(tb)
-        try:
-            await client.send_message(gio, "I just had an error: \n" + tb)
-        except:
-            pass
         with open("last_trace.log", "w") as f:
             f.write(tb)
             f.flush()
