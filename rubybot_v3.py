@@ -359,7 +359,7 @@ async def on_ready():
     async def cmd_reteam_func(message):
 
         taboo_teams = []
-        taboo_server = await client.get_server(245789672842723329)
+        taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams.append(discord.utils.get(taboo_server.roles,
                                           id='246194661763317761'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
@@ -684,7 +684,7 @@ async def on_member_join(member):
         target = member
 
         taboo_teams = []
-        taboo_server = await client.get_server(245789672842723329)
+        taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams.append(discord.utils.get(taboo_server.roles,
                                           id='246194661763317761'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
