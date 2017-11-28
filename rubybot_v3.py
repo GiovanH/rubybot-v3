@@ -175,7 +175,8 @@ async def on_ready():
                                            client.get_channel('232218346999775232'), client.get_channel('243542820189765633'), 90))
     print('Creating update loop for Minda')
     loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
-                                           client.get_channel('298435197010182144'), client.get_channel('298828535894769665'), 90))
+                                           client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
+                                           
     loop.create_task(fear_of_death(550))
 
     await loadfrogs()
