@@ -773,9 +773,6 @@ async def on_message(message):
         return
 
     if message.server != None:  # Generic Server
-        with open(logpath(message), 'a+') as file:
-            file.write("[" + message.channel.name + "] " +
-                       message.author.name + ": " + message.clean_content + "\n")
         if "rubybot" in message.content.lower():
             print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'smolrubes',False))
