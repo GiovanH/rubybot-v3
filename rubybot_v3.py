@@ -573,7 +573,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_verify_func(message):
-        workingChan = client.get_channel('232218346999775232')
+        workingChan = client.get_channel('388730628176084992')
         verified = discord.utils.get(message.server.roles, id='388737413213716481')
         for member in message.mentions:
             if verified not in member.roles:
