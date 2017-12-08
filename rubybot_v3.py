@@ -37,7 +37,7 @@ def pickleSave(object, filename):
 
 rbot.permissions = {
     '232218346999775232': {  # LWU
-        '282703165269213184': 1,  # "mod"
+        '388738370676719616': 1,  # "mod"
         '233020731779317761': 2  #Bossman
     },
     '290270624558088192':{ #Minda
@@ -573,7 +573,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_verify_func(message):
-    #    workingChan = client.get_channel('232218346999775232')
+        workingChan = client.get_channel('232218346999775232')
         verified = discord.utils.get(message.server.roles, id='388737413213716481')
         for member in message.mentions:
             if verified not in member.roles:
