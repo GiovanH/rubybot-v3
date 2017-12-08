@@ -52,6 +52,7 @@ rbot.permissions = {
         '245790823499825153': 2
     }
 }
+#ENUMS
 
 emotes = {}
 async def emote(server, match, braces):
@@ -176,7 +177,7 @@ async def on_ready():
     print('Creating update loop for Minda')
     loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
-                                           
+
     loop.create_task(fear_of_death(550))
 
     await loadfrogs()
@@ -362,17 +363,13 @@ async def on_ready():
         taboo_teams = []
         taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194661763317761'))  # red team
+                                          id='246194907302199296'))  # add team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194717946019840'))  # blue team
+                                          id='388755561359081473'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194772253999104'))  # wildcats
+                                          id='388755634402623499'))  # blue
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194825370533889'))  # the real illuminati
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194907302199296'))  # cool and new team
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='254164527271247872'))  # number one
+                                          id='388755659996397568'))  # green
         for target in message.mentions:
             newteam = random.choice(taboo_teams)
             await client.add_roles(target, newteam)
@@ -687,17 +684,13 @@ async def on_member_join(member):
         taboo_teams = []
         taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194661763317761'))  # red team
+                                          id='246194907302199296'))  # add team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194717946019840'))  # blue team
+                                          id='388755561359081473'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194772253999104'))  # wildcats
+                                          id='388755634402623499'))  # blue
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194825370533889'))  # the real illuminati
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='246194907302199296'))  # cool and new team
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='254164527271247872'))  # number one
+                                          id='388755659996397568'))  # green
         newteam = random.choice(taboo_teams)
         await client.add_roles(target, newteam)
         for role in taboo_teams:
