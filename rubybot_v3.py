@@ -367,9 +367,15 @@ async def on_ready():
         taboo_teams.append(discord.utils.get(taboo_server.roles,
                                           id='388755561359081473'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='388755634402623499'))  # blue
+                                          id='388755634402623499'))  # rocket
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='388755659996397568'))  # green
+                                          id='388755659996397568'))  # blue
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='388806422370058249'))  # illum
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='388806560006144012'))  # choice
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='388807162001883149'))  # sports
         for target in message.mentions:
             newteam = random.choice(taboo_teams)
             await client.add_roles(target, newteam)
@@ -689,9 +695,15 @@ async def on_member_join(member):
         taboo_teams.append(discord.utils.get(taboo_server.roles,
                                           id='388755561359081473'))  # red team
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='388755634402623499'))  # blue
+                                          id='388755634402623499'))  # rocket
         taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                          id='388755659996397568'))  # green
+                                          id='388755659996397568'))  # blue
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='388806422370058249'))  # illum
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='388806560006144012'))  # choice
+        taboo_teams.append(discord.utils.get(taboo_server.roles,
+                                          id='388807162001883149'))  # sports
         newteam = random.choice(taboo_teams)
         await client.add_roles(target, newteam)
         for role in taboo_teams:
