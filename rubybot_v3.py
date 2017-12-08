@@ -500,7 +500,7 @@ async def on_ready():
             badr = discord.utils.get(
                 server_lwu.server.roles, id='242853719882858496')
             verified = discord.utils.get(
-                server_lwu.server.roles, id='275764022547316736')
+                server_lwu.server.roles, id='388737413213716481')
             i = 1
             while (badr not in target.roles):
                 i = i + 1
@@ -525,7 +525,7 @@ async def on_ready():
             badr = discord.utils.get(
                 server_lwu.server.roles, id='242853719882858496')
             verified = discord.utils.get(
-                server_lwu.server.roles, id='275764022547316736')
+                server_lwu.server.roles, id='388737413213716481')
             # await client.remove_roles(target, badr)
             i = 1
             while (badr in target.roles):
@@ -574,7 +574,7 @@ async def on_ready():
 
     async def cmd_verify_func(message):
         workingChan = client.get_channel('232218346999775232')
-        verified = discord.utils.get(message.server.roles, id='275764022547316736')
+        verified = discord.utils.get(message.server.roles, id='388737413213716481')
         for member in message.mentions:
             if verified not in member.roles:
                 await client.add_roles(member, verified)
