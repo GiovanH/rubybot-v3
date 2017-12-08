@@ -173,7 +173,7 @@ async def on_ready():
     loop = asyncio.get_event_loop()
     print('Creating update loop for LWU')
     loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
-                                           client.get_channel('232218346999775232'), client.get_channel('243542820189765633'), 90))
+                                           client.get_channel('388730628176084992'), client.get_channel('388802759077658665'), 90))
     print('Creating update loop for Minda')
     loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
@@ -573,7 +573,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_verify_func(message):
-        workingChan = client.get_channel('232218346999775232')
+    #    workingChan = client.get_channel('232218346999775232')
         verified = discord.utils.get(message.server.roles, id='388737413213716481')
         for member in message.mentions:
             if verified not in member.roles:
