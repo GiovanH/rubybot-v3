@@ -642,6 +642,7 @@ async def on_ready():
     server_tabuu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.remove_cmds([cmd_frog])
+    server_tabuu.add_cmd(cmd_reteam_func)
     rbot.direct_commands = list(cmdlist_base + cmdlist_util) #Temporary: All commands to PM
     #import pdb; pdb.set_trace()
 
