@@ -380,7 +380,7 @@ async def on_ready():
                     await client.remove_roles(target, role)
             await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
-    cmd_ = rbot.Command('reteam', cmd_reteam_func,
+    cmd_reteam = rbot.Command('reteam', cmd_reteam_func,
     'Re-teams a member on taboo',  # helpstr
     1)  # Permission Level
 
@@ -642,7 +642,7 @@ async def on_ready():
     server_tabuu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.remove_cmds([cmd_frog])
-    server_tabuu.add_cmd(cmd_reteam_func)
+    server_tabuu.add_cmd(cmd_reteam)
     rbot.direct_commands = list(cmdlist_base + cmdlist_util) #Temporary: All commands to PM
     #import pdb; pdb.set_trace()
 
