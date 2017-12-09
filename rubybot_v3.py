@@ -504,7 +504,7 @@ async def on_ready():
             if source == None:
                 source = rubybot_member
             badr = discord.utils.get(
-                server_lwu.server.roles, id='242853719882858496')
+                server_lwu.server.roles, id='388739766025191435')
             verified = discord.utils.get(
                 server_lwu.server.roles, id='388737413213716481')
             i = 1
@@ -529,7 +529,7 @@ async def on_ready():
                 await client.delete_message(message)
                 return
             badr = discord.utils.get(
-                server_lwu.server.roles, id='242853719882858496')
+                server_lwu.server.roles, id='388739766025191435')
             verified = discord.utils.get(
                 server_lwu.server.roles, id='388737413213716481')
             # await client.remove_roles(target, badr)
