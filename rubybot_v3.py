@@ -672,16 +672,22 @@ async def on_ready():
         cmd_bad,
         cmd_unbad,
         cmd_pronoun,
-        cmd_verify
+        cmd_verify,
+        cmd_wwheek
     ]
     server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras) #Temporary: All commands to LWU
+
     server_minda.add_cmd(cmd_smolmote) #Temporary: All commands to LWU
     server_minda.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_minda.add_cmd(cmd_contraband)
+
     server_tabuu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
+    server_tabuu.add_cmd(cmd_wwheek) #Temporary: All commands to LWU
+
     server_mu.add_cmds(cmdlist_base) #Temporary: All commands to LWU
     server_mu.remove_cmds([cmd_frog])
     server_tabuu.add_cmd(cmd_reteam)
+
     rbot.direct_commands = list(cmdlist_base + cmdlist_util) #Temporary: All commands to PM
     #import pdb; pdb.set_trace()
 
