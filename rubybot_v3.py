@@ -309,6 +309,7 @@ async def on_ready():
             print(uniqlines)
             print(msg)
             traceback.print_exc(file=sys.stdout)
+            await client.send_message(message.channel, "There may have been an error.")
 
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
@@ -665,7 +666,6 @@ async def on_ready():
         cmd_roll,
         cmd_nickname,
         cmd_avatar,
-        cmd_sayat,
         cmd_help,
         cmd_allhelp,
         cmd_rules,
@@ -674,6 +674,7 @@ async def on_ready():
     cmdlist_util =    [
         cmd_test,
         cmd_error,
+        cmd_sayat,
         cmd_hardreboot
     ]
     cmdlist_lwu_extras =    [
