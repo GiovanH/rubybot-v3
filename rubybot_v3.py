@@ -832,17 +832,17 @@ async def on_message(message):
         if "rubybot" in message.content.lower():
             #print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'smolrubes',False))
-            return
+            #return
 
         if "boobybot" in message.content.lower():
             #print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'rubyblush', False))
-            return
+            #return
 
-        # if "wwheek" in message.content.lower():
-        #     #print("Debug: i've beem nentioned!")
-        #     await client.add_reaction(message, '💚')
-        #     return
+        if "wwheek" in message.content.lower():
+            #print("Debug: i've beem nentioned!")
+            await client.add_reaction(message, '💚')
+            #return
 
 
     if message.server:
