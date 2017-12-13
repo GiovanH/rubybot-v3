@@ -132,6 +132,10 @@ async def loadfrogs():
         traceback.print_exc(file=sys.stdout)
         eprint("frog error, continuing")
     froggos = list(set(froggos))
+    uniqlines = open(frogfile).readlines()
+    for frog in froggos:
+        uniqlines.insert(0, frog + "\n")
+    open(frogfile, 'w').writelines(set(uniqlines))
 
 # Initialization
 def logpath(message):
