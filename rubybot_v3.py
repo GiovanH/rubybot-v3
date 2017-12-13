@@ -274,7 +274,7 @@ async def on_ready():
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
-        fh = open(frogfile, 'a')
+        #fh = open(frogfile, 'a')
         #fh.write(msg + "\n")
         froggos.extend(msg)
         #uniqlines = set(open(frogfile).readlines())
@@ -296,12 +296,11 @@ async def on_ready():
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
-        fh = open(frogfile, 'a')
+        #fh = open(frogfile, 'a')
         #fh.write(msg + "\n")
         uniqlines = open(frogfile).readlines()
-        print(uniqlines)[5]
-        print(froggos)[5]
-        print(msg)
+        #print(uniqlines)[5]
+        #print(msg)
         uniqlines.remove(msg + "\n")
         froggos.remove(msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
@@ -833,10 +832,10 @@ async def on_message(message):
             await client.add_reaction(message, await emote(message.server, 'rubyblush', False))
             return
 
-        if "wwheek" in message.content.lower():
-            #print("Debug: i've beem nentioned!")
-            await client.add_reaction(message, '💚')
-            return
+        # if "wwheek" in message.content.lower():
+        #     #print("Debug: i've beem nentioned!")
+        #     await client.add_reaction(message, '💚')
+        #     return
 
 
     if message.server:
