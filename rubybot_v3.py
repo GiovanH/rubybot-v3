@@ -277,7 +277,7 @@ async def on_ready():
         #fh.write(msg + "\n")
         froggos.extend(msg)
         uniqlines = set(open(frogfile).readlines())
-        uniqulines.extend(msg + "\n")
+        uniqlines.extend(msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Added frog.")
