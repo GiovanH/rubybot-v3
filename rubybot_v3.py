@@ -233,6 +233,7 @@ async def on_ready():
     2)  # Permission Level
 
     async def cmd_wwheek_func(message):
+        print('wwheekin')
         r = urllib.request.urlopen("https://wwheekadoodle.tumblr.com/rss").read()
         r = r.decode()
         img = random.choice(re.compile('img src="([^"]+)').findall(r))
@@ -819,17 +820,17 @@ async def on_message(message):
 
     if message.server != None:  # Generic Server
         if "rubybot" in message.content.lower():
-            print("Debug: i've beem nentioned!")
+            #print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'smolrubes',False))
             return
 
         if "boobybot" in message.content.lower():
-            print("Debug: i've beem nentioned!")
+            #print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'rubyblush', False))
             return
 
         if "wwheek" in message.content.lower():
-            print("Debug: i've beem nentioned!")
+            #print("Debug: i've beem nentioned!")
             await client.add_reaction(message, '💚')
             return
 
