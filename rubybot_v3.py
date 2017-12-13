@@ -288,7 +288,7 @@ async def on_ready():
     2)  # Permission Level
 
     async def cmd_removefrog_func(message):
-        msg = message.content[9:]
+        msg = message.content[12:]
         frogfile = 'frogs.frog'
         try:
             urllib.request.urlopen(msg).read()
@@ -301,6 +301,7 @@ async def on_ready():
         uniqlines = open(frogfile).readlines()
         print(uniqlines)[5]
         print(froggos)[5]
+        print(msg)
         uniqlines.remove(msg + "\n")
         froggos.remove(msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
