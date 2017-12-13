@@ -304,7 +304,7 @@ async def on_ready():
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
-    cmd_removefrog = rbot.Command('addfrog', cmd_addfrog_func,
+    cmd_removefrog = rbot.Command('removefrog', cmd_removefrog_func,
     'Removes a frog from the frog dictionary',  # helpstr
     2)  # Permission Level
 
@@ -648,6 +648,7 @@ async def on_ready():
         cmd_listroles,
         cmd_sayhere,
         cmd_frog,
+        cmd_removefrog,
         cmd_listemotes,
         cmd_restart,
         cmd_reload,
