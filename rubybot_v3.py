@@ -205,10 +205,11 @@ async def on_ready():
     cmd_error = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
 
     async def cmd_vote_func(message):
+        splittoken = '; '
         reaction_dict = random.choice(
             ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸', '🍅🍑🍒🍌🍉🍆🍓🍇']
         )
-        options = ' '.join(message.content.split()[1:]).split(', ')  # Remove first word, Create list
+        options = ' '.join(message.content.split()[1:]).split(splittoken)  # Remove first word, Create list
         pollmsg = await client.send_message(message.channel, "Loading...")
         polltext = message.author.name + " has called a vote:"
         i = 0
@@ -219,7 +220,7 @@ async def on_ready():
             i = i + 1
         await client.edit_message(pollmsg, new_content=polltext)
     cmd_vote = rbot.Command('callvote', cmd_vote_func,
-    'List options seperated by \' ,\' to prompt a vote. ',  # helpstr
+    'List options seperated by \'; \' to prompt a vote. ',  # helpstr
     0)  # Permission Level
 
     async def cmd_listroles_func(message):
@@ -230,6 +231,15 @@ async def on_ready():
     cmd_listroles = rbot.Command('listroles', cmd_listroles_func,
     'Messages you with all roles from a server',  # helpstr
     2)  # Permission Level
+
+    async def cmd_wwheek_func(message):
+        r = urllib.request.urlopen("https://wwheekadoodle.tumblr.com/rss").read()
+        r = r.decode()
+        img = random.choice(re.compile('img src="([^"]+)').findall(r))
+        await client.send_message(message.channel, img)
+    cmd_wwheek = rbot.Command('wwheek', cmd_wwheek_func,
+    'wwheeks a wwheek',  # helpstr
+    1)  # Permission Level
 
     async def cmd_sayhere_func(message):
         text = message.content[9:]
@@ -264,14 +274,36 @@ async def on_ready():
             traceback.print_exc(file=sys.stdout)
             # return
         fh = open(frogfile, 'a')
-        fh.write(msg + "\n")
+        #fh.write(msg + "\n")
         froggos.extend(msg)
         uniqlines = set(open(frogfile).readlines())
+        uniqulines.extend(msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Added frog.")
     cmd_addfrog = rbot.Command('addfrog', cmd_addfrog_func,
     'Adds a frog to the frog dictionary',  # helpstr
+    2)  # Permission Level
+
+    async def cmd_removefrog_func(message):
+        msg = message.content[9:]
+        frogfile = 'frogs.frog'
+        try:
+            urllib.request.urlopen(msg).read()
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
+            traceback.print_exc(file=sys.stdout)
+            # return
+        fh = open(frogfile, 'a')
+        #fh.write(msg + "\n")
+        froggos.remove(msg)
+        uniqlines = set(open(frogfile).readlines())
+        uniqlines.remove(msg + "\n")
+        open(frogfile, 'w').writelines(set(uniqlines))
+        await loadfrogs()
+        await client.send_message(message.channel, "Removed frog.")
+    cmd_removefrog = rbot.Command('addfrog', cmd_addfrog_func,
+    'Removes a frog from the frog dictionary',  # helpstr
     2)  # Permission Level
 
     async def cmd_listemotes_func(message):
@@ -788,6 +820,12 @@ async def on_message(message):
             print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'rubyblush', False))
             return
+
+        if "wwheek" in message.content.lower():
+            print("Debug: i've beem nentioned!")
+            await client.add_reaction(message, '💚')
+            return
+
 
     if message.server:
         with open(logpath(message), 'a+') as file:
