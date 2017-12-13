@@ -298,9 +298,8 @@ async def on_ready():
             # return
         fh = open(frogfile, 'a')
         #fh.write(msg + "\n")
-        froggos.remove(msg)
+        froggos.remove(msg + "\n")
         uniqlines = open(frogfile).readlines()
-        print(uniqlines)
         uniqlines.remove(msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
