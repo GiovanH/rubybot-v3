@@ -303,7 +303,7 @@ async def on_ready():
         print(msg)
         try:
             uniqlines.remove(msg + "\n")
-            froggos.remove(msg + "\n")
+            froggos.remove(msg)
             #await client.send_message(message.channel, "Removing that frog.")
         except:
             print(uniqlines)
