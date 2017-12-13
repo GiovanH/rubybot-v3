@@ -300,9 +300,16 @@ async def on_ready():
         #fh.write(msg + "\n")
         uniqlines = open(frogfile).readlines()
         #print(uniqlines)[5]
-        #print(msg)
-        uniqlines.remove(msg + "\n")
-        froggos.remove(msg + "\n")
+        print(msg)
+        try:
+            uniqlines.remove(msg + "\n")
+            froggos.remove(msg + "\n")
+            #await client.send_message(message.channel, "Removing that frog.")
+        except:
+            print(uniqlines)
+            print(msg)
+            traceback.print_exc(file=sys.stdout)
+
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
