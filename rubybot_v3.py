@@ -269,7 +269,7 @@ async def on_ready():
         frogfile = 'frogs.frog'
         try:
             urllib.request.urlopen(msg).read()
-        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+        except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
@@ -831,12 +831,13 @@ async def on_message(message):
         with open(logpath(message), 'a+') as file:
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
-        if message.embeds: print(message.embeds)
+        print(message.clean_content)
+        print(message.embeds)
         for command in rbot.servers[message.server.id].commands:
-            try:
-                await command.run(message)
-            except NameError:
-                await client.send_message(message.channel, "You lack permissions for that operation")
+        #try:
+            await command.run(message)
+        # except NameError:
+        #     await client.send_message(message.channel, "You lack permissions for that operation")
 
     else:
         with open(logpath(message), 'a+') as file:
