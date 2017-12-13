@@ -794,7 +794,11 @@ async def on_message(message):
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
         for command in rbot.servers[message.server.id].commands:
-            await command.run(message)
+            try:
+                await command.run(message)
+            except NameError:
+                await client.send_message(message.channel, "You lack permissions for that operation")
+
     else:
         with open(logpath(message), 'a+') as file:
             file.write("[" + message.author.name + "] " +

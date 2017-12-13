@@ -42,7 +42,7 @@ class Command:
     async def run(self, message):
         """Attempt to execute command on behalf of message author
         Arg: Message: a discord.Message"""
-        if message.content.startswith('!' + self.name):
+        if message.content.lower().startswith('!' + self.name.lower()):
             if permissionLevel(message.author, message.server) >= self.permlevel:
                 await self.function(message)
             else:
