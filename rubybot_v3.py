@@ -831,8 +831,7 @@ async def on_message(message):
         with open(logpath(message), 'a+') as file:
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
-        print(message.clean_content)
-        print(message.embeds)
+        if message.attachments: print(message.attachments)
         for command in rbot.servers[message.server.id].commands:
         #try:
             await command.run(message)
