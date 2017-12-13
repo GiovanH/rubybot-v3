@@ -298,9 +298,11 @@ async def on_ready():
             # return
         fh = open(frogfile, 'a')
         #fh.write(msg + "\n")
-        froggos.remove(msg + "\n")
         uniqlines = open(frogfile).readlines()
+        print(uniqlines)[5]
+        print(froggos)[5]
         uniqlines.remove(msg + "\n")
+        froggos.remove(msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
