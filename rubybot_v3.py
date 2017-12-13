@@ -780,6 +780,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
     import time
     mostRecentID = '1'
     lastPostID = '0'
+    update_delay = 0
     time_lastupdate = time.time()
     # Basically run forever
     while not client.is_closed:
@@ -793,10 +794,14 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                 if '0' != lastPostID:
                     print(feedurl + " update: " +
                           lastPostID + " -> " + mostRecentID)
-                    print("Time since last update: " + str(time_lastupdate - time.time()) + " sec")
+                    print("Time since last update: " + str(time.time() - time_lastupdate) + " sec")
+                    print("Delay at time of update: " + str(update_delay))
                     time_lastupdate = time.time()
+                    update_delay = 0
                     await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
                     await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
+                elif update_delay < (10*60):
+                    update_delay += 10
                 lastPostID = mostRecentID
                 print(lastPostID)
         except:
@@ -804,7 +809,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
             traceback.print_exc()
             # No matter what goes wrong, wait same time and try again
         finally:
-            await asyncio.sleep(freq)
+            await asyncio.sleep(freq + update_delay)
 
 def rollplain(rolls, limit):
     resultarray = [(random.randint(1, limit)) for r in range(rolls)]
