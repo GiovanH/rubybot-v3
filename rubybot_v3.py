@@ -549,9 +549,9 @@ async def on_ready():
 
     async def cmd_pronoun_func(message):
         pronoun = message.content[9:]
-        r_him = discord.utils.get(message.server.roles, id='285628551229603841')
-        r_her = discord.utils.get(message.server.roles, id='285628637045063680')
-        r_they = discord.utils.get(message.server.roles, id='285628689876647937')
+        r_him = discord.utils.get(message.server.roles, id='388740839943438336')
+        r_her = discord.utils.get(message.server.roles, id='388740921975373835')
+        r_they = discord.utils.get(message.server.roles, id='388740870641287169')
 
         if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
             role = r_him
