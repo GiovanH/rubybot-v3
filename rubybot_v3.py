@@ -795,8 +795,8 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
             mostRecentID = re.search(
                 'article.* data-post-id="(.*)"', r).group(1)
             if mostRecentID != lastPostID:
-                print(feedurl + " change: " + lastPostID + " =/= " + mostRecentID)
                 if '0' != lastPostID:
+                    print(feedurl + " change: " + lastPostID + " =/= " + mostRecentID)
                     print(feedurl + " update: " +
                           lastPostID + " -> " + mostRecentID)
                     print("Time since last update: " + str(time.time() - time_lastupdate) + " sec")
