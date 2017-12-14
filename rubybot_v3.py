@@ -811,6 +811,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
         except:
             eprint("error fetching status for " + feedurl)
             traceback.print_exc()
+            traceback.print_exc(file=sys.stdout)
             # No matter what goes wrong, wait same time and try again
         finally:
             await asyncio.sleep(freq + update_delay)
