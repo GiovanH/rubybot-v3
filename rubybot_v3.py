@@ -245,7 +245,7 @@ async def on_ready():
         await client.send_message(message.channel, img)
     cmd_wwheek = rbot.Command('wwheek', cmd_wwheek_func,
     'wwheeks a wwheek',  # helpstr
-    1)  # Permission Level
+    0)  # Permission Level
 
     async def cmd_sayhere_func(message):
         text = message.content[9:]
