@@ -326,7 +326,7 @@ async def on_ready():
     async def cmd_listemotes_func(message):
         m = ""
         for s in message.server.emojis:
-            m += s.name + ", " + s.id + "\n"
+            m += s.name + "\t" + s.id + "\t" + s.url + "\n"
         await client.send_message(message.author, m)
     cmd_listemotes = rbot.Command('listemotes', (cmd_listemotes_func),
     'Messages you the server\'s emotes',  # helpstr
