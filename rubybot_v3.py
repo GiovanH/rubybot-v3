@@ -19,7 +19,7 @@ async def send_message_smart(dest,msg):
     m = ""
     for line in msg.split('\n'):
         m += line + "\n"
-        if len(m) >= DISCORD_MESSAGE_SIZE_LIMIT:
+        if len(m) >= 1600:
             await client.send_message(message.author, m)
             m = ""
 
