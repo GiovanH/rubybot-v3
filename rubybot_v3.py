@@ -15,13 +15,13 @@ import datetime
 import sys
 import rubybot_classes as rbot
 
-def send_message_smart(dest,msg):
-	m = ""
-	for line in msg.split('\n'):
-		m += line + "\n"
-		if len(m) >= DISCORD_MESSAGE_SIZE_LIMIT:
-			await client.send_message(message.author, m)
-			m = ""
+async def send_message_smart(dest,msg):
+    m = ""
+    for line in msg.split('\n'):
+        m += line + "\n"
+        if len(m) >= DISCORD_MESSAGE_SIZE_LIMIT:
+            await client.send_message(message.author, m)
+            m = ""
 
 def eprint(*args, **kwargs):
     #global gio
@@ -335,7 +335,7 @@ async def on_ready():
         m = ""
         for s in message.server.emojis:
             m += s.name + "\t" + s.id + "\t" + s.url + "\n"
-		await send_message_smart(message.author, m)
+        await send_message_smart(message.author, m)
     cmd_listemotes = rbot.Command('listemotes', (cmd_listemotes_func),
     'Messages you the server\'s emotes',  # helpstr
     1)  # Permission Level
