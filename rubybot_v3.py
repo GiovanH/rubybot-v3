@@ -20,7 +20,7 @@ async def send_message_smart(dest,msg):
     for line in msg.split('\n'):
         m += line + "\n"
         if len(m) >= 1600:
-            await client.send_message(message.author, m)
+            await client.send_message(dest, m)
             m = ""
 
 def eprint(*args, **kwargs):
