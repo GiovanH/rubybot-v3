@@ -4,4 +4,4 @@ git push
 git fetch --all
 git reset --hard origin/master
 #chmod +777 -R *
-git show | head -n 5 | tail -n 3 > git.log
+git show > git.log
