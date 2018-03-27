@@ -451,7 +451,7 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_smolmote_func(message): #TODO: Gotta localize the emotes
-        msg = " ".join(message.content.split()[1:])
+        msg = message.content.split()
         try:
             chan = client.get_channel(msg[1])
             await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
@@ -527,7 +527,7 @@ async def on_ready():
 
     async def cmd_rules_func(message):
         with open("rules/" + message.server.id, 'r') as rulefile:
-            await client.send_message(message.channel, rulefile.read())
+            await send_message_smart(message.channel, rulefile.read())
     cmd_rules = rbot.Command('rules', cmd_rules_func,
     'Lists the server\'s rules',  # helpstr
     0)  # Permission Level
