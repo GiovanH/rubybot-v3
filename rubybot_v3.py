@@ -257,7 +257,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_sayhere_func(message):
-        text = message.content[9:]
+        text = " ".join(message.content.split()[1:])
         await client.delete_message(message)
         await client.send_message(message.channel, text)
     cmd_sayhere = rbot.Command('sayhere', cmd_sayhere_func,
@@ -280,7 +280,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_addfrog_func(message):
-        msg = message.content[9:]
+        msg = " ".join(message.content.split()[1:])
         frogfile = 'frogs.frog'
         try:
             urllib.request.urlopen(msg).read()
@@ -302,7 +302,7 @@ async def on_ready():
     2)  # Permission Level
 
     async def cmd_removefrog_func(message):
-        msg = message.content[12:]
+        msg = " ".join(message.content.split()[1:])
         frogfile = 'frogs.frog'
         try:
             urllib.request.urlopen(msg).read()
@@ -347,7 +347,7 @@ async def on_ready():
             if target == None:
                 await client.send_message(message.channel, "No such person")
                 break
-            content = message.content[27:]
+            content = " ".join(message.content.split()[1:])
             await client.send_message(target, content)
         await client.delete_message(message)
     cmd_ = rbot.Command('pm', cmd_pm_func,
@@ -384,7 +384,7 @@ async def on_ready():
     0)  # Permission Level
 
     async def cmd_roll_func(message):
-        dice = message.content[6:]
+        dice = " ".join(message.content.split()[1:])
         bonus = 0
         drops = 0
         try:
@@ -449,25 +449,25 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_smolmote_func(message): #TODO: Gotta localize the emotes
-
+	msg = " ".join(message.content.split()[1:])
         try:
-            chan = client.get_channel(message.content[6:25])
+            chan = client.get_channel(msg[1])
             await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
         except AttributeError:
-            await client.send_message(message.author, "No such channel as " + message.content[7:25])
+            await client.send_message(message.author, "No such channel as " + msg[1])
     cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
     'Sends a smol to channel by ID',  # helpstr
     3)  # Permission Level
 
     async def cmd_nickname_func(message):
-        nickname = message.content[6:]
+        nickname = " ".join(message.content.split()[1:])
         await client.change_nickname(rubybot_member, nickname)
     cmd_nickname = rbot.Command('nick', cmd_nickname_func,
     'Changes nickname',  # helpstr
     3)  # Permission Level
 
     async def cmd_avatar_func(message):
-        msg = message.content[8:]
+        msg = " ".join(message.content.split()[1:])
         fp = open(msg, 'rb')
         filestream = fp.read()
         await client.edit_profile(avatar=filestream)
@@ -477,10 +477,11 @@ async def on_ready():
     3)  # Permission Level
 
     async def cmd_sayat_func(message): #TODO: Gotta localize the emotes
+		msg = message.content.split()
         try:
-            await client.send_message(client.get_channel(message.content[8:25]), message.content[23:])
+            await client.send_message(client.get_channel(msg[1]), " ".join(msg[2:]))
         except discord.errors.InvalidArgument:
-            await client.send_message(message.author, "No such channel as " + message.content[8:25])
+            await client.send_message(message.author, "No such channel as " + msg[1])
     cmd_sayat = rbot.Command('say', cmd_sayat_func,
     'Says a message at a channel by ID',  # helpstr
     3)  # Permission Level
@@ -531,7 +532,7 @@ async def on_ready():
 
     async def cmd_setrules_func(message):
         with open("rules/" + message.server.id, 'w') as rulefile:
-            rulefile.write(message.content[10:])
+            rulefile.write(" ".join(message.content.split()[1:]))
             rulefile.flush()
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     cmd_setrules = rbot.Command('setrules', cmd_setrules_func,
@@ -554,7 +555,6 @@ async def on_ready():
     async def cmd_bad_func(message):
         source = message.author
         for target in message.mentions:
-            #msg = message.content[5:]
             if target == None:
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
@@ -606,7 +606,7 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_pronoun_func(message):
-        pronoun = message.content[9:]
+        pronoun = " ".join(message.content.split()[1:])
         r_him = discord.utils.get(message.server.roles, id='388740839943438336')
         r_her = discord.utils.get(message.server.roles, id='388740921975373835')
         r_they = discord.utils.get(message.server.roles, id='388740870641287169')
@@ -697,11 +697,11 @@ async def on_ready():
         cmd_test,
         cmd_error,
         cmd_sayat,
+        cmd_smolmote,
         cmd_hardreboot
     ]
     cmdlist_lwu_extras =    [
         cmd_addfrog,
-        cmd_smolmote,
         cmd_pins,
         cmd_bad,
         cmd_unbad,
