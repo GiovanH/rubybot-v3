@@ -659,14 +659,14 @@ async def on_ready():
     cmd_patreon = rbot.Command('patreon', cmd_fund_func,
     'Alias for fund',  # helpstr
     0)  # Permission Level
-	
+    
     async def cmd_frig_func(message):
         # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel,"http://www.qwantz.com/comics/comic2-1348.png")
     cmd_frig = rbot.Command('frig', cmd_frig_func,
     'like, frig, man!',  # helpstr
     0)  # Permission Level
-	
+    
     # async def cmd__func(message):
     # cmd_ = rbot.Command('', cmd__func,
     # '',  # helpstr
@@ -790,7 +790,7 @@ async def fear_of_death(freq):
     #global timezone
     if (not client.is_logged_in) or (not client.is_closed):
         print("Oh no, the client closed???")
-		sys.exit("Client error. Status: \n\tLogged in: " + str(client.is_logged_in) + "\n\tClosed: " + str(client.is_closed)
+        sys.exit("Client error. Status: \n\tLogged in: " + str(client.is_logged_in) + "\n\tClosed: " + str(client.is_closed)
 
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
