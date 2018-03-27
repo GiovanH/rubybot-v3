@@ -788,7 +788,7 @@ async def on_member_join(member):
 
 async def fear_of_death(freq):
     #global timezone
-    if (not client.is_logged_in) or (not client.is_closed):
+    if (not client.is_logged_in) or (client.is_closed):
         print("Oh no, the client closed???")
         print("Client error. Status: \n\tLogged in: " + str(client.is_logged_in) + "\n\tClosed: " + str(client.is_closed))
         sys.exit()
