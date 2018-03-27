@@ -512,11 +512,11 @@ async def on_ready():
         helpstr = message.author.name + "'s list of availible commands (in context):"
         if message.server:
             for command in rbot.servers[message.server.id].commands:
-                helpstr += str(command.permlevel) + "\n!" + command.name + " : " + command.helpstr
+                helpstr += "\n(" + str(command.permlevel) + ") !" + command.name + " : " + command.helpstr
             await client.send_message(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
-                helpstr += str(command.permlevel) + "\n!" + command.name + " : " + command.helpstr
+                helpstr += "\n(" + str(command.permlevel) + ") !" + command.name + " : " + command.helpstr
             await client.send_message(message.author, helpstr)
     cmd_allhelp = rbot.Command('allhelp', cmd_allhelp_func,
     'List all commands and their permission level',  # helpstr
