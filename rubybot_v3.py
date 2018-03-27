@@ -449,7 +449,7 @@ async def on_ready():
     1)  # Permission Level
 
     async def cmd_smolmote_func(message): #TODO: Gotta localize the emotes
-	    msg = " ".join(message.content.split()[1:])
+        msg = " ".join(message.content.split()[1:])
         try:
             chan = client.get_channel(msg[1])
             await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
