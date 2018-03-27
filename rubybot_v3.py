@@ -788,12 +788,9 @@ async def on_member_join(member):
 
 async def fear_of_death(freq):
     #global timezone
-    while not client.is_closed:
-        # os.system("date >> ping.log")
-        # os.system("ping discordapp.com -c 1 >> ping.log")
-        # os.system("rm kill.sh 2>> /dev/null")
-        await asyncio.sleep(freq)
-    print("Oh no, the client closed???")
+    if (not client.is_logged_in) or (not client.is_closed):
+        print("Oh no, the client closed???")
+		sys.exit("Client error. Status: \n\tLogged in: " + str(client.is_logged_in) + "\n\tClosed: " + str(client.is_closed)
 
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
