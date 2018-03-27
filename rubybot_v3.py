@@ -790,7 +790,8 @@ async def fear_of_death(freq):
     #global timezone
     if (not client.is_logged_in) or (not client.is_closed):
         print("Oh no, the client closed???")
-        sys.exit("Client error. Status: \n\tLogged in: " + str(client.is_logged_in) + "\n\tClosed: " + str(client.is_closed))
+        print("Client error. Status: \n\tLogged in: " + str(client.is_logged_in) + "\n\tClosed: " + str(client.is_closed))
+        sys.exit()
 
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
