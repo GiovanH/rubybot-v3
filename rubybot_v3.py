@@ -23,6 +23,7 @@ async def send_message_smart(dest,msg):
         if len(m) >= 1600:
             await client.send_message(dest, m)
             m = ""
+	await client.send_message(dest, m)
 
 def eprint(*args, **kwargs):
     #global gio
@@ -515,11 +516,11 @@ async def on_ready():
         if message.server:
             for command in rbot.servers[message.server.id].commands:
                 helpstr += "\n(" + str(command.permlevel) + ") !" + command.name + " : " + command.helpstr
-            await client.send_message(message.channel, helpstr)
+            await send_message_smart(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
                 helpstr += "\n(" + str(command.permlevel) + ") !" + command.name + " : " + command.helpstr
-            await client.send_message(message.author, helpstr)
+            await send_message_smart(message.author, helpstr)
     cmd_allhelp = rbot.Command('allhelp', cmd_allhelp_func,
     'List all commands and their permission level',  # helpstr
     1)  # Permission Level
