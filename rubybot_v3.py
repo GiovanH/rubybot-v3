@@ -46,6 +46,7 @@ def pickleSave(object, filename):
 rbot.permissions = {
     '232218346999775232': {  # LWU
         '388738370676719616': 1,  # "mod"
+        '388739472730357773': 1, #"tadpole"
         '233020731779317761': 2  #Bossman
     },
     '290270624558088192':{ #Minda
@@ -497,12 +498,12 @@ async def on_ready():
             for command in rbot.servers[message.server.id].commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstr += "\n!" + command.name + " : " + command.helpstr
-            await client.send_message(message.channel, helpstr)
+            await send_message_smart(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstr += "\n!" + command.name + " : " + command.helpstr
-            await client.send_message(message.author, helpstr)
+            await send_message_smart(message.author, helpstr)
     cmd_help = rbot.Command('help', cmd_help_func,
     'List availible commands and their functions',  # helpstr
     0)  # Permission Level
@@ -511,11 +512,11 @@ async def on_ready():
         helpstr = message.author.name + "'s list of availible commands (in context):"
         if message.server:
             for command in rbot.servers[message.server.id].commands:
-                helpstr += "\n!" + command.name + "\n\t" + str(command.permlevel) + "\t\t\t: " + command.helpstr
+                helpstr += str(command.permlevel) + "\n!" + command.name + " : " + command.helpstr
             await client.send_message(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
-                helpstr += "\n!" + command.name + "\n\t" + str(command.permlevel) + "\t\t\t: " + command.helpstr
+                helpstr += str(command.permlevel) + "\n!" + command.name + " : " + command.helpstr
             await client.send_message(message.author, helpstr)
     cmd_allhelp = rbot.Command('allhelp', cmd_allhelp_func,
     'List all commands and their permission level',  # helpstr
