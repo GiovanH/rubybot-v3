@@ -23,7 +23,7 @@ async def send_message_smart(dest,msg):
         if len(m) >= 1600:
             await client.send_message(dest, m)
             m = ""
-	await client.send_message(dest, m)
+    await client.send_message(dest, m)
 
 def eprint(*args, **kwargs):
     #global gio
