@@ -1,4 +1,5 @@
-#from __future__ import print_function
+#!python3
+
 import discord
 from discord.ext import commands
 import random
