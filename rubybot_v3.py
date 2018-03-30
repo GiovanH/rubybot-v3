@@ -534,7 +534,7 @@ async def on_ready():
 
     async def cmd_setrules_func(message):
         with open("rules/" + message.server.id, 'w') as rulefile:
-            rulefile.write(" ".join(message.content.split()[1:]))
+            rulefile.write(" ".join(message.content.split(' ')[1:]))
             rulefile.flush()
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     cmd_setrules = rbot.Command('setrules', cmd_setrules_func,
