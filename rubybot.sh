@@ -4,10 +4,8 @@ cp rubybot_v3.py rubybot_v3.pre.bak
 
 while true
 do
-	echo Updating logs
-	tar -vuf logs.tar logs
 	echo Compressing logs
-	tar -vczf logs.tar.gz logs.tar
+	zip logs.zip -r logs
 	echo Reloading git
 	sh git.sh
 	echo starting up at `date`
