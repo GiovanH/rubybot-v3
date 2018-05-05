@@ -5,7 +5,7 @@ cp rubybot_v3.py rubybot_v3.pre.bak
 while true
 do
 	echo Compressing logs
-	zip logs.zip -r logs
+	zip logs.zip -rf logs
 	echo Reloading git
 	sh git.sh
 	echo starting up at `date`
