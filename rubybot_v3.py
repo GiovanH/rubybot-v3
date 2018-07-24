@@ -476,6 +476,7 @@ async def on_ready():
                 await client.edit_profile(avatar=filestream)
         except:
             await client.send_message(message.author, traceback.format_exc())
+    cmd_avatar = rbot.Command('avatar', cmd_avatar_func,
     'Sets avatar',  # helpstr
     3)  # Permission Level
 
