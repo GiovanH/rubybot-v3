@@ -189,7 +189,7 @@ async def on_ready():
     loop = asyncio.get_event_loop()
     print('Creating update loop for LWU')
     loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
-                                           client.get_channel('388730628176084992'), client.get_channel('388802759077658665'), 90))
+                                           client.get_channel('388730628176084992'), client.get_channel('388802759077658665'), 45))
     print('Creating update loop for Minda')
     loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
                                            client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
@@ -471,10 +471,11 @@ async def on_ready():
     async def cmd_avatar_func(message):
         msg = " ".join(message.content.split()[1:])
         fp = open(msg, 'rb')
-        filestream = fp.read()
-        await client.edit_profile(avatar=filestream)
-        fp.close()
-    cmd_avatar = rbot.Command('avatar', cmd_avatar_func,
+        try:
+            with filestream as fp.read():
+                await client.edit_profile(avatar=filestream)
+        except:
+            await client.send_message(message.author, traceback.format_exc())
     'Sets avatar',  # helpstr
     3)  # Permission Level
 
