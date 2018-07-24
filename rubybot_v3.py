@@ -472,7 +472,7 @@ async def on_ready():
         msg = " ".join(message.content.split()[1:])
         fp = open(msg, 'rb')
         try:
-            with filestream as fp.read():
+            with fp.read() as filestream:
                 await client.edit_profile(avatar=filestream)
         except:
             await client.send_message(message.author, traceback.format_exc())
