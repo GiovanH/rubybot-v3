@@ -16,6 +16,8 @@ import datetime
 import sys
 import rubybot_classes as rbot
 
+MAX_UPDATE_DELAY = 15*60  # Fifteen minutes
+
 
 async def send_message_smart(dest, msg):
     m = ""
@@ -358,7 +360,7 @@ async def on_ready():
     async def cmd_pm_func(message):
         for m in message.mentions:
             target = m
-            if target == None:
+            if target is None:
                 await client.send_message(message.channel, "No such person")
                 break
             content = " ".join(message.content.split()[1:])
@@ -572,7 +574,7 @@ async def on_ready():
     async def cmd_bad_func(message):
         source = message.author
         for target in message.mentions:
-            if target == None:
+            if target is None:
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
                 return
@@ -599,7 +601,7 @@ async def on_ready():
     async def cmd_unbad_func(message):
         source = message.author
         for target in message.mentions:
-            if target == None:
+            if target is None:
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
                 return
@@ -843,7 +845,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                     update_delay = 0
                     await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
                     await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
-                elif update_delay < (10*60):
+                elif update_delay < (MAX_UPDATE_DELAY):
                     update_delay += 10
                 lastPostID = mostRecentID
                 print(lastPostID)
@@ -881,7 +883,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.server != None:  # Generic Server
+    if message.server is not None:  # Generic Server
         if "rubybot" in message.content.lower():
             # print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'smolrubes', False))
@@ -899,8 +901,7 @@ async def on_message(message):
 
     if message.server:
         with open(logpath(message), 'a+') as file:
-            file.write("[" + message.channel.name + "] " +
-                       message.author.name + ": " + message.clean_content + "\n")
+            file.write("[" + message.channel.name + "] " + message.author.name + ": " + message.clean_content + "\n")
             if message.attachments:
                 file.write("[" + message.channel.name + "] " +
                            message.author.name + ": " + str(message.attachments) + "\n")
