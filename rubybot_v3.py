@@ -482,10 +482,9 @@ async def on_ready():
 
     async def cmd_avatar_func(message):
         msg = " ".join(message.content.split()[1:])
-        fp = open(msg, 'rb')
         try:
-            with fp.read() as filestream:
-                await client.edit_profile(avatar=filestream)
+            with open(msg, 'rb') as fp:
+                await client.edit_profile(avatar=fp.read())
         except:
             await client.send_message(message.author, traceback.format_exc())
     cmd_avatar = rbot.Command('avatar', cmd_avatar_func,
