@@ -913,8 +913,7 @@ async def on_message(message):
 
     else:
         with open(logpath(message), 'a+') as file:
-            file.write("[" + message.author.name + "] " +
-                       ": " + message.clean_content + "\n")
+            file.write("[" + message.author.name + "] " + ": " + message.clean_content + "\n")
         for command in rbot.direct_commands:
             await command.run(message)
 
