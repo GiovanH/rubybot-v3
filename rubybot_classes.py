@@ -12,12 +12,12 @@ direct_commands = {}
 def permissionLevel(user, server):
     if user.id == gio_id:
         return 3
-    if server == None:
+    if server is None:
         return 0
     plvl = 0
     for r in user.roles:
         rlvl = permissions.get(server.id).get(r.id)
-        if rlvl == None:
+        if rlvl is None:
             continue
         if plvl < rlvl:
             plvl = rlvl
@@ -46,8 +46,7 @@ class Command:
             if permissionLevel(message.author, message.server) >= self.permlevel:
                 await self.function(message)
             else:
-                raise NameError('User ' + message.author.name +
-                            ' has insufficient permissions to perform command ' + self.name)
+                raise NameError('User ' + message.author.name + ' has insufficient permissions to perform command ' + self.name)
 
 
 class Server:
@@ -84,12 +83,12 @@ class Server:
             self.commands.append(c)
             self.commands = list(set(self.commands))
         else:
-            raise TypeError(c, str(type(c)) +
-                            " is not a rubybot command class!")
+            raise TypeError(c, str(type(c)) + " is not a rubybot command class!")
 
     def add_cmds(self, cs):
         for c in cs:
             self.add_cmd(c)
+
     def remove_cmds(self, cs):
         for c in cs:
             try:
