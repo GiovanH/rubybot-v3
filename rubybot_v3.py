@@ -22,6 +22,7 @@ MAX_UPDATE_DELAY = 15*60  # Fifteen minutes
 LOADED = False
 
 client = discord.Client()
+rutil.client = client
 
 # Load permissions file from json
 rbot.permissions = jfileutil.load("permissions")
