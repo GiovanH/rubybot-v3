@@ -481,7 +481,7 @@ async def on_ready():
         helpstrs = []
         if message.server:
             for command in rbot.servers[message.server.id].commands:
-                helpstrs += ["(" + str(command.permlevel) + ") !" + command.helpstr]
+                helpstrs += ["(" + str(command.permlevel) + ") !" + command.name + " : " + command.helpstr]
             helpstrs = sorted(helpstrs)
             helpstrs.insert(0, message.author.name + "'s list of availible commands (in context):")
             await rutil.send_message_smart(message.channel, "\n".join(helpstrs))
