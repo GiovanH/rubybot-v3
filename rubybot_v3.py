@@ -833,6 +833,11 @@ def totalDelimitedList(list, number):
 
 
 @client.event
+async def on_member_update(before, after):
+    if before.nick != after.nick:
+        print(before.nick + " => " + after.nick)
+
+@client.event
 async def on_message(message):
     # tic = time.clock()
     # we do not want the bot to react to itself
