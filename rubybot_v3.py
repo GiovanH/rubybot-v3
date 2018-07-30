@@ -265,7 +265,7 @@ async def on_ready():
         uniqlines = set(froggos)
         print("Extended set")
 
-        jfileutil.save(uniqlines, "frogs")
+        jfileutil.save(list(uniqlines), "frogs")
 
         print("saved object")
         await loadfrogs()
@@ -288,11 +288,10 @@ async def on_ready():
             froggos.remove(msg)
             # await client.send_message(message.channel, "Removing that frog.")
         except:
-            print(uniqlines)
             print(msg)
             traceback.print_exc(file=sys.stdout)
             await client.send_message(message.channel, "There may have been an error.")
-        jfileutil.save(uniqlines, "frogs")
+        jfileutil.save(froggos, "frogs")
         # open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
