@@ -650,7 +650,7 @@ async def on_ready():
         rbot.commands['frig'],
         rbot.commands['fund'],
         rbot.commands['patreon'],
-        rbot.commands['vote'],
+        rbot.commands['callvote'],
         rbot.commands['listroles'],
         rbot.commands['sayhere'],
         rbot.commands['frog'],
