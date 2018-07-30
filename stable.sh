@@ -1,1 +1,1 @@
-git branch master
+git checkout master
