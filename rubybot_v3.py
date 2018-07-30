@@ -464,14 +464,14 @@ async def on_ready():
             for command in rbot.servers[message.server.id].commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstrs += ["!**" + command.name + "** : " + command.helpstr]
-                helpstrs = sorted(helpstrs)
-                helpstrs.insert(0, message.author.name + "'s list of availible commands (in context):")
+            helpstrs = sorted(helpstrs)
+            helpstrs.insert(0, message.author.name + "'s list of availible commands (in context):")
             await rutil.send_message_smart(message.channel, "\n".join(helpstrs))
         else:
             for command in rbot.direct_commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstrs += ["!**" + command.name + "** : " + command.helpstr]
-                helpstrs = sorted(helpstrs)
+            helpstrs = sorted(helpstrs)
             await rutil.send_message_smart(message.author, "\n".join(helpstrs))
     rbot.Command('help', cmd_help_func,
                  'List availible commands and their functions',  # helpstr
