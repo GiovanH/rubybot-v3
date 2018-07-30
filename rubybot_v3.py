@@ -259,13 +259,12 @@ async def on_ready():
             traceback.print_exc(file=sys.stdout)
             # return
         print("Parsed url")
-        # fh = open(frogfile, 'a')
-        # fh.write(msg + "\n")
+
         froggos.extend(msg)
         uniqlines = set(froggos)
         print("Extended set")
 
-        jfileutil.save(uniqlines, "frogs")
+        jfileutil.save(list(uniqlines), "frogs")
 
         print("saved object")
         await loadfrogs()
@@ -286,19 +285,16 @@ async def on_ready():
         print(msg)
         try:
             froggos.remove(msg)
-            # await client.send_message(message.channel, "Removing that frog.")
         except:
-            print(uniqlines)
             print(msg)
             traceback.print_exc(file=sys.stdout)
             await client.send_message(message.channel, "There may have been an error.")
-        jfileutil.save(uniqlines, "frogs")
-        # open(frogfile, 'w').writelines(set(uniqlines))
+        jfileutil.save(froggos, "frogs")
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
     rbot.Command('removefrog', cmd_removefrog_func,
-                                  'Removes a frog from the frog dictionary',  # helpstr
-                                  2)  # Permission Level
+                  'Removes a frog from the frog dictionary',  # helpstr
+                  2)  # Permission Level
 
     async def cmd_listemotes_func(message):
         m = ""
@@ -306,8 +302,8 @@ async def on_ready():
             m += s.name + "\t" + s.id + "\t" + s.url + "\n"
         await rutil.send_message_smart(message.author, m)
     rbot.Command('listemotes', (cmd_listemotes_func),
-                                  'Messages you the server\'s emotes',  # helpstr
-                                  1)  # Permission Level
+                  'Messages you the server\'s emotes',  # helpstr
+                  1)  # Permission Level
 
     async def cmd_pm_func(message):
         for m in message.mentions:
