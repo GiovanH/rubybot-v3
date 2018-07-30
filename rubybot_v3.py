@@ -332,11 +332,11 @@ async def on_ready():
             f.flush()
         sys.exit(0)
     rbot.Command('restart', cmd_restart_func,
-                               'Restarts rubybot',  # helpstr
-                               2)  # Permission Level
+                   'Restarts rubybot',  # helpstr
+                   2)  # Permission Level
     rbot.Command('reload', cmd_restart_func,
-                              'Alias of restart',  # helpstr
-                              2)
+                  'Alias of restart',  # helpstr
+                  2)
 
     async def cmd_permissions_func(message):
         p = rbot.permissionLevel(message.author, message.server)
@@ -344,8 +344,8 @@ async def on_ready():
         ps = pss[p]
         await client.send_message(message.channel, message.author.name + ", your permission level in this server is " + str(p) + " (" + ps + ")")
     rbot.Command('permissions', cmd_permissions_func,
-                                   'Tells you your permissions level in context',  # helpstr
-                                   0)  # Permission Level
+                   'Tells you your permissions level in context',  # helpstr
+                   0)  # Permission Level
 
     async def cmd_roll_func(message):
         dice = " ".join(message.content.split()[1:])
@@ -409,8 +409,8 @@ async def on_ready():
             await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
     rbot.Command('reteam', cmd_reteam_func,
-                              'Re-teams a member on taboo',  # helpstr
-                              1)  # Permission Level
+                  'Re-teams a member on taboo',  # helpstr
+                  1)  # Permission Level
 
     async def cmd_smolmote_func(message):  # TODO: Gotta localize the emotes
         msg = message.content.split()
@@ -420,15 +420,15 @@ async def on_ready():
         except AttributeError:
             await client.send_message(message.author, "No such channel as " + msg[1])
     rbot.Command('smol', cmd_smolmote_func,
-                                'Sends a smol to channel by ID',  # helpstr
-                                3)  # Permission Level
+                    'Sends a smol to channel by ID',  # helpstr
+                    3)  # Permission Level
 
     async def cmd_nickname_func(message):
         nickname = " ".join(message.content.split()[1:])
         await client.change_nickname(rubybot_member, nickname)
     rbot.Command('nick', cmd_nickname_func,
-                                'Changes nickname',  # helpstr
-                                3)  # Permission Level
+                    'Changes nickname',  # helpstr
+                    3)  # Permission Level
 
     async def cmd_avatar_func(message):
         msg = " ".join(message.content.split()[1:])
@@ -438,8 +438,8 @@ async def on_ready():
         except:
             await client.send_message(message.author, traceback.format_exc())
     rbot.Command('avatar', cmd_avatar_func,
-                              'Sets avatar',  # helpstr
-                              3)  # Permission Level
+                  'Sets avatar',  # helpstr
+                  3)  # Permission Level
 
     async def cmd_sayat_func(message):  # TODO: Gotta localize the emotes
         msg = message.content.split()
@@ -448,15 +448,15 @@ async def on_ready():
         except discord.errors.InvalidArgument:
             await client.send_message(message.author, "No such channel as " + msg[1])
     rbot.Command('say', cmd_sayat_func,
-                             'Says a message at a channel by ID',  # helpstr
-                             3)  # Permission Level
+                 'Says a message at a channel by ID',  # helpstr
+                 3)  # Permission Level
 
     async def cmd_hardreboot_func(message):
         await client.send_message(message.author, "Here goes!")
         await client.send_message(message.author, os.system("sudo reboot"))
     rbot.Command('hardreboot', cmd_hardreboot_func,
-                                  'sudo reboot',  # helpstr
-                                  3)  # Permission Level
+                  'sudo reboot',  # helpstr
+                  3)  # Permission Level
 
     async def cmd_help_func(message):
         helpstr = message.author.name + "'s list of availible commands (in context):"
@@ -471,8 +471,8 @@ async def on_ready():
                     helpstr += "\n!" + command.name + " : " + command.helpstr
             await rutil.send_message_smart(message.author, helpstr)
     rbot.Command('help', cmd_help_func,
-                            'List availible commands and their functions',  # helpstr
-                            0)  # Permission Level
+                'List availible commands and their functions',  # helpstr
+                0)  # Permission Level
 
     async def cmd_allhelp_func(message):
         helpstr = message.author.name + "'s list of availible commands (in context):"
@@ -487,14 +487,14 @@ async def on_ready():
                     command.name + " : " + command.helpstr
             await rutil.send_message_smart(message.author, helpstr)
     rbot.Command('allhelp', cmd_allhelp_func,
-                               'List all commands and their permission level',  # helpstr
-                               1)  # Permission Level
+                   'List all commands and their permission level',  # helpstr
+                   1)  # Permission Level
 
     async def cmd_rules_func(message):
         await rutil.send_message_smart(message.channel, jfileutil.load("rules_" + message.server.id))
     rbot.Command('rules', cmd_rules_func,
-                             'Lists the server\'s rules',  # helpstr
-                             0)  # Permission Level
+                 'Lists the server\'s rules',  # helpstr
+                 0)  # Permission Level
 
     async def cmd_setrules_func(message):
         with open("rules/" + message.server.id, 'w') as rulefile:
@@ -503,8 +503,8 @@ async def on_ready():
             jfileutil.save(message.content, "rules_" + message.server.id)
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     rbot.Command('setrules', cmd_setrules_func,
-                                'Modifies the server\'s rules',  # helpstr
-                                2)  # Permission Level
+                    'Modifies the server\'s rules',  # helpstr
+                    2)  # Permission Level
 
     async def cmd_pins_func(message):
         await client.send_typing(message.channel)
@@ -516,8 +516,8 @@ async def on_ready():
         await client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
         await client.delete_message(message)
     rbot.Command('pins', cmd_pins_func,
-                            'Posts a random pinned message',  # helpstr
-                            0)  # Permission Level
+                    'Posts a random pinned message',  # helpstr
+                    0)  # Permission Level
 
     async def cmd_bad_func(message):
         source = message.author
