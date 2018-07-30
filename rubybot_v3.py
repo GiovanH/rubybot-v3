@@ -459,32 +459,35 @@ async def on_ready():
                   3)  # Permission Level
 
     async def cmd_help_func(message):
-        helpstr = message.author.name + "'s list of availible commands (in context):"
+        helpstrs = []
         if message.server:
             for command in rbot.servers[message.server.id].commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
-                    helpstr += "\n!" + command.name + " : " + command.helpstr
-            await rutil.send_message_smart(message.channel, helpstr)
+                    helpstrs += ["!**" + command.name + "** : " + command.helpstr]
+                helpstrs = sorted(helpstrs)
+                helpstrs.insert(0, message.author.name + "'s list of availible commands (in context):")
+            await rutil.send_message_smart(message.channel, "\n".join(helpstrs))
         else:
             for command in rbot.direct_commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
-                    helpstr += "\n!" + command.name + " : " + command.helpstr
-            await rutil.send_message_smart(message.author, helpstr)
+                    helpstrs += ["!**" + command.name + "** : " + command.helpstr]
+                helpstrs = sorted(helpstrs)
+            await rutil.send_message_smart(message.author, "\n".join(helpstrs))
     rbot.Command('help', cmd_help_func,
-                'List availible commands and their functions',  # helpstr
-                0)  # Permission Level
+                 'List availible commands and their functions',  # helpstr
+                 0)  # Permission Level
 
     async def cmd_allhelp_func(message):
-        helpstr = message.author.name + "'s list of availible commands (in context):"
+        helpstrs = []
         if message.server:
             for command in rbot.servers[message.server.id].commands:
-                helpstr += "\n(" + str(command.permlevel) + ") !" + \
-                    command.name + " : " + command.helpstr
-            await rutil.send_message_smart(message.channel, helpstr)
+                helpstrs += ["(" + str(command.permlevel) + ") !" + command.helpstr]
+            helpstrs = sorted(helpstrs)
+            helpstrs.insert(0, message.author.name + "'s list of availible commands (in context):")
+            await rutil.send_message_smart(message.channel, "\n".join(helpstrs))
         else:
             for command in rbot.direct_commands:
-                helpstr += "\n(" + str(command.permlevel) + ") !" + \
-                    command.name + " : " + command.helpstr
+                helpstr += ["(" + str(command.permlevel) + ") !" + command.name + " : " + command.helpstr]
             await rutil.send_message_smart(message.author, helpstr)
     rbot.Command('allhelp', cmd_allhelp_func,
                    'List all commands and their permission level',  # helpstr
@@ -508,7 +511,7 @@ async def on_ready():
 
     async def cmd_pins_func(message):
         await client.send_typing(message.channel)
-        pins = await client.logs_from(client.get_channel('278819870106451969'), limit=400)
+        pins = await list(client.logs_from(client.get_channel('278819870106451969'), limit=400))
         pinmsg = random.choice(list(pins))
         pinurl = pinmsg.content
         for a in pinmsg.attachments:
