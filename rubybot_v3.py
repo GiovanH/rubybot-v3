@@ -31,6 +31,7 @@ emotes = {}
 # Make emote enumeration
 ###############################
 
+
 async def emote(server, match, braces):
     default = "smolrubes"
     fallback = None
@@ -66,6 +67,8 @@ async def emote(server, match, braces):
     ###############################
 
 froggos = ["Not ready yet! Try again!"]
+
+
 async def loadfrogs():
     global froggos
     froggos = jfileutil.load("frogs")
@@ -108,14 +111,9 @@ async def loadfrogs():
         traceback.print_exc(file=sys.stdout)
         rutil.eprint("frog error, continuing")
     froggos = list(set(froggos))
-    frogfile = 'frogs.frog'
-    uniqlines = open(frogfile).readlines()
-    for frog in froggos:
-        uniqlines.insert(0, frog + "\n")
-    open(frogfile, 'w').writelines(set(uniqlines))
+    jfileutil.save(froggos, "frogs")
 
 # Initialization
-
 @client.event
 async def on_ready():
 
@@ -263,15 +261,14 @@ async def on_ready():
         # fh = open(frogfile, 'a')
         # fh.write(msg + "\n")
         froggos.extend(msg)
-        # uniqlines = set(open(frogfile).readlines())
-        uniqlines = open(frogfile).readlines()
-        uniqlines.insert(0, msg + "\n")
-        open(frogfile, 'w').writelines(set(uniqlines))
+        uniqlines = set(froggos)
+
+        jfileutil.save(uniqlines, "frogs")
         await loadfrogs()
         await client.send_message(message.channel, "Added frog.")
     rbot.Command('addfrog', cmd_addfrog_func,
-                               'Adds a frog to the frog dictionary',  # helpstr
-                               2)  # Permission Level
+                   'Adds a frog to the frog dictionary',  # helpstr
+                   2)  # Permission Level
 
     async def cmd_removefrog_func(message):
         msg = " ".join(message.content.split()[1:])
@@ -384,8 +381,8 @@ async def on_ready():
         if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
             await client.send_message(message.channel, "you meme-loving degenerates.")
     rbot.Command('roll', cmd_roll_func,
-                            'Rolls fancy dice',  # helpstr
-                            0)  # Permission Level
+                'Rolls fancy dice',  # helpstr
+                0)  # Permission Level
 
     async def cmd_reteam_func(message):
 
