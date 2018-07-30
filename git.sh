@@ -1,6 +1,6 @@
 #/bin/bash -v
 git fetch --all
-git commit frogs.frog rules rules/* -m "routine frog update"
+git commit jobj/* -m "routine object update"
 git merge --no-edit
 git push
 #git reset --hard origin/master
