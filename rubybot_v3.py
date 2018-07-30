@@ -19,7 +19,7 @@ import rubybot_util as rutil
 import jfileutil
 
 MAX_UPDATE_DELAY = 15*60  # Fifteen minutes
-
+LOADED = False
 
 client = discord.Client()
 
@@ -173,12 +173,10 @@ async def on_ready():
             tracefile2.flush()
     except:
         traceback.print_exc(file=sys.stdout)
-
+    LOADED = True
     ###############################
     # Commands and command handling
     ###############################
-
-    rbot.commands = []
 
     rbot.Command('test', (lambda message:
                                      client.send_message(gio, "Message")
@@ -704,6 +702,8 @@ async def on_ready():
 
 @client.event
 async def on_message_edit(before, after):
+    if not LOADED:
+        return
     message = after
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
     if message.server:
@@ -720,6 +720,8 @@ async def on_message_edit(before, after):
 
 @client.event
 async def on_message_delete(message):
+    if not LOADED:
+        return
     if message.server:
         fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
         with open(rutil.logpath(message), 'a+') as file:
@@ -736,6 +738,8 @@ async def on_message_delete(message):
 
 @client.event
 async def on_member_join(member):
+    if not LOADED:
+        return
     if rbot.servers.get('245789672842723329') and member.server is rbot.servers['245789672842723329'].server:
         rutil.eprint("setting team in taboo")
         target = member
