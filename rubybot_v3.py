@@ -671,7 +671,7 @@ async def on_ready():
         rbot.commands['test'],
         rbot.commands['error'],
         rbot.commands['say'],
-        rbot.commands['smolmote'],
+        rbot.commands['smol'],
         rbot.commands['hardreboot']
     ]
     cmdlist_lwu_extras = [
@@ -685,7 +685,7 @@ async def on_ready():
     ]
     server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras)  # Temporary: All commands to LWU
 
-    server_minda.add_cmd(rbot.commands['smolmote'])  # Temporary: All commands to LWU
+    server_minda.add_cmd(rbot.commands['smol'])  # Temporary: All commands to LWU
     server_minda.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
     server_minda.add_cmd(rbot.commands['contraband'])
 
