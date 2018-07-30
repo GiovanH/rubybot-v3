@@ -251,20 +251,24 @@ async def on_ready():
 
     async def cmd_addfrog_func(message):
         msg = " ".join(message.content.split()[1:])
-        frogfile = 'frogs.frog'
         try:
             urllib.request.urlopen(msg).read()
         except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
+        print("Parsed url")
         # fh = open(frogfile, 'a')
         # fh.write(msg + "\n")
         froggos.extend(msg)
         uniqlines = set(froggos)
+        print("Extended set")
 
         jfileutil.save(uniqlines, "frogs")
+
+        print("saved object")
         await loadfrogs()
+        print("loaded object")
         await client.send_message(message.channel, "Added frog.")
     rbot.Command('addfrog', cmd_addfrog_func,
                    'Adds a frog to the frog dictionary',  # helpstr
@@ -278,20 +282,15 @@ async def on_ready():
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
-        # fh = open(frogfile, 'a')
-        # fh.write(msg + "\n")
-        uniqlines = open(frogfile).readlines()
-        # print(uniqlines)[5]
         print(msg)
-    # try:
-        uniqlines.remove(msg + "\n")
-        froggos.remove(msg)
-        # await client.send_message(message.channel, "Removing that frog.")
-    # except:
-    #     print(uniqlines)
-    #     print(msg)
-    #     traceback.print_exc(file=sys.stdout)
-    #     await client.send_message(message.channel, "There may have been an error.")
+        try:
+            froggos.remove(msg)
+            # await client.send_message(message.channel, "Removing that frog.")
+        except:
+            print(uniqlines)
+            print(msg)
+            traceback.print_exc(file=sys.stdout)
+            await client.send_message(message.channel, "There may have been an error.")
         jfileutil.save(uniqlines, "frogs")
         # open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
