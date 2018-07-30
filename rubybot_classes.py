@@ -46,7 +46,9 @@ class Command:
             if permissionLevel(message.author, message.server) >= self.permlevel:
                 await self.function(message)
             else:
-                raise NameError('User ' + message.author.name + ' has insufficient permissions to perform command ' + self.name)
+                e = 'User ' + message.author.name + ' has insufficient permissions to perform command ' + self.name
+                print(e)
+                raise NameError(e)
 
 
 class Server:
