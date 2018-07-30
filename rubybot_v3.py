@@ -695,7 +695,7 @@ async def on_ready():
     server_tabuu.add_cmd(rbot.commands['wwheek'])  # Temporary: All commands to LWU
 
     server_mu.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
-    server_mu.remove_cmds([rbot.commands['frog]'])
+    server_mu.remove_cmds([rbot.commands['frog']])
     server_tabuu.add_cmd(rbot.commands['reteam'])
 
     rbot.direct_commands = list(cmdlist_base + cmdlist_util)  # Temporary: All commands to PM
