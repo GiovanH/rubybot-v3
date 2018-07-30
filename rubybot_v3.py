@@ -187,7 +187,7 @@ async def on_ready():
     def cmd_error_func(message):
         m = [1]
         print(m[3])
-    rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
+    rbot.Command('error', cmd_error_func, 'Throws an error', 0)
 
     async def cmd_vote_func(message):
         splittoken = '; '
