@@ -1,4 +1,4 @@
-#!python3
+# !python3
 
 import discord
 from discord.ext import commands
@@ -15,63 +15,21 @@ from time import gmtime, strftime
 import datetime
 import sys
 import rubybot_classes as rbot
+import rubybot_util as rutil
+import jfileutil
 
 MAX_UPDATE_DELAY = 15*60  # Fifteen minutes
 
 
-async def send_message_smart(dest, msg):
-    m = ""
-    for line in msg.split('\n'):
-        m += line + "\n"
-        if len(m) >= 1600:
-            await client.send_message(dest, m)
-            m = ""
-    await client.send_message(dest, m)
+client = discord.Client()
 
-
-def eprint(*args, **kwargs):
-    # global gio
-    t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    # print(t, file=sys.stderr, **kwargs)
-    # print(*args, file=sys.stderr, **kwargs)
-    print("[Logging:]" + t)
-    print(*args, **kwargs)
-    # await client.send_message(gio, *args)
-
-
-def pickleLoad(filename):
-    filehandler = open("pickle/" + filename + ".obj", 'rb')
-    object = pickle.load(filehandler)
-    return object
-
-
-def pickleSave(object, filename):
-    filehandler = open("pickle/" + filename + ".obj", 'wb')
-    pickle.dump(object, filehandler)
-
-
-rbot.permissions = {
-    '232218346999775232': {  # LWU
-        '388738370676719616': 1,  # "mod"
-        '388739472730357773': 1,  # "tadpole"
-        '233020731779317761': 2  # Bossman
-    },
-    '290270624558088192': {  # Minda
-        '298390405169283072': 1,
-        '290270933304999936': 2
-    },
-    '358806463139020810': {  # MU
-        '358829062233260032': 1
-    },
-    '245789672842723329': {  # Tabuu
-        '258320487698923520': 1,
-        '245790823499825153': 2
-    }
-}
-# ENUMS
-
+# Load permissions file from json
+rbot.permissions = jfileutil.load("permissions")
 emotes = {}
 
+###############################
+# Make emote enumeration
+###############################
 
 async def emote(server, match, braces):
     default = "smolrubes"
@@ -103,36 +61,34 @@ async def emote(server, match, braces):
     else:
         return s
 
-client = discord.Client()
+    ###############################
+    # Make frog enumeration
+    ###############################
 
 froggos = ["Not ready yet! Try again!"]
-
-
 async def loadfrogs():
     global froggos
-    froggos = []
-    with open('frogs.frog') as f:
-        for line in f:
-            froggos.append(line[:-1])
+    froggos = jfileutil.load("frogs")
+    # with open('frogs.frog') as f:
+    #     for line in f:
+    #         froggos.append(line[:-1])
     try:
         r = urllib.request.urlopen(
             "http://allaboutfrogs.org/funstuff/randomfrog.html").read()
         r = r.decode()
-        regex = re.compile(
-            '"(http:\/\/www\.allaboutfrogs\.org\/funstuff\/random\/.*?)"')
+        regex = re.compile('"(http:\/\/www\.allaboutfrogs\.org\/funstuff\/random\/.*?)"')
         froggos.extend(regex.findall(r))
     except:
         traceback.print_exc(file=sys.stdout)
-        eprint("frog error, continuing")
+        rutil.eprint("frog error, continuing")
     try:
-        r = urllib.request.urlopen(
-            "http://stickyfrogs.tumblr.com/tagged/frogfriends").read()
+        r = urllib.request.urlopen("http://stickyfrogs.tumblr.com/tagged/frogfriends").read()
         r = r.decode()
         regex = re.compile('img src="(.*?)"')
         froggos.extend(regex.findall(r))
     except:
         traceback.print_exc(file=sys.stdout)
-        eprint("frog error, continuing")
+        rutil.eprint("frog error, continuing")
     try:
         r = urllib.request.urlopen(
             "https://twitter.com/stickyfrogs/media").read()
@@ -141,7 +97,7 @@ async def loadfrogs():
             'img data-aria-label-part src="(.*?)"').findall(r))
     except:
         traceback.print_exc(file=sys.stdout)
-        eprint("frog error, continuing")
+        rutil.eprint("frog error, continuing")
     try:
         r = urllib.request.urlopen(
             "https://twitter.com/Litoriacaeru/media").read()
@@ -150,7 +106,7 @@ async def loadfrogs():
             'img data-aria-label-part src="(.*?)"').findall(r))
     except:
         traceback.print_exc(file=sys.stdout)
-        eprint("frog error, continuing")
+        rutil.eprint("frog error, continuing")
     froggos = list(set(froggos))
     frogfile = 'frogs.frog'
     uniqlines = open(frogfile).readlines()
@@ -160,22 +116,12 @@ async def loadfrogs():
 
 # Initialization
 
-
-def logpath(message):
-    """Given a message, returns a filepath for logging that message."""
-    if message.server != None:
-        _dir = "logs/" + message.channel.server.name + "/" + message.channel.name
-    else:
-        _dir = "logs/direct_messages/" + message.author.name
-    try:
-        os.makedirs(_dir)
-    except:
-        pass
-    return _dir + "/" + str(datetime.date.today()) + ".log"
-
-
 @client.event
 async def on_ready():
+
+    ###############################
+    # Initial Loading
+    ###############################
     await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
 
     global gio
@@ -220,9 +166,15 @@ async def on_ready():
                 "Nothing known! No exception written to file!")
             tracefile2.flush()
     except:
-        pass
+        traceback.print_exc(file=sys.stdout)
 
-    cmd_test = rbot.Command('test', (lambda message:
+    ###############################
+    # Commands and command handling
+    ###############################
+
+    rbot.commands = []
+
+    rbot.commands['test'] = rbot.Command('test', (lambda message:
                                      client.send_message(gio, "Message")
                                      ),
                             'Test command',  # helpstr
@@ -231,7 +183,7 @@ async def on_ready():
     def cmd_error_func(message):
         m = [1]
         print(m[3])
-    cmd_error = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
+    rbot.commands['error'] = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
 
     async def cmd_vote_func(message):
         splittoken = '; '
@@ -249,7 +201,7 @@ async def on_ready():
             await client.add_reaction(pollmsg, reaction_dict[i])
             i = i + 1
         await client.edit_message(pollmsg, new_content=polltext)
-    cmd_vote = rbot.Command('callvote', cmd_vote_func,
+    rbot.commands['vote'] = rbot.Command('callvote', cmd_vote_func,
                             'List options seperated by \'; \' to prompt a vote. ',  # helpstr
                             0)  # Permission Level
 
@@ -258,7 +210,7 @@ async def on_ready():
         for role in message.server.roles:
             m += str(role.name) + ": " + str(role.id) + "\n"
         await client.send_message(message.author, m)
-    cmd_listroles = rbot.Command('listroles', cmd_listroles_func,
+    rbot.commands['listroles'] = rbot.Command('listroles', cmd_listroles_func,
                                  'Messages you with all roles from a server',  # helpstr
                                  2)  # Permission Level
 
@@ -268,15 +220,15 @@ async def on_ready():
         r = r.decode()
         img = random.choice(re.compile('img src="([^"]+)').findall(r))
         await client.send_message(message.channel, img)
-    cmd_wwheek = rbot.Command('wwheek', cmd_wwheek_func,
-                              'wwheeks a wwheek',  # helpstr
+    rbot.commands['wwheek'] = rbot.Command('wwheek', cmd_wwheek_func,
+                              "Gets a doodle from wwheek's tumblr",  # helpstr
                               0)  # Permission Level
 
     async def cmd_sayhere_func(message):
         text = " ".join(message.content.split()[1:])
         await client.delete_message(message)
         await client.send_message(message.channel, text)
-    cmd_sayhere = rbot.Command('sayhere', cmd_sayhere_func,
+    rbot.commands['sayhere'] = rbot.Command('sayhere', cmd_sayhere_func,
                                'Echos your message back where you post this command',  # helpstr
                                3)  # Permission Level
 
@@ -288,10 +240,10 @@ async def on_ready():
         await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
         await client.delete_message(message)
         return
-    cmd_frog = rbot.Command('frog', cmd_frog_func,
+    rbot.commands['frog'] = rbot.Command('frog', cmd_frog_func,
                             'Gives a froggo',  # helpstr
                             0)  # Permission Level
-    cmd_contraband = rbot.Command('contraband', cmd_frog_func,
+    rbot.commands['contraband'] = rbot.Command('contraband', cmd_frog_func,
                                   'Alias for frog',  # helpstr
                                   0)  # Permission Level
 
@@ -304,47 +256,46 @@ async def on_ready():
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
-        #fh = open(frogfile, 'a')
-        #fh.write(msg + "\n")
+        # fh = open(frogfile, 'a')
+        # fh.write(msg + "\n")
         froggos.extend(msg)
-        #uniqlines = set(open(frogfile).readlines())
+        # uniqlines = set(open(frogfile).readlines())
         uniqlines = open(frogfile).readlines()
         uniqlines.insert(0, msg + "\n")
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Added frog.")
-    cmd_addfrog = rbot.Command('addfrog', cmd_addfrog_func,
+    rbot.commands['addfrog'] = rbot.Command('addfrog', cmd_addfrog_func,
                                'Adds a frog to the frog dictionary',  # helpstr
                                2)  # Permission Level
 
     async def cmd_removefrog_func(message):
         msg = " ".join(message.content.split()[1:])
-        frogfile = 'frogs.frog'
         try:
             urllib.request.urlopen(msg).read()
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
             # return
-        #fh = open(frogfile, 'a')
-        #fh.write(msg + "\n")
+        # fh = open(frogfile, 'a')
+        # fh.write(msg + "\n")
         uniqlines = open(frogfile).readlines()
         # print(uniqlines)[5]
         print(msg)
-        try:
-            uniqlines.remove(msg + "\n")
-            froggos.remove(msg)
-            # await client.send_message(message.channel, "Removing that frog.")
-        except:
-            print(uniqlines)
-            print(msg)
-            traceback.print_exc(file=sys.stdout)
-            await client.send_message(message.channel, "There may have been an error.")
-
-        open(frogfile, 'w').writelines(set(uniqlines))
+    # try:
+        uniqlines.remove(msg + "\n")
+        froggos.remove(msg)
+        # await client.send_message(message.channel, "Removing that frog.")
+    # except:
+    #     print(uniqlines)
+    #     print(msg)
+    #     traceback.print_exc(file=sys.stdout)
+    #     await client.send_message(message.channel, "There may have been an error.")
+        jfileutil.save(uniqlines, "frogs")
+        # open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
-    cmd_removefrog = rbot.Command('removefrog', cmd_removefrog_func,
+    rbot.commands['removefrog'] = rbot.Command('removefrog', cmd_removefrog_func,
                                   'Removes a frog from the frog dictionary',  # helpstr
                                   2)  # Permission Level
 
@@ -352,8 +303,8 @@ async def on_ready():
         m = ""
         for s in message.server.emojis:
             m += s.name + "\t" + s.id + "\t" + s.url + "\n"
-        await send_message_smart(message.author, m)
-    cmd_listemotes = rbot.Command('listemotes', (cmd_listemotes_func),
+        await rutil.send_message_smart(message.author, m)
+    rbot.commands['listemotes'] = rbot.Command('listemotes', (cmd_listemotes_func),
                                   'Messages you the server\'s emotes',  # helpstr
                                   1)  # Permission Level
 
@@ -376,17 +327,17 @@ async def on_ready():
             await client.add_reaction(message, await emote(message.server, 'smolrubes', False))
         except:
             pass
-        eprint("Restarting rubybot at request of " +
+        rutil.eprint("Restarting rubybot at request of " +
                message.author.name)
         with open("last_trace.log", "w") as f:
             f.write("Restarted at request of " +
                     message.author.name)
             f.flush()
         sys.exit(0)
-    cmd_restart = rbot.Command('restart', cmd_restart_func,
+    rbot.commands['restart'] = rbot.Command('restart', cmd_restart_func,
                                'Restarts rubybot',  # helpstr
                                2)  # Permission Level
-    cmd_reload = rbot.Command('reload', cmd_restart_func,
+    rbot.commands['reload'] = rbot.Command('reload', cmd_restart_func,
                               'Alias of restart',  # helpstr
                               2)
 
@@ -395,7 +346,7 @@ async def on_ready():
         pss = ['Everyone', 'Moderator', 'Admin', 'Super Admin']
         ps = pss[p]
         await client.send_message(message.channel, message.author.name + ", your permission level in this server is " + str(p) + " (" + ps + ")")
-    cmd_permissions = rbot.Command('permissions', cmd_permissions_func,
+    rbot.commands['permissions'] = rbot.Command('permissions', cmd_permissions_func,
                                    'Tells you your permissions level in context',  # helpstr
                                    0)  # Permission Level
 
@@ -428,7 +379,7 @@ async def on_ready():
             await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
         if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
             await client.send_message(message.channel, "you meme-loving degenerates.")
-    cmd_roll = rbot.Command('roll', cmd_roll_func,
+    rbot.commands['roll'] = rbot.Command('roll', cmd_roll_func,
                             'Rolls fancy dice',  # helpstr
                             0)  # Permission Level
 
@@ -460,7 +411,7 @@ async def on_ready():
                     await client.remove_roles(target, role)
             await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
-    cmd_reteam = rbot.Command('reteam', cmd_reteam_func,
+    rbot.commands['reteam'] = rbot.Command('reteam', cmd_reteam_func,
                               'Re-teams a member on taboo',  # helpstr
                               1)  # Permission Level
 
@@ -471,14 +422,14 @@ async def on_ready():
             await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
         except AttributeError:
             await client.send_message(message.author, "No such channel as " + msg[1])
-    cmd_smolmote = rbot.Command('smol', cmd_smolmote_func,
+    rbot.commands['smolmote'] = rbot.Command('smol', cmd_smolmote_func,
                                 'Sends a smol to channel by ID',  # helpstr
                                 3)  # Permission Level
 
     async def cmd_nickname_func(message):
         nickname = " ".join(message.content.split()[1:])
         await client.change_nickname(rubybot_member, nickname)
-    cmd_nickname = rbot.Command('nick', cmd_nickname_func,
+    rbot.commands['nickname'] = rbot.Command('nick', cmd_nickname_func,
                                 'Changes nickname',  # helpstr
                                 3)  # Permission Level
 
@@ -489,7 +440,7 @@ async def on_ready():
                 await client.edit_profile(avatar=fp.read())
         except:
             await client.send_message(message.author, traceback.format_exc())
-    cmd_avatar = rbot.Command('avatar', cmd_avatar_func,
+    rbot.commands['avatar'] = rbot.Command('avatar', cmd_avatar_func,
                               'Sets avatar',  # helpstr
                               3)  # Permission Level
 
@@ -499,14 +450,14 @@ async def on_ready():
             await client.send_message(client.get_channel(msg[1]), " ".join(msg[2:]))
         except discord.errors.InvalidArgument:
             await client.send_message(message.author, "No such channel as " + msg[1])
-    cmd_sayat = rbot.Command('say', cmd_sayat_func,
+    rbot.commands['sayat'] = rbot.Command('say', cmd_sayat_func,
                              'Says a message at a channel by ID',  # helpstr
                              3)  # Permission Level
 
     async def cmd_hardreboot_func(message):
         await client.send_message(message.author, "Here goes!")
         await client.send_message(message.author, os.system("sudo reboot"))
-    cmd_hardreboot = rbot.Command('hardreboot', cmd_hardreboot_func,
+    rbot.commands['hardreboot'] = rbot.Command('hardreboot', cmd_hardreboot_func,
                                   'sudo reboot',  # helpstr
                                   3)  # Permission Level
 
@@ -516,13 +467,13 @@ async def on_ready():
             for command in rbot.servers[message.server.id].commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstr += "\n!" + command.name + " : " + command.helpstr
-            await send_message_smart(message.channel, helpstr)
+            await rutil.send_message_smart(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstr += "\n!" + command.name + " : " + command.helpstr
-            await send_message_smart(message.author, helpstr)
-    cmd_help = rbot.Command('help', cmd_help_func,
+            await rutil.send_message_smart(message.author, helpstr)
+    rbot.commands['help'] = rbot.Command('help', cmd_help_func,
                             'List availible commands and their functions',  # helpstr
                             0)  # Permission Level
 
@@ -532,29 +483,29 @@ async def on_ready():
             for command in rbot.servers[message.server.id].commands:
                 helpstr += "\n(" + str(command.permlevel) + ") !" + \
                     command.name + " : " + command.helpstr
-            await send_message_smart(message.channel, helpstr)
+            await rutil.send_message_smart(message.channel, helpstr)
         else:
             for command in rbot.direct_commands:
                 helpstr += "\n(" + str(command.permlevel) + ") !" + \
                     command.name + " : " + command.helpstr
-            await send_message_smart(message.author, helpstr)
-    cmd_allhelp = rbot.Command('allhelp', cmd_allhelp_func,
+            await rutil.send_message_smart(message.author, helpstr)
+    rbot.commands['allhelp'] = rbot.Command('allhelp', cmd_allhelp_func,
                                'List all commands and their permission level',  # helpstr
                                1)  # Permission Level
 
     async def cmd_rules_func(message):
-        with open("rules/" + message.server.id, 'r') as rulefile:
-            await send_message_smart(message.channel, rulefile.read())
-    cmd_rules = rbot.Command('rules', cmd_rules_func,
+        await rutil.send_message_smart(message.channel, jfileutil.load("rules_" + message.server.id))
+    rbot.commands['rules'] = rbot.Command('rules', cmd_rules_func,
                              'Lists the server\'s rules',  # helpstr
                              0)  # Permission Level
 
     async def cmd_setrules_func(message):
         with open("rules/" + message.server.id, 'w') as rulefile:
-            rulefile.write(" ".join(message.content.split(' ')[1:]))
-            rulefile.flush()
+            # rulefile.write(" ".join(message.content.split(' ')[1:]))
+            # rulefile.flush()
+            jfileutil.save(message.content, "rules_" + message.server.id)
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
-    cmd_setrules = rbot.Command('setrules', cmd_setrules_func,
+    rbot.commands['setrules'] = rbot.Command('setrules', cmd_setrules_func,
                                 'Modifies the server\'s rules',  # helpstr
                                 2)  # Permission Level
 
@@ -567,7 +518,7 @@ async def on_ready():
             pinurl += "\n" + a.get('url')
         await client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
         await client.delete_message(message)
-    cmd_pins = rbot.Command('pins', cmd_pins_func,
+    rbot.commands['pins'] = rbot.Command('pins', cmd_pins_func,
                             'Posts a random pinned message',  # helpstr
                             0)  # Permission Level
 
@@ -578,7 +529,7 @@ async def on_ready():
                 await client.send_message(message.channel, "No such person")
                 await client.delete_message(message)
                 return
-            if source == None:
+            if source is None:
                 source = rubybot_member
             badr = discord.utils.get(
                 server_lwu.server.roles, id='388739766025191435')
@@ -594,7 +545,7 @@ async def on_ready():
             await client.send_message(message.channel, target.name + " has been badded to the pit by " + source.name + ".")
             # await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
         await client.delete_message(message)
-    cmd_bad = rbot.Command('bad', cmd_bad_func,
+    rbot.commands['bad'] = rbot.Command('bad', cmd_bad_func,
                            'Bad them to the pit!',  # helpstr
                            1)  # Permission Level
 
@@ -620,7 +571,7 @@ async def on_ready():
             # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
             await client.send_message(message.channel, "Log: " + target.name + " has been unbadded by " + source.name + ".")
         await client.delete_message(message)
-    cmd_unbad = rbot.Command('unbad', cmd_unbad_func,
+    rbot.commands['unbad'] = rbot.Command('unbad', cmd_unbad_func,
                              'unBad them from the pit!',  # helpstr
                              1)  # Permission Level
 
@@ -639,19 +590,19 @@ async def on_ready():
         try:
             if role in message.author.roles:
                 await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
-                eprint(message.author.name + " has role " +
+                rutil.eprint(message.author.name + " has role " +
                        role.name + ", removing.")
                 await client.remove_roles(message.author, role)
             else:
                 if role not in message.author.roles:
                     await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
-                    eprint(message.author.name +
+                    rutil.eprint(message.author.name +
                            " does not have role " + role.name + ", adding.")
                     await client.add_roles(message.author, role)
         except BaseException as e:
             await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
         await client.delete_message(message)
-    cmd_pronoun = rbot.Command('pronoun', cmd_pronoun_func,
+    rbot.commands['pronoun'] = rbot.Command('pronoun', cmd_pronoun_func,
                                'Gives you a pronoun role so people know what to call you. Specify a pronoun after the command',  # helpstr
                                0)  # Permission Level
 
@@ -666,24 +617,24 @@ async def on_ready():
                 await client.send_message(message.channel, "User is already verified: " + member.name)
         await client.send_message(workingChan, "Please welcome new user " + member.mention + " to the server!")
         await client.delete_message(message)
-    cmd_verify = rbot.Command('verify', cmd_verify_func,
+    rbot.commands['verify'] = rbot.Command('verify', cmd_verify_func,
                               'Verifies a user',  # helpstr
                               1)  # Permission Level
 
     async def cmd_fund_func(message):
         # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel, embed=discord.Embed(title="Keep me from dying a horrible, painful death!", url="https://www.patreon.com/giovan").set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png"))
-    cmd_fund = rbot.Command('fund', cmd_fund_func,
+    rbot.commands['fund'] = rbot.Command('fund', cmd_fund_func,
                             'Gives information about patreon',  # helpstr
                             0)  # Permission Level
-    cmd_patreon = rbot.Command('patreon', cmd_fund_func,
+    rbot.commands['patreon'] = rbot.Command('patreon', cmd_fund_func,
                                'Alias for fund',  # helpstr
                                0)  # Permission Level
 
     async def cmd_frig_func(message):
         # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel, "http://www.qwantz.com/comics/comic2-1348.png")
-    cmd_frig = rbot.Command('frig', cmd_frig_func,
+    rbot.commands['frig'] = rbot.Command('frig', cmd_frig_func,
                             'like, frig, man!',  # helpstr
                             0)  # Permission Level
 
@@ -692,57 +643,57 @@ async def on_ready():
     # '',  # helpstr
     # 0)  # Permission Level
     cmdlist_base = [
-        cmd_frig,
-        cmd_fund,
-        cmd_patreon,
-        cmd_vote,
-        cmd_listroles,
-        cmd_sayhere,
-        cmd_frog,
-        cmd_removefrog,
-        cmd_listemotes,
-        cmd_restart,
-        cmd_reload,
-        cmd_permissions,
-        cmd_roll,
-        cmd_nickname,
-        cmd_avatar,
-        cmd_help,
-        cmd_allhelp,
-        cmd_rules,
-        cmd_setrules
+        rbot.commands['frig'],
+        rbot.commands['fund'],
+        rbot.commands['patreon'],
+        rbot.commands['vote'],
+        rbot.commands['listroles'],
+        rbot.commands['sayhere'],
+        rbot.commands['frog'],
+        rbot.commands['removefrog'],
+        rbot.commands['listemotes'],
+        rbot.commands['restart'],
+        rbot.commands['reload'],
+        rbot.commands['permissions'],
+        rbot.commands['roll'],
+        rbot.commands['nickname'],
+        rbot.commands['avatar'],
+        rbot.commands['help'],
+        rbot.commands['allhelp'],
+        rbot.commands['rules'],
+        rbot.commands['setrules']
     ]
     cmdlist_util = [
-        cmd_test,
-        cmd_error,
-        cmd_sayat,
-        cmd_smolmote,
-        cmd_hardreboot
+        rbot.commands['test'],
+        rbot.commands['error'],
+        rbot.commands['sayat'],
+        rbot.commands['smolmote'],
+        rbot.commands['hardreboot']
     ]
     cmdlist_lwu_extras = [
-        cmd_addfrog,
-        cmd_pins,
-        cmd_bad,
-        cmd_unbad,
-        cmd_pronoun,
-        cmd_verify,
-        cmd_wwheek
+        rbot.commands['addfrog'],
+        rbot.commands['pins'],
+        rbot.commands['bad'],
+        rbot.commands['unbad'],
+        rbot.commands['pronoun'],
+        rbot.commands['verify'],
+        rbot.commands['wwheek']
     ]
     server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras)  # Temporary: All commands to LWU
 
-    server_minda.add_cmd(cmd_smolmote)  # Temporary: All commands to LWU
+    server_minda.add_cmd(rbot.commands['smolmote'])  # Temporary: All commands to LWU
     server_minda.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
-    server_minda.add_cmd(cmd_contraband)
+    server_minda.add_cmd(rbot.commands['contraband'])
 
     server_tabuu.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
-    server_tabuu.add_cmd(cmd_wwheek)  # Temporary: All commands to LWU
+    server_tabuu.add_cmd(rbot.commands['wwheek'])  # Temporary: All commands to LWU
 
     server_mu.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
-    server_mu.remove_cmds([cmd_frog])
-    server_tabuu.add_cmd(cmd_reteam)
+    server_mu.remove_cmds([rbot.commands['frog]'])
+    server_tabuu.add_cmd(rbot.commands['reteam'])
 
     rbot.direct_commands = list(cmdlist_base + cmdlist_util)  # Temporary: All commands to PM
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
 
 @client.event
@@ -750,12 +701,12 @@ async def on_message_edit(before, after):
     message = after
     fmt = '**{0.author}** edited their message from: |{1.content}| to |{0.content}|\n'
     if message.server:
-        with open(logpath(message), 'a+') as file:
+        with open(rutil.logpath(message), 'a+') as file:
             file.write(fmt.format(after, before))
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
     else:
-        with open(logpath(message), 'a+') as file:
+        with open(rutil.logpath(message), 'a+') as file:
             file.write(fmt.format(after, before))
             file.write(message.author.name + ": " +
                        message.clean_content + "\n")
@@ -765,13 +716,13 @@ async def on_message_edit(before, after):
 async def on_message_delete(message):
     if message.server:
         fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
-        with open(logpath(message), 'a+') as file:
+        with open(rutil.logpath(message), 'a+') as file:
             file.write(fmt.format(message))
             file.write("[" + message.channel.name + "] " +
                        message.author.name + ": " + message.clean_content + "\n")
     else:
         fmt = '{0.author.name} has deleted the message: |{0.content}|\n'
-        with open(logpath(message), 'a+') as file:
+        with open(rutil.logpath(message), 'a+') as file:
             file.write(fmt.format(message))
             file.write(message.author.name + ": " +
                        message.clean_content + "\n")
@@ -780,7 +731,7 @@ async def on_message_delete(message):
 @client.event
 async def on_member_join(member):
     if rbot.servers.get('245789672842723329') and member.server is rbot.servers['245789672842723329'].server:
-        eprint("setting team in taboo")
+        rutil.eprint("setting team in taboo")
         target = member
 
         taboo_teams = []
@@ -810,7 +761,7 @@ async def on_member_join(member):
 
 
 async def fear_of_death(freq):
-    #global timezone
+    # global timezone
     while not client.is_closed:
         if (not client.is_logged_in) or (client.is_closed):
             print("Oh no, the client closed???")
@@ -821,7 +772,7 @@ async def fear_of_death(freq):
 
 
 async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
-    #global timezone
+    # global timezone
     import time
     mostRecentID = '1'
     lastPostID = '0'
@@ -837,8 +788,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
             if mostRecentID != lastPostID:
                 if '0' != lastPostID:
                     print(feedurl + " change: " + lastPostID + " =/= " + mostRecentID)
-                    print(feedurl + " update: " +
-                          lastPostID + " -> " + mostRecentID)
+                    print(feedurl + " update: " + lastPostID + " -> " + mostRecentID)
                     print("Time since last update: " + str(time.time() - time_lastupdate) + " sec")
                     print("Delay at time of update: " + str(update_delay))
                     time_lastupdate = time.time()
@@ -850,7 +800,7 @@ async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, fre
                 lastPostID = mostRecentID
                 print(lastPostID)
         except: # TODO: Do not use bare except
-            eprint("error fetching status for " + feedurl)
+            rutil.eprint("error fetching status for " + feedurl)
             traceback.print_exc()
             traceback.print_exc(file=sys.stdout)
             # No matter what goes wrong, wait same time and try again
@@ -890,17 +840,17 @@ async def on_message(message):
             # return
 
         if "boobybot" in message.content.lower():
-            #print("Debug: i've beem nentioned!")
+            # print("Debug: i've beem nentioned!")
             await client.add_reaction(message, await emote(message.server, 'rubyblush', False))
             # return
 
         if "wwheek" in message.content.lower():
-            #print("Debug: i've beem nentioned!")
+            # print("Debug: i've beem nentioned!")
             await client.add_reaction(message, '💚')
             # return
 
     if message.server:
-        with open(logpath(message), 'a+') as file:
+        with open(rutil.logpath(message), 'a+') as file:
             file.write("[" + message.channel.name + "] " + message.author.name + ": " + message.clean_content + "\n")
             if message.attachments:
                 file.write("[" + message.channel.name + "] " +
@@ -912,7 +862,7 @@ async def on_message(message):
         #     await client.send_message(message.channel, "You lack permissions for that operation")
 
     else:
-        with open(logpath(message), 'a+') as file:
+        with open(rutil.logpath(message), 'a+') as file:
             file.write("[" + message.author.name + "] " + ": " + message.clean_content + "\n")
         for command in rbot.direct_commands:
             await command.run(message)
@@ -922,29 +872,29 @@ with open("token", 'rb') as filehandler:
 
 while True:
     try:
-        eprint("Running client")
+        rutil.eprint("Running client")
         client.run(token)
-        eprint("Successful completion?")
+        rutil.eprint("Successful completion?")
     except RuntimeError as e:
-        eprint("Major fault - Runtime error")
+        rutil.eprint("Major fault - Runtime error")
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        eprint(tb)
+        rutil.eprint(tb)
         with open("last_trace.log", "w") as f:
             f.write(tb)
             f.flush()
         break
     except SystemExit as e:
-        eprint("Exiting peacefully")
+        rutil.eprint("Exiting peacefully")
         break
     except BaseException as e:
-        eprint("Major fault - unknown cause")
+        rutil.eprint("Major fault - unknown cause")
         tb = traceback.format_exc()
         tb = tb + "\n" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        eprint(tb)
+        rutil.eprint(tb)
         with open("last_trace.log", "w") as f:
             f.write(tb)
             f.flush()
         # break
 
-eprint("Program terminated: Ran over edge of file")
+rutil.eprint("Program terminated: Ran over edge of file")
