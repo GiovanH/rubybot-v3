@@ -146,12 +146,18 @@ async def on_ready():
     print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
 
     loop = asyncio.get_event_loop()
-    print('Creating update loop for LWU')
-    loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
-                                           client.get_channel('388730628176084992'), client.get_channel('388802759077658665'), 45))
-    print('Creating update loop for Minda')
-    loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
-                                           client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
+    print('Creating update loops')
+    tumblr_polls = jfileutil.load("polls")
+
+    for t in tumblr_polls:
+        print('Creating update loop for ' + t['url'])
+        loop.create_task(background_check_feed(loop, t['url'],
+                                               client.get_channel(t['bigchannel']), client.get_channel(t['minichannel']), t['mindelay']))
+
+        # loop.create_task(background_check_feed(loop, 'http://loreweaver-universe.tumblr.com/',
+        #                                        client.get_channel('388730628176084992'), client.get_channel('388802759077658665'), 45))
+        # loop.create_task(background_check_feed(loop, 'http://mindareadsoots.tumblr.com/',
+        #                                        client.get_channel('290270624558088192'), client.get_channel('298828535894769665'), 90))
 
     loop.create_task(fear_of_death(550))
 
