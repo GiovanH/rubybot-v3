@@ -660,7 +660,7 @@ async def on_ready():
         rbot.commands['reload'],
         rbot.commands['permissions'],
         rbot.commands['roll'],
-        rbot.commands['nickname'],
+        rbot.commands['nick'],
         rbot.commands['avatar'],
         rbot.commands['help'],
         rbot.commands['allhelp'],
