@@ -1,5 +1,7 @@
 import datetime
 
+client = {}
+
 def logpath(message):
     """Given a message, returns a filepath for logging that message."""
     if message.server != None:
