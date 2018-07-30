@@ -174,7 +174,7 @@ async def on_ready():
 
     rbot.commands = []
 
-    rbot.commands['test'] = rbot.Command('test', (lambda message:
+    rbot.Command('test', (lambda message:
                                      client.send_message(gio, "Message")
                                      ),
                             'Test command',  # helpstr
@@ -183,7 +183,7 @@ async def on_ready():
     def cmd_error_func(message):
         m = [1]
         print(m[3])
-    rbot.commands['error'] = rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
+    rbot.Command('raise', cmd_error_func, 'Throws an error', 0)
 
     async def cmd_vote_func(message):
         splittoken = '; '
@@ -201,7 +201,7 @@ async def on_ready():
             await client.add_reaction(pollmsg, reaction_dict[i])
             i = i + 1
         await client.edit_message(pollmsg, new_content=polltext)
-    rbot.commands['vote'] = rbot.Command('callvote', cmd_vote_func,
+    rbot.Command('callvote', cmd_vote_func,
                             'List options seperated by \'; \' to prompt a vote. ',  # helpstr
                             0)  # Permission Level
 
@@ -210,7 +210,7 @@ async def on_ready():
         for role in message.server.roles:
             m += str(role.name) + ": " + str(role.id) + "\n"
         await client.send_message(message.author, m)
-    rbot.commands['listroles'] = rbot.Command('listroles', cmd_listroles_func,
+    rbot.Command('listroles', cmd_listroles_func,
                                  'Messages you with all roles from a server',  # helpstr
                                  2)  # Permission Level
 
@@ -220,7 +220,7 @@ async def on_ready():
         r = r.decode()
         img = random.choice(re.compile('img src="([^"]+)').findall(r))
         await client.send_message(message.channel, img)
-    rbot.commands['wwheek'] = rbot.Command('wwheek', cmd_wwheek_func,
+    rbot.Command('wwheek', cmd_wwheek_func,
                               "Gets a doodle from wwheek's tumblr",  # helpstr
                               0)  # Permission Level
 
@@ -228,7 +228,7 @@ async def on_ready():
         text = " ".join(message.content.split()[1:])
         await client.delete_message(message)
         await client.send_message(message.channel, text)
-    rbot.commands['sayhere'] = rbot.Command('sayhere', cmd_sayhere_func,
+    rbot.Command('sayhere', cmd_sayhere_func,
                                'Echos your message back where you post this command',  # helpstr
                                3)  # Permission Level
 
@@ -240,10 +240,10 @@ async def on_ready():
         await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
         await client.delete_message(message)
         return
-    rbot.commands['frog'] = rbot.Command('frog', cmd_frog_func,
+    rbot.Command('frog', cmd_frog_func,
                             'Gives a froggo',  # helpstr
                             0)  # Permission Level
-    rbot.commands['contraband'] = rbot.Command('contraband', cmd_frog_func,
+    rbot.Command('contraband', cmd_frog_func,
                                   'Alias for frog',  # helpstr
                                   0)  # Permission Level
 
@@ -265,7 +265,7 @@ async def on_ready():
         open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Added frog.")
-    rbot.commands['addfrog'] = rbot.Command('addfrog', cmd_addfrog_func,
+    rbot.Command('addfrog', cmd_addfrog_func,
                                'Adds a frog to the frog dictionary',  # helpstr
                                2)  # Permission Level
 
@@ -295,7 +295,7 @@ async def on_ready():
         # open(frogfile, 'w').writelines(set(uniqlines))
         await loadfrogs()
         await client.send_message(message.channel, "Removed frog.")
-    rbot.commands['removefrog'] = rbot.Command('removefrog', cmd_removefrog_func,
+    rbot.Command('removefrog', cmd_removefrog_func,
                                   'Removes a frog from the frog dictionary',  # helpstr
                                   2)  # Permission Level
 
@@ -304,7 +304,7 @@ async def on_ready():
         for s in message.server.emojis:
             m += s.name + "\t" + s.id + "\t" + s.url + "\n"
         await rutil.send_message_smart(message.author, m)
-    rbot.commands['listemotes'] = rbot.Command('listemotes', (cmd_listemotes_func),
+    rbot.Command('listemotes', (cmd_listemotes_func),
                                   'Messages you the server\'s emotes',  # helpstr
                                   1)  # Permission Level
 
@@ -334,10 +334,10 @@ async def on_ready():
                     message.author.name)
             f.flush()
         sys.exit(0)
-    rbot.commands['restart'] = rbot.Command('restart', cmd_restart_func,
+    rbot.Command('restart', cmd_restart_func,
                                'Restarts rubybot',  # helpstr
                                2)  # Permission Level
-    rbot.commands['reload'] = rbot.Command('reload', cmd_restart_func,
+    rbot.Command('reload', cmd_restart_func,
                               'Alias of restart',  # helpstr
                               2)
 
@@ -346,7 +346,7 @@ async def on_ready():
         pss = ['Everyone', 'Moderator', 'Admin', 'Super Admin']
         ps = pss[p]
         await client.send_message(message.channel, message.author.name + ", your permission level in this server is " + str(p) + " (" + ps + ")")
-    rbot.commands['permissions'] = rbot.Command('permissions', cmd_permissions_func,
+    rbot.Command('permissions', cmd_permissions_func,
                                    'Tells you your permissions level in context',  # helpstr
                                    0)  # Permission Level
 
@@ -379,7 +379,7 @@ async def on_ready():
             await client.send_message(message.channel, message.author.mention + "'s roll:\n" + resultsstr + " + " + str(bonus) + " = " + str(result[0] + bonus))
         if ((rolls == 4) and (limit == 20)) or (rolls == 69) or (limit == 69):
             await client.send_message(message.channel, "you meme-loving degenerates.")
-    rbot.commands['roll'] = rbot.Command('roll', cmd_roll_func,
+    rbot.Command('roll', cmd_roll_func,
                             'Rolls fancy dice',  # helpstr
                             0)  # Permission Level
 
@@ -411,7 +411,7 @@ async def on_ready():
                     await client.remove_roles(target, role)
             await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
-    rbot.commands['reteam'] = rbot.Command('reteam', cmd_reteam_func,
+    rbot.Command('reteam', cmd_reteam_func,
                               'Re-teams a member on taboo',  # helpstr
                               1)  # Permission Level
 
@@ -422,14 +422,14 @@ async def on_ready():
             await client.send_message(chan, await emote(chan.server, 'smolrubes', True))
         except AttributeError:
             await client.send_message(message.author, "No such channel as " + msg[1])
-    rbot.commands['smolmote'] = rbot.Command('smol', cmd_smolmote_func,
+    rbot.Command('smol', cmd_smolmote_func,
                                 'Sends a smol to channel by ID',  # helpstr
                                 3)  # Permission Level
 
     async def cmd_nickname_func(message):
         nickname = " ".join(message.content.split()[1:])
         await client.change_nickname(rubybot_member, nickname)
-    rbot.commands['nickname'] = rbot.Command('nick', cmd_nickname_func,
+    rbot.Command('nick', cmd_nickname_func,
                                 'Changes nickname',  # helpstr
                                 3)  # Permission Level
 
@@ -440,7 +440,7 @@ async def on_ready():
                 await client.edit_profile(avatar=fp.read())
         except:
             await client.send_message(message.author, traceback.format_exc())
-    rbot.commands['avatar'] = rbot.Command('avatar', cmd_avatar_func,
+    rbot.Command('avatar', cmd_avatar_func,
                               'Sets avatar',  # helpstr
                               3)  # Permission Level
 
@@ -450,14 +450,14 @@ async def on_ready():
             await client.send_message(client.get_channel(msg[1]), " ".join(msg[2:]))
         except discord.errors.InvalidArgument:
             await client.send_message(message.author, "No such channel as " + msg[1])
-    rbot.commands['sayat'] = rbot.Command('say', cmd_sayat_func,
+    rbot.Command('say', cmd_sayat_func,
                              'Says a message at a channel by ID',  # helpstr
                              3)  # Permission Level
 
     async def cmd_hardreboot_func(message):
         await client.send_message(message.author, "Here goes!")
         await client.send_message(message.author, os.system("sudo reboot"))
-    rbot.commands['hardreboot'] = rbot.Command('hardreboot', cmd_hardreboot_func,
+    rbot.Command('hardreboot', cmd_hardreboot_func,
                                   'sudo reboot',  # helpstr
                                   3)  # Permission Level
 
@@ -473,7 +473,7 @@ async def on_ready():
                 if rbot.permissionLevel(message.author, message.server) >= command.permlevel:
                     helpstr += "\n!" + command.name + " : " + command.helpstr
             await rutil.send_message_smart(message.author, helpstr)
-    rbot.commands['help'] = rbot.Command('help', cmd_help_func,
+    rbot.Command('help', cmd_help_func,
                             'List availible commands and their functions',  # helpstr
                             0)  # Permission Level
 
@@ -489,13 +489,13 @@ async def on_ready():
                 helpstr += "\n(" + str(command.permlevel) + ") !" + \
                     command.name + " : " + command.helpstr
             await rutil.send_message_smart(message.author, helpstr)
-    rbot.commands['allhelp'] = rbot.Command('allhelp', cmd_allhelp_func,
+    rbot.Command('allhelp', cmd_allhelp_func,
                                'List all commands and their permission level',  # helpstr
                                1)  # Permission Level
 
     async def cmd_rules_func(message):
         await rutil.send_message_smart(message.channel, jfileutil.load("rules_" + message.server.id))
-    rbot.commands['rules'] = rbot.Command('rules', cmd_rules_func,
+    rbot.Command('rules', cmd_rules_func,
                              'Lists the server\'s rules',  # helpstr
                              0)  # Permission Level
 
@@ -505,7 +505,7 @@ async def on_ready():
             # rulefile.flush()
             jfileutil.save(message.content, "rules_" + message.server.id)
             await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
-    rbot.commands['setrules'] = rbot.Command('setrules', cmd_setrules_func,
+    rbot.Command('setrules', cmd_setrules_func,
                                 'Modifies the server\'s rules',  # helpstr
                                 2)  # Permission Level
 
@@ -518,7 +518,7 @@ async def on_ready():
             pinurl += "\n" + a.get('url')
         await client.send_message(message.channel, "Pin from " + pinmsg.author.name + " from " + str(pinmsg.timestamp) + ": " + pinurl)
         await client.delete_message(message)
-    rbot.commands['pins'] = rbot.Command('pins', cmd_pins_func,
+    rbot.Command('pins', cmd_pins_func,
                             'Posts a random pinned message',  # helpstr
                             0)  # Permission Level
 
@@ -545,7 +545,7 @@ async def on_ready():
             await client.send_message(message.channel, target.name + " has been badded to the pit by " + source.name + ".")
             # await client.send_message(modchat, "Log: " + target.name + " has been badded to the pit by " + source.name)
         await client.delete_message(message)
-    rbot.commands['bad'] = rbot.Command('bad', cmd_bad_func,
+    rbot.Command('bad', cmd_bad_func,
                            'Bad them to the pit!',  # helpstr
                            1)  # Permission Level
 
@@ -571,7 +571,7 @@ async def on_ready():
             # await client.send_message(workingChan, target.name + " has been unbadded by " + source.name)
             await client.send_message(message.channel, "Log: " + target.name + " has been unbadded by " + source.name + ".")
         await client.delete_message(message)
-    rbot.commands['unbad'] = rbot.Command('unbad', cmd_unbad_func,
+    rbot.Command('unbad', cmd_unbad_func,
                              'unBad them from the pit!',  # helpstr
                              1)  # Permission Level
 
@@ -602,7 +602,7 @@ async def on_ready():
         except BaseException as e:
             await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
         await client.delete_message(message)
-    rbot.commands['pronoun'] = rbot.Command('pronoun', cmd_pronoun_func,
+    rbot.Command('pronoun', cmd_pronoun_func,
                                'Gives you a pronoun role so people know what to call you. Specify a pronoun after the command',  # helpstr
                                0)  # Permission Level
 
@@ -617,24 +617,24 @@ async def on_ready():
                 await client.send_message(message.channel, "User is already verified: " + member.name)
         await client.send_message(workingChan, "Please welcome new user " + member.mention + " to the server!")
         await client.delete_message(message)
-    rbot.commands['verify'] = rbot.Command('verify', cmd_verify_func,
+    rbot.Command('verify', cmd_verify_func,
                               'Verifies a user',  # helpstr
                               1)  # Permission Level
 
     async def cmd_fund_func(message):
         # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel, embed=discord.Embed(title="Keep me from dying a horrible, painful death!", url="https://www.patreon.com/giovan").set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png"))
-    rbot.commands['fund'] = rbot.Command('fund', cmd_fund_func,
+    rbot.Command('fund', cmd_fund_func,
                             'Gives information about patreon',  # helpstr
                             0)  # Permission Level
-    rbot.commands['patreon'] = rbot.Command('patreon', cmd_fund_func,
+    rbot.Command('patreon', cmd_fund_func,
                                'Alias for fund',  # helpstr
                                0)  # Permission Level
 
     async def cmd_frig_func(message):
         # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel, "http://www.qwantz.com/comics/comic2-1348.png")
-    rbot.commands['frig'] = rbot.Command('frig', cmd_frig_func,
+    rbot.Command('frig', cmd_frig_func,
                             'like, frig, man!',  # helpstr
                             0)  # Permission Level
 
