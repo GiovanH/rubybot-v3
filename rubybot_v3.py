@@ -670,7 +670,7 @@ async def on_ready():
     cmdlist_util = [
         rbot.commands['test'],
         rbot.commands['error'],
-        rbot.commands['sayat'],
+        rbot.commands['say'],
         rbot.commands['smolmote'],
         rbot.commands['hardreboot']
     ]
