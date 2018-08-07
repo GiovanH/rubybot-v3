@@ -1,17 +1,13 @@
 # !python3
 
 import discord
-from discord.ext import commands
 import random
 import traceback
 import asyncio
 import re
 import pickle
 import urllib.request
-import json
 import os
-import time
-from time import gmtime, strftime
 import datetime
 import sys
 import rubybot_classes as rbot
@@ -500,9 +496,9 @@ async def on_ready():
                  0)  # Permission Level
 
     async def cmd_setrules_func(message):
-        with open("rules/" + message.server.id, 'w') as rulefile:
-            jfileutil.save(" ".join(message.content.split(' ')[1:]), "rules_" + message.server.id)
-            await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
+        #with open("rules/" + message.server.id, 'w') as rulefile:
+        jfileutil.save(" ".join(message.content.split(' ')[1:]), "rules_" + message.server.id)
+        await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     rbot.Command('setrules', cmd_setrules_func,
                     'Modifies the server\'s rules',  # helpstr
                     2)  # Permission Level
