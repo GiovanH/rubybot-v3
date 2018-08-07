@@ -500,8 +500,9 @@ async def on_ready():
                  0)  # Permission Level
 
     async def cmd_setrules_func(message):
-        jfileutil.save(message.content, "rules_" + message.server.id)
-        await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
+        with open("rules/" + message.server.id, 'w') as rulefile:
+            jfileutil.save(" ".join(message.content.split(' ')[1:]), "rules_" + message.server.id)
+            await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     rbot.Command('setrules', cmd_setrules_func,
                     'Modifies the server\'s rules',  # helpstr
                     2)  # Permission Level
