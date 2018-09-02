@@ -118,12 +118,12 @@ class Frog:
             req = requests.get(self.data['url'])
         except requests.exceptions.MissingSchema:
             raise
-        hash = hashlib.sha256
-        self.data['md5'] = hash(req._content).hexdigest()
+        hashm = hashlib.sha256
+        self.data['md5'] = hashm(req._content).hexdigest()
         print(self.data['md5'])
 
     def __eq__(self, other):
         return self.data['md5'] == other.data['md5']
 
     def __hash__(self):
-        return self.data['md5']
+        return hash(self.data['md5'])
