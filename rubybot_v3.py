@@ -65,11 +65,11 @@ async def emote(server, match, braces):
     # Make frog enumeration
     ###############################
 
-froggos = ["Not ready yet! Try again!"]
+froggos = []
 
 
 async def loadfrogs():
-    frogurls = jfileutil.load("frogs")
+    # frogurls = jfileutil.load("frogs")
 
     frogfetchers = [
         {
@@ -106,11 +106,11 @@ async def loadfrogs():
         except:
             print("Could not add frog with data " + d)
 
-    for url in frogurls:
-        try:
-            froggos.append(rbot.Frog({'url': url}))
-        except:
-            print("Could not add frog with url " + url)
+    # for url in frogurls:
+    #     try:
+    #         froggos.append(rbot.Frog({'url': url}))
+    #     except:
+    #         print("Could not add frog with url " + url)
 
     froggos = list(set(froggos))
 
@@ -183,7 +183,9 @@ async def on_ready():
             tracefile2.flush()
     except:
         traceback.print_exc(file=sys.stdout)
+    global LOADED
     LOADED = True
+
     ###############################
     # Commands and command handling
     ###############################
@@ -263,47 +265,39 @@ async def on_ready():
                  0)  # Permission Level
 
     async def cmd_addfrog_func(message):
+        global froggos
         msg = " ".join(message.content.split()[1:])
         try:
-            urllib.request.urlopen(msg).read()
+            froggos.append(rbot.Frog({'url': msg}))
+            froggos = list(set(froggos))
+            jfileutil.save([f.data for f in froggos], "frogsmd5")
         except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
-            await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
+            await client.send_message(message.channel, "Adding frog failed. Details in log.")
             traceback.print_exc(file=sys.stdout)
-            # return
-        print("Parsed url")
 
-        froggos.extend(msg)
-        uniqlines = set(froggos)
-        print("Extended set")
-
-        jfileutil.save(list(uniqlines), "frogs")
-
-        print("saved object")
         await loadfrogs()
-        print("loaded object")
         await client.send_message(message.channel, "Added frog.")
     rbot.Command('addfrog', cmd_addfrog_func,
                  'Adds a frog to the frog dictionary',  # helpstr
                  2)  # Permission Level
 
     async def cmd_removefrog_func(message):
+        global froggos
         msg = " ".join(message.content.split()[1:])
         try:
-            urllib.request.urlopen(msg).read()
+            i = 0
+            for frog in froggos:
+                if frog.data['url'] == msg:
+                    froggos.remove(frog)
+                    i += 1
+            froggos = list(set(froggos))
+            jfileutil.save([f.data for f in froggos], "frogsmd5")
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
-            # return
-        print(msg)
-        try:
-            froggos.remove(msg)
-        except:
-            print(msg)
-            traceback.print_exc(file=sys.stdout)
-            await client.send_message(message.channel, "There may have been an error.")
-        jfileutil.save(froggos, "frogs")
+            return
         await loadfrogs()
-        await client.send_message(message.channel, "Removed frog.")
+        await client.send_message(message.channel, "Removed " + str(i) + " occurances of frog.")
     rbot.Command('removefrog', cmd_removefrog_func,
                  'Removes a frog from the frog dictionary',  # helpstr
                  2)  # Permission Level
@@ -326,7 +320,7 @@ async def on_ready():
             content = " ".join(message.content.split()[1:])
             await client.send_message(target, content)
         await client.delete_message(message)
-    cmd_ = rbot.Command('pm', cmd_pm_func,
+    cmd_pm = rbot.Command('pm', cmd_pm_func,
                         'Sends a PM to one person mentioned',  # helpstr
                         3)  # Permission Level
 
@@ -394,22 +388,11 @@ async def on_ready():
 
     async def cmd_reteam_func(message):
 
-        taboo_teams = []
         taboo_server = rbot.servers['245789672842723329'].server
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='246194907302199296'))  # add team
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388755561359081473'))  # red team
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388755634402623499'))  # rocket
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388755659996397568'))  # blue
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388806422370058249'))  # illum
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388806560006144012'))  # choice
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388807162001883149'))  # sports
+        taboo_teams = [
+            discord.utils.get(taboo_server.roles, id=teamid) 
+            for teamid in jfileutil.load("altgen_teams")
+        ]
         for target in message.mentions:
             newteam = random.choice(taboo_teams)
             await client.add_roles(target, newteam)
@@ -503,6 +486,7 @@ async def on_ready():
                             "'s list of availible commands (in context):")
             await rutil.send_message_smart(message.channel, "\n".join(helpstrs))
         else:
+            helpstr = ""
             for command in rbot.direct_commands:
                 helpstr += ["(" + str(command.permlevel) + ") !" +
                             command.name + " : " + command.helpstr]
@@ -547,7 +531,7 @@ async def on_ready():
                 await client.delete_message(message)
                 return
             if source is None:
-                source = rubybot_member
+                source = message.server.Client
             badr = discord.utils.get(
                 server_lwu.server.roles, id='388739766025191435')
             verified = discord.utils.get(
@@ -765,22 +749,12 @@ async def on_member_join(member):
         rutil.eprint("setting team in taboo")
         target = member
 
-        taboo_teams = []
         taboo_server = rbot.servers['245789672842723329'].server
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='246194907302199296'))  # add team
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388755561359081473'))  # red team
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388755634402623499'))  # rocket
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388755659996397568'))  # blue
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388806422370058249'))  # illum
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388806560006144012'))  # choice
-        taboo_teams.append(discord.utils.get(taboo_server.roles,
-                                             id='388807162001883149'))  # sports
+        taboo_teams = [
+            discord.utils.get(taboo_server.roles, id=teamid)
+            for teamid in jfileutil.load("altgen_teams")
+        ]
+
         newteam = random.choice(taboo_teams)
         await client.add_roles(target, newteam)
         for role in taboo_teams:
@@ -868,6 +842,8 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
+    if not LOADED:
+        return
     # tic = time.clock()
     # we do not want the bot to react to itself
     if message.author == client.user:

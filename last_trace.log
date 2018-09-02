@@ -1,6 +1,6 @@
 Traceback (most recent call last):
-  File "rubybot_v3.py", line 909, in <module>
-    client.run(token)
+  File "rubybot_v3.py", line 922, in <module>
+    f.flush()
   File "C:\Users\Seth\AppData\Roaming\Python\Python36\site-packages\discord\client.py", line 519, in run
     self.loop.run_until_complete(self.start(*args, **kwargs))
   File "C:\Program Files\Python36\lib\asyncio\base_events.py", line 443, in run_until_complete
@@ -9,4 +9,4 @@ Traceback (most recent call last):
     raise RuntimeError('Event loop is closed')
 RuntimeError: Event loop is closed
 
-2018-09-02 21:52:48
+2018-09-02 22:12:24
