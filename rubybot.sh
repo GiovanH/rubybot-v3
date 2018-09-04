@@ -7,7 +7,7 @@ do
 	echo Compressing logs
 	zip logs.zip -rf logs
 	echo Reloading git
-	./git.sh
+	./git.sh > git.log
 	echo starting up at `date`
 	echo starting up at `date` >/dev/stderr
 	python3 rubybot_v3.py
