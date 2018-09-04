@@ -107,10 +107,14 @@ async def loadfrogs():
             print("Could not add frog with data " + d)
 
     for url in frogurls:
-        try:
-            froggos.append(rbot.Frog({'url': url}))
-        except:
-            print("Could not add frog with url " + url)
+        for frog in froggos:
+            if frog.data.url == url:
+                break
+        else:
+            try:
+                froggos.append(rbot.Frog({'url': url}))
+            except:
+                print("Could not add frog with url " + url)
 
     froggos = list(set(froggos))
 
@@ -176,7 +180,7 @@ async def on_ready():
         with open("last_trace.log", "r") as tracefile:
             await client.send_message(gio, "I just came online. Last error: \n" + tracefile.read())
         with open("git.log", "r") as _file:
-            await client.send_message(gio, "Latest git revision: \n" + _file.read())
+            await rutil.send_message_smart(gio, "Latest git revision: \n" + _file.read())
         with open("last_trace.log", 'w', newline='\r\n') as tracefile2:
             tracefile2.write(
                 "Nothing known! No exception written to file!")
