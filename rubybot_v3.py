@@ -391,21 +391,26 @@ async def on_ready():
                  0)  # Permission Level
 
     async def cmd_reteam_func(message):
+        msg = " ".join(message.content.split()[1:])
 
         taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams = [
             discord.utils.get(taboo_server.roles, id=teamid) 
             for teamid in jfileutil.load("altgen_teams")
         ]
-        for target in message.mentions:
-            newteam = random.choice(taboo_teams)
+        targets = message.mentions
+        if msg.lower()  == "all":
+            targets = message.server.members
+        for target in targets:
+            newteam = taboo_teams[target.id%len(taboo_teams)]
             await client.add_roles(target, newteam)
             for role in taboo_teams:
                 # await client.send_message(message.channel, "Checking role " + role.name)
                 if (role in target.roles) and (role is not newteam):
                     # await client.send_message(message.channel, "Removing role " + role.name)
                     await client.remove_roles(target, role)
-            await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
+            if msg.lower()  != "all":
+                await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
     rbot.Command('reteam', cmd_reteam_func,
                  'Re-teams a member on taboo',  # helpstr
@@ -759,13 +764,8 @@ async def on_member_join(member):
             for teamid in jfileutil.load("altgen_teams")
         ]
 
-        newteam = random.choice(taboo_teams)
+        newteam = taboo_teams[target.id % len(taboo_teams)]
         await client.add_roles(target, newteam)
-        for role in taboo_teams:
-            # await client.send_message(message.channel, "Checking role " + role.name)
-            if (role in target.roles) and (role is not newteam):
-                # await client.send_message(message.channel, "Removing role " + role.name)
-                await client.remove_roles(target, role)
         await client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
 
 
