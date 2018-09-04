@@ -6,4 +6,3 @@ git push
 #git reset --hard origin/master
 #chmod +777 -R *
 git status
-git show
