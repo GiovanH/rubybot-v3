@@ -272,9 +272,9 @@ async def on_ready():
         global froggos
         msg = " ".join(message.content.split()[1:])
         try:
+            print(msg)
             froggos.append(rbot.Frog({'url': msg}))
-            froggos = list(set(froggos))
-            jfileutil.save([f.data for f in froggos], "frogsmd5")
+            jfileutil.save([f.data for f in list(set(froggos))], "frogsmd5")
         except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
             await client.send_message(message.channel, "Adding frog failed. Details in log.")
             traceback.print_exc(file=sys.stdout)
