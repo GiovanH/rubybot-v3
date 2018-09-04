@@ -15,4 +15,5 @@ do
 	echo Crashed at `date` >/dev/stderr
 	cat "last_trace.log"
 	cp rubybot_v3.py rubybot_v3.post.bak
+	sleep 1
 done
