@@ -5,4 +5,5 @@ git merge --no-edit
 git push
 #git reset --hard origin/master
 #chmod +777 -R *
-git show > git.log
+git status
+git show
