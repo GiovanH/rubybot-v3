@@ -70,7 +70,7 @@ froggos = []
 
 async def loadfrogs():
     # frogurls = jfileutil.load("frogs")
-
+    global froggos
     frogfetchers = [
         {
             "url": "http://allaboutfrogs.org/funstuff/randomfrog.html",
