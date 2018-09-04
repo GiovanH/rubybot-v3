@@ -766,7 +766,7 @@ async def on_member_join(member):
 
         newteam = taboo_teams[int(target.id) % len(taboo_teams)]
         await client.add_roles(target, newteam)
-        await client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
+        await client.send_message(taboo_server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
 
 
 async def fear_of_death(freq):
