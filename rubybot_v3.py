@@ -89,7 +89,7 @@ async def loadfrogs():
             "re": 'img data-aria-label-part src="(.*?)"'
         }
     ]
-
+    frogurls = []
     for method in frogfetchers:
         try:
             r = urllib.request.urlopen(method['url']).read()
@@ -106,11 +106,11 @@ async def loadfrogs():
         except:
             print("Could not add frog with data " + d)
 
-    # for url in frogurls:
-    #     try:
-    #         froggos.append(rbot.Frog({'url': url}))
-    #     except:
-    #         print("Could not add frog with url " + url)
+    for url in frogurls:
+        try:
+            froggos.append(rbot.Frog({'url': url}))
+        except:
+            print("Could not add frog with url " + url)
 
     froggos = list(set(froggos))
 
