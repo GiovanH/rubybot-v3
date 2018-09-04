@@ -108,7 +108,7 @@ async def loadfrogs():
 
     for url in frogurls:
         for frog in froggos:
-            if frog.data.url == url:
+            if frog.data['url'] == url:
                 break
         else:
             try:
