@@ -258,7 +258,7 @@ async def on_ready():
         print(len(froggos))
         frogi = random.randint(1, len(froggos))
         froggo = froggos[frogi - 1]
-        await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo)
+        await client.send_message(message.channel, "[" + str(frogi) + "/" + str(len(froggos)) + "] Frog for " + message.author.name + ": " + froggo['url'])
         await client.delete_message(message)
         return
     rbot.Command('frog', cmd_frog_func,
