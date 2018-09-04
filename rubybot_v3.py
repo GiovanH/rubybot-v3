@@ -402,7 +402,7 @@ async def on_ready():
         if msg.lower()  == "all":
             targets = message.server.members
         for target in targets:
-            newteam = taboo_teams[target.id%len(taboo_teams)]
+            newteam = taboo_teams[int(target.id)%len(taboo_teams)]
             await client.add_roles(target, newteam)
             for role in taboo_teams:
                 # await client.send_message(message.channel, "Checking role " + role.name)
@@ -764,7 +764,7 @@ async def on_member_join(member):
             for teamid in jfileutil.load("altgen_teams")
         ]
 
-        newteam = taboo_teams[target.id % len(taboo_teams)]
+        newteam = taboo_teams[int(target.id) % len(taboo_teams)]
         await client.add_roles(target, newteam)
         await client.send_message(member.server.default_channel, "Please welcome " + target.mention + " to " + newteam.name)
 
