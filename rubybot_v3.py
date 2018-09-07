@@ -636,8 +636,7 @@ async def on_ready():
                  1)  # Permission Level
 
     async def cmd_fund_func(message):
-        # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
-        await client.send_message(message.channel, embed=discord.Embed(title="Keep me from dying a horrible, painful death!", url="https://www.patreon.com/giovan").set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png"))
+        await client.send_message(message.channel, embed=discord.Embed(title="Keep me alive and keep Gio healthy!", url="https://www.patreon.com/giovan").set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png"))
     rbot.Command('fund', cmd_fund_func,
                  'Gives information about patreon',  # helpstr
                  0)  # Permission Level
@@ -646,7 +645,6 @@ async def on_ready():
                  0)  # Permission Level
 
     async def cmd_frig_func(message):
-        # await client.send_message(message.channel, "Keep me from dying a painful death! https://www.patreon.com/giovan")
         await client.send_message(message.channel, "http://www.qwantz.com/comics/comic2-1348.png")
     rbot.Command('frig', cmd_frig_func,
                  'like, frig, man!',  # helpstr
