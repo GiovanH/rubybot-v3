@@ -1,4 +1,8 @@
 import datetime
+import os
+
+client = {}
+
 
 def logpath(message):
     """Given a message, returns a filepath for logging that message."""
@@ -12,6 +16,7 @@ def logpath(message):
         pass
     return _dir + "/" + str(datetime.date.today()) + ".log"
 
+
 async def send_message_smart(dest, msg):
     m = ""
     for line in msg.split('\n'):
@@ -20,6 +25,7 @@ async def send_message_smart(dest, msg):
             await client.send_message(dest, m)
             m = ""
     await client.send_message(dest, m)
+
 
 def eprint(*args, **kwargs):
     # global gio

@@ -1,12 +1,12 @@
 Traceback (most recent call last):
-  File "marquee.py", line 155, in <module>
-    client.run(token)
-  File "C:\Program Files (x86)\Python36-32\lib\site-packages\discord\client.py", line 519, in run
+  File "rubybot_v3.py", line 922, in <module>
+    f.flush()
+  File "C:\Users\Seth\AppData\Roaming\Python\Python36\site-packages\discord\client.py", line 519, in run
     self.loop.run_until_complete(self.start(*args, **kwargs))
-  File "C:\Program Files (x86)\Python36-32\lib\asyncio\base_events.py", line 443, in run_until_complete
+  File "C:\Program Files\Python36\lib\asyncio\base_events.py", line 443, in run_until_complete
     self._check_closed()
-  File "C:\Program Files (x86)\Python36-32\lib\asyncio\base_events.py", line 357, in _check_closed
+  File "C:\Program Files\Python36\lib\asyncio\base_events.py", line 357, in _check_closed
     raise RuntimeError('Event loop is closed')
 RuntimeError: Event loop is closed
 
-2018-04-02 23:10:44
+2018-09-02 22:12:24

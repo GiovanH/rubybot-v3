@@ -1,5 +1,8 @@
 import discord
-from discord.ext import commands
+# from discord.ext import commands
+
+import hashlib
+import requests
 
 gio_id = '233017800854077441'
 
@@ -10,11 +13,11 @@ direct_commands = {}
 
 
 def permissionLevel(user, server):
+    plvl = 0
     if user.id == gio_id:
         return 3
     if server is None:
-        return 0
-    plvl = 0
+        return plvl
     for r in user.roles:
         rlvl = permissions.get(server.id).get(r.id)
         if rlvl is None:
@@ -46,7 +49,10 @@ class Command:
             if permissionLevel(message.author, message.server) >= self.permlevel:
                 await self.function(message)
             else:
-                raise NameError('User ' + message.author.name + ' has insufficient permissions to perform command ' + self.name)
+                e = 'User ' + message.author.name + \
+                    ' has insufficient permissions to perform command ' + self.name
+                print(e)
+                raise NameError(e)
 
 
 class Server:
@@ -62,13 +68,13 @@ class Server:
 
     def __init__(self, client, a):
         try:
-            if str(type(a)) == "<class 'int'>":
+            if isinstance(a, int):
                 # nonlocal a
                 a = str(a)
-            if str(type(a)) == "<class 'str'>":
+            if isinstance(a, str):
                 # nonlocal a
                 a = client.get_server(a)
-            if str(type(a)) != "<class 'discord.server.Server'>":
+            if not isinstance(a, discord.server.Server):
                 raise TypeError(a, 'Argument is not a discord server')
         except TypeError:
             raise
@@ -79,11 +85,11 @@ class Server:
         servers.update({a.id: self})
 
     def add_cmd(self, c):
-        if str(type(c)) == "<class 'rubybot_classes.Command'>":
+        if isinstance(c, Command):
             self.commands.append(c)
             self.commands = list(set(self.commands))
         else:
-            raise TypeError(c, str(type(c)) + " is not a rubybot command class!")
+            raise TypeError(c, str(type(c)) + " is not a rubybot command!")
 
     def add_cmds(self, cs):
         for c in cs:
@@ -96,3 +102,28 @@ class Server:
             except Exception:
                 pass
         self.commands = list(set(self.commands))
+
+
+class Frog:
+    """Represents a frog."""
+
+    def __init__(self, data):
+        self.data = data
+        self.checkmd5()
+
+    def checkmd5(self):
+        if self.data.get('md5') is not None:
+            return
+        try:
+            req = requests.get(self.data['url'])
+        except requests.exceptions.MissingSchema:
+            raise
+        hashm = hashlib.sha256
+        self.data['md5'] = hashm(req._content).hexdigest()
+        print(self.data['md5'])
+
+    def __eq__(self, other):
+        return self.data['md5'] == other.data['md5']
+
+    def __hash__(self):
+        return hash(self.data['md5'])
