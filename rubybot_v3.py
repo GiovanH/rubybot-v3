@@ -795,7 +795,7 @@ async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, fr
             mostRecentID = mostRecentPost['id']
 
             if mostRecentID != lastPostID:
-                if '0' != lastPostID:
+                if 0 != lastPostID:
                     print(blogname + " change: " +
                           str(lastPostID) + " =/= " + str(mostRecentID))
                     print(blogname + " update: " +
