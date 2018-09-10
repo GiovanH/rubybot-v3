@@ -158,7 +158,7 @@ async def on_ready():
     tumblr_polls = jfileutil.load("polls")
 
     for t in tumblr_polls:
-        print('Creating update loop for ' + t['url'])
+        print('Creating update loop for ' + t['blogname'])
         loop.create_task(
             background_check_feed(
                 loop,
