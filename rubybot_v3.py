@@ -792,7 +792,7 @@ async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, fr
             response = tumblr_client.posts(blogname, limit=1)
             # Get the 'posts' field of the response
             mostRecentPost = response['posts'][0]
-            mostRecentID = ['id']
+            mostRecentID = mostRecentPost['id']
 
             if mostRecentID != lastPostID:
                 if '0' != lastPostID:
@@ -813,6 +813,7 @@ async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, fr
                 print(lastPostID)
         except:  # TODO: Do not use bare except
             rutil.eprint("error fetching status for " + blogname)
+            print(response)
             traceback.print_exc()
             traceback.print_exc(file=sys.stdout)
             # No matter what goes wrong, wait same time and try again
