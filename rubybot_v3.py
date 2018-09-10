@@ -782,8 +782,8 @@ async def fear_of_death(freq):
 async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, freq):
     # global timezone
     import time
-    mostRecentID = '1'
-    lastPostID = '0'
+    mostRecentID = 1
+    lastPostID = 0
     update_delay = 0
     time_lastupdate = time.time()
     # Basically run forever
@@ -797,9 +797,9 @@ async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, fr
             if mostRecentID != lastPostID:
                 if '0' != lastPostID:
                     print(blogname + " change: " +
-                          lastPostID + " =/= " + mostRecentID)
+                          str(lastPostID) + " =/= " + str(mostRecentID))
                     print(blogname + " update: " +
-                          lastPostID + " -> " + mostRecentID)
+                          str(lastPostID) + " -> " + str(mostRecentID))
                     print("Time since last update: " +
                           str(time.time() - time_lastupdate) + " sec")
                     print("Delay at time of update: " + str(update_delay))
