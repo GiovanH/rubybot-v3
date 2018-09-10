@@ -789,7 +789,7 @@ async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, fr
     # Basically run forever
     while not client.is_closed:
         try:
-            response = client.posts(blogname, limit=1)
+            response = tumblr_client.posts(blogname, limit=1)
             # Get the 'posts' field of the response
             mostRecentPost = response['posts'][0]
             mostRecentID = ['id']
