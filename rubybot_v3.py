@@ -116,9 +116,11 @@ async def loadfrogs():
                 froggos.append(rbot.Frog({'url': url}))
             except:
                 print("Could not add frog with url " + url)
+    save_frogs()
 
-    froggos = list(set(froggos))
-
+def save_frogs():
+    global froggos
+    froggos = sorted(list(set(froggos)))
     jfileutil.save([f.data for f in froggos], "frogsmd5")
 
 # Initialization
@@ -275,7 +277,7 @@ async def on_ready():
         try:
             print(msg)
             froggos.append(rbot.Frog({'url': msg}))
-            jfileutil.save([f.data for f in list(set(froggos))], "frogsmd5")
+            save_frogs()
         except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
             await client.send_message(message.channel, "Adding frog failed. Details in log.")
             traceback.print_exc(file=sys.stdout)
@@ -295,8 +297,7 @@ async def on_ready():
                 if frog.data['url'] == msg:
                     froggos.remove(frog)
                     i += 1
-            froggos = list(set(froggos))
-            jfileutil.save([f.data for f in froggos], "frogsmd5")
+                save_frogs()
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
