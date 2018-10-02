@@ -709,27 +709,22 @@ async def on_ready():
     for server in rbot.servers.values():
         server.add_cmds(cmdlist_base)
         try:
-            cmdlist = jfileutil.load("cmds/" + server.id)
+            cmdlist = jfileutil.load("cmds/" + server.server.id)
             server.add_cmds([rbot.commands[key] for key in cmdlist])
         except FileNotFoundError:
             m = "I am missing a command list for server " + c.name + " with id " + c.id
             await client.send_message(gio, m)
             print(m)
 
-    # Temporary: All commands to LWU
-    server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras)
+    server_lwu.add_cmds(cmdlist_lwu_extras)
 
-    # Temporary: All commands to LWU
     server_minda.add_cmd(rbot.commands['smol'])
-    server_minda.add_cmds(cmdlist_base)
     server_minda.add_cmd(rbot.commands['contraband'])
 
-    server_tabuu.add_cmds(cmdlist_base) 
     server_tabuu.add_cmd(rbot.commands['wwheek'])
-
-    server_mu.add_cmds(cmdlist_base)
-    server_mu.remove_cmds([rbot.commands['frog']])
     server_tabuu.add_cmd(rbot.commands['reteam'])
+
+    server_mu.remove_cmds([rbot.commands['frog']])
 
     # Temporary: All commands to PM
     rbot.direct_commands = list(cmdlist_base + cmdlist_util)
