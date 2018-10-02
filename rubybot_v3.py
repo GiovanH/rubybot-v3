@@ -149,7 +149,7 @@ async def on_ready():
         rbot.Server(client, id)
 
     for c in client.servers:
-        if c.id not in rbot.servers:  # Flat is better than nested.
+        if c.id not in rbot.servers.keys():  # Flat is better than nested.
             m = "I am not authorized to be in " + c.name + \
                 "! It's ID, " + c.id + ", is not in my list. Leaving. "
             await client.send_message(c.owner, m)
