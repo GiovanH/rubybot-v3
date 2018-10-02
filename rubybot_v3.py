@@ -519,7 +519,7 @@ async def on_ready():
 
     async def cmd_rulesmd_func(message):
         await rutil.send_message_smart(message.channel, "```" + getRules(message.server) + "```")
-    rbot.Command('rulesmd',
+    rbot.Command('mdrules',
                  cmd_rulesmd_func,
                  'Lists the server\'s rules, in plaintext.',  # helpstr
                  1)  # Permission Level
@@ -712,7 +712,7 @@ async def on_ready():
             cmdlist = jfileutil.load("cmds/" + server.server.id)
             server.add_cmds([rbot.commands[key] for key in cmdlist])
         except FileNotFoundError:
-            m = "I am missing a command list for server " + c.name + " with id " + c.id
+            m = "I am missing a command list for server " + server.server.name + " with id " + server.server.id
             await client.send_message(gio, m)
             print(m)
 
