@@ -634,13 +634,13 @@ async def on_ready():
     async def cmd_togglerole_func(message):
         requested = " ".join(message.content.split()[1:])
         try:
-            freeroles = jfileutil.open("freeroles/" + message.server.id)
+            freeroles = jfileutil.load("freeroles/" + message.server.id)
         except FileNotFoundError:
             await client.send_message(message.channel, "This server has no free roles, or else something is misconfigured.")
         roleLookup = freeroles.get(requested)
         if roleLookup is None:
             await client.send_message(message.channel, "That role name is unknown! Availible roles:")
-            await client.send_message(message.channel, "\n".join(freeroles.keys()))
+            await client.send_message(message.channel, "\n".join(["`" + k + "`" for k in freeroles.keys()]))
         else:
             role = discord.utils.get(message.server.roles, id=roleLookup)
             if role in message.author.roles:
