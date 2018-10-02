@@ -324,9 +324,9 @@ async def on_ready():
             content = " ".join(message.content.split()[1:])
             await client.send_message(target, content)
         await client.delete_message(message)
-    cmd_pm = rbot.Command('pm', cmd_pm_func,
-                        'Sends a PM to one person mentioned',  # helpstr
-                        3)  # Permission Level
+    rbot.Command('pm', cmd_pm_func,
+                 'Sends a PM to one person mentioned',  # helpstr
+                 3)  # Permission Level
 
     async def cmd_restart_func(message):
         await client.change_presence(game=discord.Game(name="swords", type=1))
@@ -334,11 +334,9 @@ async def on_ready():
             await client.add_reaction(message, await emote(message.server, 'smolrubes', False))
         except:
             pass
-        rutil.eprint("Restarting rubybot at request of " +
-                     message.author.name)
+        rutil.eprint("Restarting rubybot at request of " + message.author.name)
         with open("last_trace.log", "w") as f:
-            f.write("Restarted at request of " +
-                    message.author.name)
+            f.write("Restarted at request of " + message.author.name)
             f.flush()
         sys.exit(0)
     rbot.Command('restart', cmd_restart_func,
@@ -395,28 +393,28 @@ async def on_ready():
 
         taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams = [
-            discord.utils.get(taboo_server.roles, id=teamid) 
+            discord.utils.get(taboo_server.roles, id=teamid)
             for teamid in jfileutil.load("altgen_teams")
         ]
         targets = message.mentions
-        if msg.lower()  == "all":
+        if msg.lower() == "all":
             targets = message.server.members
         for target in targets:
-            newteam = taboo_teams[int(target.id)%len(taboo_teams)]
+            newteam = taboo_teams[int(target.id) % len(taboo_teams)]
             await client.add_roles(target, newteam)
             for role in taboo_teams:
                 # await client.send_message(message.channel, "Checking role " + role.name)
                 if (role in target.roles) and (role is not newteam):
                     # await client.send_message(message.channel, "Removing role " + role.name)
                     await client.remove_roles(target, role)
-            if msg.lower()  != "all":
+            if msg.lower() != "all":
                 await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
     rbot.Command('reteam', cmd_reteam_func,
                  'Re-teams a member on taboo',  # helpstr
                  2)  # Permission Level
 
-    async def cmd_smolmote_func(message):  # TODO: Gotta localize the emotes
+    async def cmd_smolmote_func(message):
         msg = message.content.split()
         try:
             chan = client.get_channel(msg[1])
@@ -429,7 +427,7 @@ async def on_ready():
 
     async def cmd_nickname_func(message):
         nickname = " ".join(message.content.split()[1:])
-        await client.change_nickname(rubybot_member, nickname)
+        await client.change_nickname(rbot.servers[message.server.id].member, nickname)
     rbot.Command('nick', cmd_nickname_func,
                  'Changes nickname',  # helpstr
                  3)  # Permission Level
@@ -687,6 +685,7 @@ async def on_ready():
         rbot.commands['help'],
         rbot.commands['allhelp'],
         rbot.commands['rules'],
+        rbot.commands['mdrules'],
         rbot.commands['setrules']
     ]
     cmdlist_util = [
@@ -714,6 +713,7 @@ async def on_ready():
         except FileNotFoundError:
             m = "I am missing a command list for server " + server.server.name + " with id " + server.server.id
             await client.send_message(gio, m)
+            jfileutil.save([], "cmds/" + server.server.id)
             print(m)
 
     server_lwu.add_cmds(cmdlist_lwu_extras)
@@ -726,9 +726,7 @@ async def on_ready():
 
     server_mu.remove_cmds([rbot.commands['frog']])
 
-    # Temporary: All commands to PM
     rbot.direct_commands = list(cmdlist_base + cmdlist_util)
-    # import pdb; pdb.set_trace()
 
 
 @client.event
