@@ -695,15 +695,6 @@ async def on_ready():
         rbot.commands['smol'],
         rbot.commands['hardreboot']
     ]
-    cmdlist_lwu_extras = [
-        rbot.commands['addfrog'],
-        rbot.commands['pins'],
-        rbot.commands['bad'],
-        rbot.commands['unbad'],
-        rbot.commands['pronoun'],
-        rbot.commands['verify'],
-        rbot.commands['wwheek']
-    ]
 
     for server in rbot.servers.values():
         server.add_cmds(cmdlist_base)
@@ -715,16 +706,6 @@ async def on_ready():
             await client.send_message(gio, m)
             jfileutil.save([], "cmds/" + server.server.id)
             print(m)
-
-    server_lwu.add_cmds(cmdlist_lwu_extras)
-
-    server_minda.add_cmd(rbot.commands['smol'])
-    server_minda.add_cmd(rbot.commands['contraband'])
-
-    server_tabuu.add_cmd(rbot.commands['wwheek'])
-    server_tabuu.add_cmd(rbot.commands['reteam'])
-
-    server_mu.remove_cmds([rbot.commands['frog']])
 
     rbot.direct_commands = list(cmdlist_base + cmdlist_util)
 
