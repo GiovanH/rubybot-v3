@@ -510,13 +510,17 @@ async def on_ready():
         except FileNotFoundError:
             return "The server owner has not set rules. Do so with !setrules"
 
+    def cmd_rules_func(message):
+        await rutil.send_message_smart(message.channel, getRules(message.server))
     rbot.Command('rules',
-                 (lambda message: await rutil.send_message_smart(message.channel, getRules(message.server))),
+                 cmd_rules_func,
                  'Lists the server\'s rules',  # helpstr
                  0)  # Permission Level
 
+    def cmd_rulesmd_func(message):
+        await rutil.send_message_smart(message.channel, "```" + getRules(message.server) + "```")
     rbot.Command('rulesmd',
-                 (lambda message: await rutil.send_message_smart(message.channel, "```" + getRules(message.server)) + "```"),
+                 cmd_rulesmd_func,
                  'Lists the server\'s rules, in plaintext.',  # helpstr
                  1)  # Permission Level
 
