@@ -139,11 +139,6 @@ async def on_ready():
 
     """Called when discord logs in. Initializes things. """
 
-    server_mu = rbot.Server(client, 358806463139020810)  # Moderation United
-    server_lwu = rbot.Server(client, 232218346999775232)  # lwu
-    server_tabuu = rbot.Server(client, 245789672842723329)  # TABUU
-    server_minda = rbot.Server(client, 290270624558088192)  # Minda
-
     for c in client.servers:
         if c.id not in rbot.servers:  # Flat is better than nested.
             m = "I am not authorized to be in " + c.name + "! It's ID, " + c.id + ", is not in my list. Leaving. "
@@ -188,9 +183,12 @@ async def on_ready():
             tracefile2.flush()
     except:
         traceback.print_exc(file=sys.stdout)
+    loadCommands()
     global LOADED
     LOADED = True
 
+
+def loadCommands():
     ###############################
     # Commands and command handling
     ###############################
@@ -554,9 +552,9 @@ async def on_ready():
             if source is None:
                 source = message.server.Client
             badr = discord.utils.get(
-                server_lwu.server.roles, id='388739766025191435')
+                message.server.roles, id='388739766025191435')
             verified = discord.utils.get(
-                server_lwu.server.roles, id='388737413213716481')
+                message.server.roles, id='388737413213716481')
             i = 1
             while (badr not in target.roles):
                 i = i + 1
@@ -579,9 +577,9 @@ async def on_ready():
                 await client.delete_message(message)
                 return
             badr = discord.utils.get(
-                server_lwu.server.roles, id='388739766025191435')
+                message.server.roles, id='388739766025191435')
             verified = discord.utils.get(
-                server_lwu.server.roles, id='388737413213716481')
+                message.server.roles, id='388737413213716481')
             # await client.remove_roles(target, badr)
             i = 1
             while (badr in target.roles):
@@ -598,37 +596,38 @@ async def on_ready():
                  1)  # Permission Level
 
     async def cmd_pronoun_func(message):
-        pronoun = " ".join(message.content.split()[1:])
-        r_him = discord.utils.get(
-            message.server.roles, id='388740839943438336')
-        r_her = discord.utils.get(
-            message.server.roles, id='388740921975373835')
-        r_they = discord.utils.get(
-            message.server.roles, id='388740870641287169')
+        await client.send_message(message.channel, "This function has been replaced by !togglerole.")
+        # pronoun = " ".join(message.content.split()[1:])
+        # r_him = discord.utils.get(
+        #     message.server.roles, id='388740839943438336')
+        # r_her = discord.utils.get(
+        #     message.server.roles, id='388740921975373835')
+        # r_they = discord.utils.get(
+        #     message.server.roles, id='388740870641287169')
 
-        if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
-            role = r_him
-        if ((pronoun.upper() == "HER") or (pronoun.upper() == "SHE") or (pronoun.upper() == "FEMALE") or (pronoun.upper() == "WOMAN") or (pronoun.upper() == "F") or (pronoun.upper() == "S")):
-            role = r_her
-        if ((pronoun.upper() == "THEM") or (pronoun.upper() == "THEY") or (pronoun.upper() == "IT") or (pronoun.upper() == "OTHER") or (pronoun.upper() == "T")):
-            role = r_they
-        try:
-            if role in message.author.roles:
-                await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
-                rutil.eprint(message.author.name + " has role " +
-                             role.name + ", removing.")
-                await client.remove_roles(message.author, role)
-            else:
-                if role not in message.author.roles:
-                    await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
-                    rutil.eprint(message.author.name +
-                                 " does not have role " + role.name + ", adding.")
-                    await client.add_roles(message.author, role)
-        except BaseException as e:
-            await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
-        await client.delete_message(message)
+        # if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
+        #     role = r_him
+        # if ((pronoun.upper() == "HER") or (pronoun.upper() == "SHE") or (pronoun.upper() == "FEMALE") or (pronoun.upper() == "WOMAN") or (pronoun.upper() == "F") or (pronoun.upper() == "S")):
+        #     role = r_her
+        # if ((pronoun.upper() == "THEM") or (pronoun.upper() == "THEY") or (pronoun.upper() == "IT") or (pronoun.upper() == "OTHER") or (pronoun.upper() == "T")):
+        #     role = r_they
+        # try:
+        #     if role in message.author.roles:
+        #         await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
+        #         rutil.eprint(message.author.name + " has role " +
+        #                      role.name + ", removing.")
+        #         await client.remove_roles(message.author, role)
+        #     else:
+        #         if role not in message.author.roles:
+        #             await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
+        #             rutil.eprint(message.author.name +
+        #                          " does not have role " + role.name + ", adding.")
+        #             await client.add_roles(message.author, role)
+        # except BaseException as e:
+        #     await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
+        # await client.delete_message(message)
     rbot.Command('pronoun', cmd_pronoun_func,
-                 'Gives you a pronoun role so people know what to call you. Specify a pronoun after the command',  # helpstr
+                 'Depreciated.',  # helpstr
                  0)  # Permission Level
 
     async def cmd_togglerole_func(message):
@@ -644,17 +643,16 @@ async def on_ready():
         else:
             role = discord.utils.get(message.server.roles, id=roleLookup)
             if role in message.author.roles:
+                await client.remove_roles(message.author, role)
                 await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
                 rutil.eprint(message.author.name + " has role " +
                              role.name + ", removing.")
-                await client.remove_roles(message.author, role)
             else:
                 if role not in message.author.roles:
+                    await client.add_roles(message.author, role)
                     await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
                     rutil.eprint(message.author.name +
                                  " does not have role " + role.name + ", adding.")
-                    await client.add_roles(message.author, role)
-        #discord.utils.get(message.server.roles, id='388740870641287169')
     rbot.Command('togglerole', cmd_togglerole_func,
                  'Toggles roles.',  # helpstr
                  0)  # Permission Level
