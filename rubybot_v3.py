@@ -183,12 +183,12 @@ async def on_ready():
             tracefile2.flush()
     except:
         traceback.print_exc(file=sys.stdout)
-    loadCommands(client)
+    await loadCommands()
     global LOADED
     LOADED = True
 
 
-def loadCommands(client):
+async def loadCommands():
     ###############################
     # Commands and command handling
     ###############################
