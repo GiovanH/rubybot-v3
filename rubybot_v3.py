@@ -118,6 +118,7 @@ async def loadfrogs():
     #             print("Could not add frog with url " + url)
     # save_frogs()
 
+
 def save_frogs():
     global froggos
     froggos = sorted(list(set(froggos)))
@@ -139,9 +140,18 @@ async def on_ready():
 
     """Called when discord logs in. Initializes things. """
 
+    for id in [
+        358806463139020810,  # MU
+        232218346999775232,  # LWU
+        245789672842723329,  # Tabuu
+        290270624558088192  # Minda
+    ]:
+        rbot.Server(client, id)
+
     for c in client.servers:
         if c.id not in rbot.servers:  # Flat is better than nested.
-            m = "I am not authorized to be in " + c.name + "! It's ID, " + c.id + ", is not in my list. Leaving. "
+            m = "I am not authorized to be in " + c.name + \
+                "! It's ID, " + c.id + ", is not in my list. Leaving. "
             await client.send_message(c.owner, m)
             print(m)
             # await client.leave_server(s)
@@ -729,7 +739,8 @@ async def loadCommands():
             cmdlist = jfileutil.load("cmds/" + server.server.id)
             server.add_cmds([rbot.commands[key] for key in cmdlist])
         except FileNotFoundError:
-            m = "I am missing a command list for server " + server.server.name + " with id " + server.server.id
+            m = "I am missing a command list for server " + \
+                server.server.name + " with id " + server.server.id
             await client.send_message(gio, m)
             jfileutil.save([], "cmds/" + server.server.id)
             print(m)
