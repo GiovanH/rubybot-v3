@@ -2,9 +2,12 @@ import json
 import pickle
 from os import makedirs
 
-# Version 1.21
+# Version 1.3
 
-basepath = "./jobj/"
+# This is for change in the library, not change in runtime!
+basepath = "./jobj/" 
+
+# Runtime changes should be made to these:
 basepath_json = basepath
 basepath_pick = basepath
 

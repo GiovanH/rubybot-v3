@@ -13,6 +13,7 @@ import sys
 import rubybot_classes as rbot
 import rubybot_util as rutil
 import jfileutil
+import pytumblr
 
 MAX_UPDATE_DELAY = 15 * 60  # Fifteen minutes
 LOADED = False
@@ -115,9 +116,11 @@ async def loadfrogs():
                 froggos.append(rbot.Frog({'url': url}))
             except:
                 print("Could not add frog with url " + url)
+    save_frogs()
 
-    froggos = list(set(froggos))
-
+def save_frogs():
+    global froggos
+    froggos = sorted(list(set(froggos)))
     jfileutil.save([f.data for f in froggos], "frogsmd5")
 
 # Initialization
@@ -157,11 +160,11 @@ async def on_ready():
     tumblr_polls = jfileutil.load("polls")
 
     for t in tumblr_polls:
-        print('Creating update loop for ' + t['url'])
+        print('Creating update loop for ' + t['blogname'])
         loop.create_task(
             background_check_feed(
                 loop,
-                t['url'],
+                t['blogname'],
                 client.get_channel(t['bigchannel']),
                 client.get_channel(t['minichannel']),
                 t['mindelay']
@@ -274,7 +277,7 @@ async def on_ready():
         try:
             print(msg)
             froggos.append(rbot.Frog({'url': msg}))
-            jfileutil.save([f.data for f in list(set(froggos))], "frogsmd5")
+            save_frogs()
         except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
             await client.send_message(message.channel, "Adding frog failed. Details in log.")
             traceback.print_exc(file=sys.stdout)
@@ -294,8 +297,7 @@ async def on_ready():
                 if frog.data['url'] == msg:
                     froggos.remove(frog)
                     i += 1
-            froggos = list(set(froggos))
-            jfileutil.save([f.data for f in froggos], "frogsmd5")
+                save_frogs()
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             await client.send_message(message.channel, "Check failed! Bad link? Details in log. Ignore this message if the link came from discord, or if the image shows up anyway.")
             traceback.print_exc(file=sys.stdout)
@@ -778,39 +780,41 @@ async def fear_of_death(freq):
         await asyncio.sleep(freq)
 
 
-async def background_check_feed(asyncioloop, feedurl, workingChan, rubychan, freq):
+async def background_check_feed(asyncioloop, blogname, workingChan, rubychan, freq):
     # global timezone
     import time
-    mostRecentID = '1'
-    lastPostID = '0'
+    mostRecentID = 1
+    lastPostID = 0
     update_delay = 0
     time_lastupdate = time.time()
     # Basically run forever
     while not client.is_closed:
         try:
-            r = urllib.request.urlopen(feedurl).read()
-            r = r.decode()
-            mostRecentID = re.search(
-                'article.* data-post-id="(.*)"', r).group(1)
+            response = tumblr_client.posts(blogname, limit=1)
+            # Get the 'posts' field of the response
+            mostRecentPost = response['posts'][0]
+            mostRecentID = mostRecentPost['id']
+
             if mostRecentID != lastPostID:
-                if '0' != lastPostID:
-                    print(feedurl + " change: " +
-                          lastPostID + " =/= " + mostRecentID)
-                    print(feedurl + " update: " +
-                          lastPostID + " -> " + mostRecentID)
+                if 0 != lastPostID:
+                    print(blogname + " change: " +
+                          str(lastPostID) + " =/= " + str(mostRecentID))
+                    print(blogname + " update: " +
+                          str(lastPostID) + " -> " + str(mostRecentID))
                     print("Time since last update: " +
                           str(time.time() - time_lastupdate) + " sec")
                     print("Delay at time of update: " + str(update_delay))
                     time_lastupdate = time.time()
                     update_delay = 0
-                    await client.send_message(rubychan, "[[ " + "Update! " + feedurl + "post/" + mostRecentID + "/ ]]")
+                    await client.send_message(rubychan, "[[ " + "Update! " + mostRecentPost['post_url'] + "/ ]]")
                     await client.send_message(workingChan, await emote(workingChan.server, 'smolrubes', True) + "[[ Update! ]]")
                 elif update_delay < (MAX_UPDATE_DELAY):
                     update_delay += 10
                 lastPostID = mostRecentID
                 print(lastPostID)
         except:  # TODO: Do not use bare except
-            rutil.eprint("error fetching status for " + feedurl)
+            rutil.eprint("error fetching status for " + blogname)
+            print(response)
             traceback.print_exc()
             traceback.print_exc(file=sys.stdout)
             # No matter what goes wrong, wait same time and try again
@@ -889,6 +893,15 @@ async def on_message(message):
 
 with open("token", 'rb') as filehandler:
     token = pickle.load(filehandler)
+
+with open("tumblr_token", 'rb') as filehandler:
+    tumblr_token_data = pickle.load(filehandler)
+    tumblr_client = pytumblr.TumblrRestClient(
+        tumblr_token_data[0],
+        tumblr_token_data[1],
+        tumblr_token_data[2],
+        tumblr_token_data[3]
+    )
 
 while True:
     try:
