@@ -631,6 +631,34 @@ async def on_ready():
                  'Gives you a pronoun role so people know what to call you. Specify a pronoun after the command',  # helpstr
                  0)  # Permission Level
 
+    async def cmd_togglerole_func(message):
+        requested = " ".join(message.content.split()[1:])
+        try:
+            freeroles = jfileutil.open("freeroles/" + message.server.id)
+        except FileNotFoundError:
+            await client.send_message(message.channel, "This server has no free roles, or else something is misconfigured.")
+        roleLookup = freeroles.get(requested)
+        if roleLookup is None:
+            await client.send_message(message.channel, "That role name is unknown! Availible roles:")
+            await client.send_message(message.channel, "\n".join(freeroles.keys()))
+        else:
+            role = discord.utils.get(message.server.roles, id=roleLookup)
+            if role in message.author.roles:
+                await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
+                rutil.eprint(message.author.name + " has role " +
+                             role.name + ", removing.")
+                await client.remove_roles(message.author, role)
+            else:
+                if role not in message.author.roles:
+                    await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
+                    rutil.eprint(message.author.name +
+                                 " does not have role " + role.name + ", adding.")
+                    await client.add_roles(message.author, role)
+        #discord.utils.get(message.server.roles, id='388740870641287169')
+    rbot.Command('togglerole', cmd_togglerole_func,
+                 'Toggles roles.',  # helpstr
+                 0)  # Permission Level
+
     async def cmd_verify_func(message):
         workingChan = client.get_channel('388730628176084992')
         verified = discord.utils.get(
@@ -667,26 +695,27 @@ async def on_ready():
     # '',  # helpstr
     # 0)  # Permission Level
     cmdlist_base = [
-        rbot.commands['frig'],
-        rbot.commands['fund'],
-        rbot.commands['patreon'],
-        rbot.commands['callvote'],
-        rbot.commands['listroles'],
-        rbot.commands['sayhere'],
-        rbot.commands['frog'],
-        rbot.commands['removefrog'],
-        rbot.commands['listemotes'],
-        rbot.commands['restart'],
-        rbot.commands['reload'],
-        rbot.commands['permissions'],
-        rbot.commands['roll'],
-        rbot.commands['nick'],
-        rbot.commands['avatar'],
-        rbot.commands['help'],
         rbot.commands['allhelp'],
-        rbot.commands['rules'],
+        rbot.commands['avatar'],
+        rbot.commands['callvote'],
+        rbot.commands['frig'],
+        rbot.commands['frog'],
+        rbot.commands['fund'],
+        rbot.commands['help'],
+        rbot.commands['listemotes'],
+        rbot.commands['listroles'],
         rbot.commands['mdrules'],
-        rbot.commands['setrules']
+        rbot.commands['nick'],
+        rbot.commands['patreon'],
+        rbot.commands['permissions'],
+        rbot.commands['reload'],
+        rbot.commands['removefrog'],
+        rbot.commands['restart'],
+        rbot.commands['roll'],
+        rbot.commands['rules'],
+        rbot.commands['sayhere'],
+        rbot.commands['setrules'],
+        rbot.commands['togglerole']
     ]
     cmdlist_util = [
         rbot.commands['test'],
