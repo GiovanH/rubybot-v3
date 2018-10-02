@@ -135,7 +135,7 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
 
     global gio
-    gio = await client.get_user_info(rbot.gio_id)
+    gio = await client.get_user_info('233017800854077441')
 
     """Called when discord logs in. Initializes things. """
 
@@ -145,11 +145,13 @@ async def on_ready():
     server_minda = rbot.Server(client, 290270624558088192)  # Minda
 
     for c in client.servers:
-        if c.id not in rbot.servers:  # Flat is better than nested.
-            m = "I am not authorized to be in " + c.name + "! It's ID, " + c.id + ", is not in my list. Leaving. "
-            await client.send_message(c.owner, m)
-            print(m)
-            # await client.leave_server(s)
+        allowed = False
+        for s in rbot.servers:
+            if s == c.id:
+                allowed = True
+        if not allowed:
+            await client.send_message(s.owner, "I am not authorized to be in " + s.name + "! It's ID, " + s.id + ", is not in my list. Leaving. ")
+            await client.leave_server(s)
 
     print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
 
@@ -504,26 +506,16 @@ async def on_ready():
                  'List all commands and their permission level',  # helpstr
                  1)  # Permission Level
 
-    def getRules(server):
-        try:
-            return jfileutil.load("rules/" + server.id)
-        except FileNotFoundError:
-            return "The server owner has not set rules. Do so with !setrules"
-
-    rbot.Command('rules',
-                 (lambda message: await rutil.send_message_smart(message.channel, getRules(message.server))),
+    async def cmd_rules_func(message):
+        await rutil.send_message_smart(message.channel, jfileutil.load("rules_" + message.server.id))
+    rbot.Command('rules', cmd_rules_func,
                  'Lists the server\'s rules',  # helpstr
                  0)  # Permission Level
-
-    rbot.Command('rulesmd',
-                 (lambda message: await rutil.send_message_smart(message.channel, "```" + getRules(message.server)) + "```"),
-                 'Lists the server\'s rules, in plaintext.',  # helpstr
-                 1)  # Permission Level
 
     async def cmd_setrules_func(message):
         # with open("rules/" + message.server.id, 'w') as rulefile:
         jfileutil.save(" ".join(message.content.split(' ')
-                                [1:]), "rules/" + message.server.id)
+                                [1:]), "rules_" + message.server.id)
         await client.send_message(message.channel, "Rules updated. Use the rules command to test.")
     rbot.Command('setrules', cmd_setrules_func,
                  'Modifies the server\'s rules',  # helpstr
@@ -701,29 +693,19 @@ async def on_ready():
         rbot.commands['verify'],
         rbot.commands['wwheek']
     ]
-
-    for server in rbot.servers.values():
-        server.add_cmds(cmdlist_base)
-        try:
-            cmdlist = jfileutil.load("cmds/" + server.id)
-            server.add_cmds([rbot.commands[key] for key in cmdlist])
-        except FileNotFoundError:
-            m = "I am missing a command list for server " + c.name + " with id " + c.id
-            await client.send_message(gio, m)
-            print(m)
-
     # Temporary: All commands to LWU
     server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras)
 
     # Temporary: All commands to LWU
     server_minda.add_cmd(rbot.commands['smol'])
-    server_minda.add_cmds(cmdlist_base)
+    server_minda.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
     server_minda.add_cmd(rbot.commands['contraband'])
 
-    server_tabuu.add_cmds(cmdlist_base) 
+    server_tabuu.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
+    # Temporary: All commands to LWU
     server_tabuu.add_cmd(rbot.commands['wwheek'])
 
-    server_mu.add_cmds(cmdlist_base)
+    server_mu.add_cmds(cmdlist_base)  # Temporary: All commands to LWU
     server_mu.remove_cmds([rbot.commands['frog']])
     server_tabuu.add_cmd(rbot.commands['reteam'])
 
