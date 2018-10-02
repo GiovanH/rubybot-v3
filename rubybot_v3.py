@@ -154,7 +154,7 @@ async def on_ready():
                 "! It's ID, " + c.id + ", is not in my list. Leaving. "
             await client.send_message(c.owner, m)
             print(m)
-            # await client.leave_server(s)
+            await client.leave_server(s)
 
     print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
 
