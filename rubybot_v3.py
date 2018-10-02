@@ -90,15 +90,15 @@ async def loadfrogs():
             "re": 'img data-aria-label-part src="(.*?)"'
         }
     ]
-    frogurls = []
-    for method in frogfetchers:
-        try:
-            r = urllib.request.urlopen(method['url']).read()
-            r = r.decode()
-            frogurls.extend(re.compile(method['re']).findall(r))
-        except:
-            traceback.print_exc(file=sys.stdout)
-            rutil.eprint("frog error, continuing")
+    # frogurls = []
+    # for method in frogfetchers:
+    #     try:
+    #         r = urllib.request.urlopen(method['url']).read()
+    #         r = r.decode()
+    #         frogurls.extend(re.compile(method['re']).findall(r))
+    #     except:
+    #         traceback.print_exc(file=sys.stdout)
+    #         rutil.eprint("frog error, continuing")
 
     froggos = []
     for d in jfileutil.load("frogsmd5"):
@@ -107,16 +107,16 @@ async def loadfrogs():
         except:
             print("Could not add frog with data " + d)
 
-    for url in frogurls:
-        for frog in froggos:
-            if frog.data['url'] == url:
-                break
-        else:
-            try:
-                froggos.append(rbot.Frog({'url': url}))
-            except:
-                print("Could not add frog with url " + url)
-    save_frogs()
+    # for url in frogurls:
+    #     for frog in froggos:
+    #         if frog.data['url'] == url:
+    #             break
+    #     else:
+    #         try:
+    #             froggos.append(rbot.Frog({'url': url}))
+    #         except:
+    #             print("Could not add frog with url " + url)
+    # save_frogs()
 
 def save_frogs():
     global froggos
