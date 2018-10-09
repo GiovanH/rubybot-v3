@@ -132,7 +132,7 @@ async def on_ready():
     ###############################
     # Initial Loading
     ###############################
-    await client.change_presence(game=discord.Game(name="with ur heart <3", type=1))
+    await client.change_presence(game=discord.Game(name="with ur heart <3", type=0, url="https://www.patreon.com/giovan"))
 
     global gio
     gio = await client.get_user_info(rbot.gio_id)
