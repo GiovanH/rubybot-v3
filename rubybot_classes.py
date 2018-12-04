@@ -127,3 +127,9 @@ class Frog:
 
     def __hash__(self):
         return hash(self.data['md5'])
+
+    def __gt__(self, other):
+        return self.data['md5'] > other.data['md5']
+
+    def __lt__(self, other):
+        return self.data['md5'] < other.data['md5']

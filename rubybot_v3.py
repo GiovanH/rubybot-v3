@@ -90,15 +90,15 @@ async def loadfrogs():
             "re": 'img data-aria-label-part src="(.*?)"'
         }
     ]
-    frogurls = []
-    for method in frogfetchers:
-        try:
-            r = urllib.request.urlopen(method['url']).read()
-            r = r.decode()
-            frogurls.extend(re.compile(method['re']).findall(r))
-        except:
-            traceback.print_exc(file=sys.stdout)
-            rutil.eprint("frog error, continuing")
+    # frogurls = []
+    # for method in frogfetchers:
+    #     try:
+    #         r = urllib.request.urlopen(method['url']).read()
+    #         r = r.decode()
+    #         frogurls.extend(re.compile(method['re']).findall(r))
+    #     except:
+    #         traceback.print_exc(file=sys.stdout)
+    #         rutil.eprint("frog error, continuing")
 
     froggos = []
     for d in jfileutil.load("frogsmd5"):
@@ -107,16 +107,17 @@ async def loadfrogs():
         except:
             print("Could not add frog with data " + d)
 
-    for url in frogurls:
-        for frog in froggos:
-            if frog.data['url'] == url:
-                break
-        else:
-            try:
-                froggos.append(rbot.Frog({'url': url}))
-            except:
-                print("Could not add frog with url " + url)
-    save_frogs()
+    # for url in frogurls:
+    #     for frog in froggos:
+    #         if frog.data['url'] == url:
+    #             break
+    #     else:
+    #         try:
+    #             froggos.append(rbot.Frog({'url': url}))
+    #         except:
+    #             print("Could not add frog with url " + url)
+    # save_frogs()
+
 
 def save_frogs():
     global froggos
@@ -139,17 +140,21 @@ async def on_ready():
 
     """Called when discord logs in. Initializes things. """
 
-    server_mu = rbot.Server(client, 358806463139020810)  # Moderation United
-    server_lwu = rbot.Server(client, 232218346999775232)  # lwu
-    server_tabuu = rbot.Server(client, 245789672842723329)  # TABUU
-    server_minda = rbot.Server(client, 290270624558088192)  # Minda
+    for id in [
+        358806463139020810,  # MU
+        232218346999775232,  # LWU
+        245789672842723329,  # Tabuu
+        290270624558088192  # Minda
+    ]:
+        rbot.Server(client, id)
 
     for c in client.servers:
-        if c.id not in rbot.servers:  # Flat is better than nested.
-            m = "I am not authorized to be in " + c.name + "! It's ID, " + c.id + ", is not in my list. Leaving. "
+        if c.id not in rbot.servers.keys():  # Flat is better than nested.
+            m = "I am not authorized to be in " + c.name + \
+                "! It's ID, " + c.id + ", is not in my list. Leaving. "
             await client.send_message(c.owner, m)
             print(m)
-            # await client.leave_server(s)
+            await client.leave_server(s)
 
     print('Logged in as ' + client.user.name + " @<" + client.user.id + ">")
 
@@ -188,9 +193,12 @@ async def on_ready():
             tracefile2.flush()
     except:
         traceback.print_exc(file=sys.stdout)
+    await loadCommands()
     global LOADED
     LOADED = True
 
+
+async def loadCommands():
     ###############################
     # Commands and command handling
     ###############################
@@ -324,9 +332,9 @@ async def on_ready():
             content = " ".join(message.content.split()[1:])
             await client.send_message(target, content)
         await client.delete_message(message)
-    cmd_pm = rbot.Command('pm', cmd_pm_func,
-                        'Sends a PM to one person mentioned',  # helpstr
-                        3)  # Permission Level
+    rbot.Command('pm', cmd_pm_func,
+                 'Sends a PM to one person mentioned',  # helpstr
+                 3)  # Permission Level
 
     async def cmd_restart_func(message):
         await client.change_presence(game=discord.Game(name="swords", type=1))
@@ -334,11 +342,9 @@ async def on_ready():
             await client.add_reaction(message, await emote(message.server, 'smolrubes', False))
         except:
             pass
-        rutil.eprint("Restarting rubybot at request of " +
-                     message.author.name)
+        rutil.eprint("Restarting rubybot at request of " + message.author.name)
         with open("last_trace.log", "w") as f:
-            f.write("Restarted at request of " +
-                    message.author.name)
+            f.write("Restarted at request of " + message.author.name)
             f.flush()
         sys.exit(0)
     rbot.Command('restart', cmd_restart_func,
@@ -395,28 +401,28 @@ async def on_ready():
 
         taboo_server = rbot.servers['245789672842723329'].server
         taboo_teams = [
-            discord.utils.get(taboo_server.roles, id=teamid) 
+            discord.utils.get(taboo_server.roles, id=teamid)
             for teamid in jfileutil.load("altgen_teams")
         ]
         targets = message.mentions
-        if msg.lower()  == "all":
+        if msg.lower() == "all":
             targets = message.server.members
         for target in targets:
-            newteam = taboo_teams[int(target.id)%len(taboo_teams)]
+            newteam = taboo_teams[int(target.id) % len(taboo_teams)]
             await client.add_roles(target, newteam)
             for role in taboo_teams:
                 # await client.send_message(message.channel, "Checking role " + role.name)
                 if (role in target.roles) and (role is not newteam):
                     # await client.send_message(message.channel, "Removing role " + role.name)
                     await client.remove_roles(target, role)
-            if msg.lower()  != "all":
+            if msg.lower() != "all":
                 await client.send_message(message.channel, "Please welcome " + target.mention + " to " + newteam.name)
         await client.delete_message(message)
     rbot.Command('reteam', cmd_reteam_func,
                  'Re-teams a member on taboo',  # helpstr
                  2)  # Permission Level
 
-    async def cmd_smolmote_func(message):  # TODO: Gotta localize the emotes
+    async def cmd_smolmote_func(message):
         msg = message.content.split()
         try:
             chan = client.get_channel(msg[1])
@@ -429,7 +435,7 @@ async def on_ready():
 
     async def cmd_nickname_func(message):
         nickname = " ".join(message.content.split()[1:])
-        await client.change_nickname(rubybot_member, nickname)
+        await client.change_nickname(rbot.servers[message.server.id].member, nickname)
     rbot.Command('nick', cmd_nickname_func,
                  'Changes nickname',  # helpstr
                  3)  # Permission Level
@@ -510,13 +516,17 @@ async def on_ready():
         except FileNotFoundError:
             return "The server owner has not set rules. Do so with !setrules"
 
+    async def cmd_rules_func(message):
+        await rutil.send_message_smart(message.channel, getRules(message.server))
     rbot.Command('rules',
-                 (lambda message: await rutil.send_message_smart(message.channel, getRules(message.server))),
+                 cmd_rules_func,
                  'Lists the server\'s rules',  # helpstr
                  0)  # Permission Level
 
-    rbot.Command('rulesmd',
-                 (lambda message: await rutil.send_message_smart(message.channel, "```" + getRules(message.server)) + "```"),
+    async def cmd_rulesmd_func(message):
+        await rutil.send_message_smart(message.channel, "```" + getRules(message.server) + "```")
+    rbot.Command('mdrules',
+                 cmd_rulesmd_func,
                  'Lists the server\'s rules, in plaintext.',  # helpstr
                  1)  # Permission Level
 
@@ -552,9 +562,9 @@ async def on_ready():
             if source is None:
                 source = message.server.Client
             badr = discord.utils.get(
-                server_lwu.server.roles, id='388739766025191435')
+                message.server.roles, id='388739766025191435')
             verified = discord.utils.get(
-                server_lwu.server.roles, id='388737413213716481')
+                message.server.roles, id='388737413213716481')
             i = 1
             while (badr not in target.roles):
                 i = i + 1
@@ -577,9 +587,9 @@ async def on_ready():
                 await client.delete_message(message)
                 return
             badr = discord.utils.get(
-                server_lwu.server.roles, id='388739766025191435')
+                message.server.roles, id='388739766025191435')
             verified = discord.utils.get(
-                server_lwu.server.roles, id='388737413213716481')
+                message.server.roles, id='388737413213716481')
             # await client.remove_roles(target, badr)
             i = 1
             while (badr in target.roles):
@@ -596,37 +606,65 @@ async def on_ready():
                  1)  # Permission Level
 
     async def cmd_pronoun_func(message):
-        pronoun = " ".join(message.content.split()[1:])
-        r_him = discord.utils.get(
-            message.server.roles, id='388740839943438336')
-        r_her = discord.utils.get(
-            message.server.roles, id='388740921975373835')
-        r_they = discord.utils.get(
-            message.server.roles, id='388740870641287169')
+        await client.send_message(message.channel, "This function has been replaced by !togglerole.")
+        # pronoun = " ".join(message.content.split()[1:])
+        # r_him = discord.utils.get(
+        #     message.server.roles, id='388740839943438336')
+        # r_her = discord.utils.get(
+        #     message.server.roles, id='388740921975373835')
+        # r_they = discord.utils.get(
+        #     message.server.roles, id='388740870641287169')
 
-        if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
-            role = r_him
-        if ((pronoun.upper() == "HER") or (pronoun.upper() == "SHE") or (pronoun.upper() == "FEMALE") or (pronoun.upper() == "WOMAN") or (pronoun.upper() == "F") or (pronoun.upper() == "S")):
-            role = r_her
-        if ((pronoun.upper() == "THEM") or (pronoun.upper() == "THEY") or (pronoun.upper() == "IT") or (pronoun.upper() == "OTHER") or (pronoun.upper() == "T")):
-            role = r_they
+        # if ((pronoun.upper() == "HIM") or (pronoun.upper() == "HE") or (pronoun.upper() == "MALE") or (pronoun.upper() == "MAN") or (pronoun.upper() == "M") or (pronoun.upper() == "H")):
+        #     role = r_him
+        # if ((pronoun.upper() == "HER") or (pronoun.upper() == "SHE") or (pronoun.upper() == "FEMALE") or (pronoun.upper() == "WOMAN") or (pronoun.upper() == "F") or (pronoun.upper() == "S")):
+        #     role = r_her
+        # if ((pronoun.upper() == "THEM") or (pronoun.upper() == "THEY") or (pronoun.upper() == "IT") or (pronoun.upper() == "OTHER") or (pronoun.upper() == "T")):
+        #     role = r_they
+        # try:
+        #     if role in message.author.roles:
+        #         await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
+        #         rutil.eprint(message.author.name + " has role " +
+        #                      role.name + ", removing.")
+        #         await client.remove_roles(message.author, role)
+        #     else:
+        #         if role not in message.author.roles:
+        #             await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
+        #             rutil.eprint(message.author.name +
+        #                          " does not have role " + role.name + ", adding.")
+        #             await client.add_roles(message.author, role)
+        # except BaseException as e:
+        #     await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
+        # await client.delete_message(message)
+    rbot.Command('pronoun', cmd_pronoun_func,
+                 'Depreciated.',  # helpstr
+                 0)  # Permission Level
+
+    async def cmd_togglerole_func(message):
+        requested = " ".join(message.content.split()[1:])
         try:
+            freeroles = jfileutil.load("freeroles/" + message.server.id)
+        except FileNotFoundError:
+            await client.send_message(message.channel, "This server has no free roles, or else something is misconfigured.")
+        roleLookup = freeroles.get(requested)
+        if roleLookup is None:
+            await client.send_message(message.channel, "That role name is unknown! Availible roles:")
+            await client.send_message(message.channel, "\n".join(["`" + k + "`" for k in freeroles.keys()]))
+        else:
+            role = discord.utils.get(message.server.roles, id=roleLookup)
             if role in message.author.roles:
+                await client.remove_roles(message.author, role)
                 await client.send_message(message.author, "You already had the role " + role.name + ", so I'm toggling it off. ")
                 rutil.eprint(message.author.name + " has role " +
                              role.name + ", removing.")
-                await client.remove_roles(message.author, role)
             else:
                 if role not in message.author.roles:
+                    await client.add_roles(message.author, role)
                     await client.send_message(message.author, "You did not have the role " + role.name + ", so I'm adding it now for you!")
                     rutil.eprint(message.author.name +
                                  " does not have role " + role.name + ", adding.")
-                    await client.add_roles(message.author, role)
-        except BaseException as e:
-            await client.send_message(message.author, "Either you did not specify a pronoun, or I don't know what you mean by " + pronoun + ". Sorry! If you think this is an error, please report it. ")
-        await client.delete_message(message)
-    rbot.Command('pronoun', cmd_pronoun_func,
-                 'Gives you a pronoun role so people know what to call you. Specify a pronoun after the command',  # helpstr
+    rbot.Command('togglerole', cmd_togglerole_func,
+                 'Toggles roles.',  # helpstr
                  0)  # Permission Level
 
     async def cmd_verify_func(message):
@@ -665,25 +703,27 @@ async def on_ready():
     # '',  # helpstr
     # 0)  # Permission Level
     cmdlist_base = [
-        rbot.commands['frig'],
-        rbot.commands['fund'],
-        rbot.commands['patreon'],
-        rbot.commands['callvote'],
-        rbot.commands['listroles'],
-        rbot.commands['sayhere'],
-        rbot.commands['frog'],
-        rbot.commands['removefrog'],
-        rbot.commands['listemotes'],
-        rbot.commands['restart'],
-        rbot.commands['reload'],
-        rbot.commands['permissions'],
-        rbot.commands['roll'],
-        rbot.commands['nick'],
-        rbot.commands['avatar'],
-        rbot.commands['help'],
         rbot.commands['allhelp'],
+        rbot.commands['avatar'],
+        rbot.commands['callvote'],
+        rbot.commands['frig'],
+        rbot.commands['frog'],
+        rbot.commands['fund'],
+        rbot.commands['help'],
+        rbot.commands['listemotes'],
+        rbot.commands['listroles'],
+        rbot.commands['mdrules'],
+        rbot.commands['nick'],
+        rbot.commands['patreon'],
+        rbot.commands['permissions'],
+        rbot.commands['reload'],
+        rbot.commands['removefrog'],
+        rbot.commands['restart'],
+        rbot.commands['roll'],
         rbot.commands['rules'],
-        rbot.commands['setrules']
+        rbot.commands['sayhere'],
+        rbot.commands['setrules'],
+        rbot.commands['togglerole']
     ]
     cmdlist_util = [
         rbot.commands['test'],
@@ -692,44 +732,20 @@ async def on_ready():
         rbot.commands['smol'],
         rbot.commands['hardreboot']
     ]
-    cmdlist_lwu_extras = [
-        rbot.commands['addfrog'],
-        rbot.commands['pins'],
-        rbot.commands['bad'],
-        rbot.commands['unbad'],
-        rbot.commands['pronoun'],
-        rbot.commands['verify'],
-        rbot.commands['wwheek']
-    ]
 
     for server in rbot.servers.values():
         server.add_cmds(cmdlist_base)
         try:
-            cmdlist = jfileutil.load("cmds/" + server.id)
+            cmdlist = jfileutil.load("cmds/" + server.server.id)
             server.add_cmds([rbot.commands[key] for key in cmdlist])
         except FileNotFoundError:
-            m = "I am missing a command list for server " + c.name + " with id " + c.id
+            m = "I am missing a command list for server " + \
+                server.server.name + " with id " + server.server.id
             await client.send_message(gio, m)
+            jfileutil.save([], "cmds/" + server.server.id)
             print(m)
 
-    # Temporary: All commands to LWU
-    server_lwu.add_cmds(cmdlist_base + cmdlist_lwu_extras)
-
-    # Temporary: All commands to LWU
-    server_minda.add_cmd(rbot.commands['smol'])
-    server_minda.add_cmds(cmdlist_base)
-    server_minda.add_cmd(rbot.commands['contraband'])
-
-    server_tabuu.add_cmds(cmdlist_base) 
-    server_tabuu.add_cmd(rbot.commands['wwheek'])
-
-    server_mu.add_cmds(cmdlist_base)
-    server_mu.remove_cmds([rbot.commands['frog']])
-    server_tabuu.add_cmd(rbot.commands['reteam'])
-
-    # Temporary: All commands to PM
     rbot.direct_commands = list(cmdlist_base + cmdlist_util)
-    # import pdb; pdb.set_trace()
 
 
 @client.event
