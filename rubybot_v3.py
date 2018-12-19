@@ -561,6 +561,8 @@ async def loadCommands():
     
     async def cmd_setliveblogs_func(message):
         # with open("liveblogs/" + message.server.id, 'w') as rulefile:
+        from os import makedirs
+        makedirs("./jobj/liveblogs/", exist_ok=True)
         jfileutil.save(" ".join(message.content.split(' ')
                                 [1:]), "liveblogs/" + message.server.id)
         await client.send_message(message.channel, "liveblogs updated. Use the liveblogs command to test.")
