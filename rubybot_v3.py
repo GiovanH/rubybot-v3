@@ -539,6 +539,35 @@ async def loadCommands():
                  'Modifies the server\'s rules',  # helpstr
                  2)  # Permission Level
 
+    def getliveblogs(server):
+        try:
+            return jfileutil.load("liveblogs/" + server.id)
+        except FileNotFoundError:
+            return "The server owner has not set liveblogs. Do so with !setliveblogs"
+
+    async def cmd_liveblogs_func(message):
+        await rutil.send_message_smart(message.channel, getliveblogs(message.server))
+    rbot.Command('liveblogs',
+                 cmd_liveblogs_func,
+                 'Lists the server\'s liveblogs',  # helpstr
+                 0)  # Permission Level
+
+    async def cmd_liveblogsmd_func(message):
+        await rutil.send_message_smart(message.channel, "```" + getliveblogs(message.server) + "```")
+    rbot.Command('mdliveblogs',
+                 cmd_liveblogsmd_func,
+                 'Lists the server\'s liveblogs, in plaintext.',  # helpstr
+                 1)  # Permission Level
+    
+    async def cmd_setliveblogs_func(message):
+        # with open("liveblogs/" + message.server.id, 'w') as rulefile:
+        jfileutil.save(" ".join(message.content.split(' ')
+                                [1:]), "liveblogs/" + message.server.id)
+        await client.send_message(message.channel, "liveblogs updated. Use the liveblogs command to test.")
+    rbot.Command('setliveblogs', cmd_setliveblogs_func,
+                 'Modifies the server\'s liveblogs',  # helpstr
+                 2)  # Permission Level
+
     async def cmd_pins_func(message):
         await client.send_typing(message.channel)
         pins = await list(client.logs_from(client.get_channel('278819870106451969'), limit=400))
@@ -712,7 +741,12 @@ async def loadCommands():
         rbot.commands['help'],
         rbot.commands['listemotes'],
         rbot.commands['listroles'],
+        rbot.commands['rules'],
         rbot.commands['mdrules'],
+        rbot.commands['setrules'],
+        rbot.commands['liveblogs'],
+        rbot.commands['mdliveblogs'],
+        rbot.commands['setliveblogs'],
         rbot.commands['nick'],
         rbot.commands['patreon'],
         rbot.commands['permissions'],
@@ -720,9 +754,7 @@ async def loadCommands():
         rbot.commands['removefrog'],
         rbot.commands['restart'],
         rbot.commands['roll'],
-        rbot.commands['rules'],
         rbot.commands['sayhere'],
-        rbot.commands['setrules'],
         rbot.commands['togglerole']
     ]
     cmdlist_util = [
