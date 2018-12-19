@@ -770,6 +770,7 @@ async def loadCommands():
         try:
             cmdlist = jfileutil.load("cmds/" + server.server.id)
             server.add_cmds([rbot.commands[key] for key in cmdlist])
+            server.add_cmds([rbot.commands[key] for key in ["liveblogs", "mdliveblogs", "setliveblogs"]])
         except FileNotFoundError:
             m = "I am missing a command list for server " + \
                 server.server.name + " with id " + server.server.id
