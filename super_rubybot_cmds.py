@@ -168,30 +168,31 @@ def get_new_frog_urls(old_frog_urls=[]):
 
 class FrogCog(Cog):
     def __init__(self, bot):
-        import loom
         super().__init__(bot)
-        loom.thread(target=self.loadFrogs)
+        self.loadFrogs()
+        # import loom
+        # loom.thread(target=self.loadFrogs)
 
     def loadFrogs(self):
         from loom import Spool
 
         hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
 
-        new_frog_urls = get_new_frog_urls(old_frog_urls=hashedFrogs.values())
+        # new_frog_urls = get_new_frog_urls(old_frog_urls=hashedFrogs.values())
 
-        with Spool(4) as hashSpool:
-            def job(url):
-                try:
-                    phash = url_to_hash(url)
-                    if phash not in hashedFrogs.keys():
-                        hashedFrogs[phash] = url
-                except Exception:
-                    traceback.print_exc(limit=0)
-                    return
-            for url in new_frog_urls:
-                hashSpool.enqueue(target=job, args=(url,))
+        # with Spool(4) as hashSpool:
+        #     def job(url):
+        #         try:
+        #             phash = url_to_hash(url)
+        #             if phash not in hashedFrogs.keys():
+        #                 hashedFrogs[phash] = url
+        #         except Exception:
+        #             traceback.print_exc(limit=0)
+        #             return
+        #     for url in new_frog_urls:
+        #         hashSpool.enqueue(target=job, args=(url,))
 
-        jfileutil.save(hashedFrogs, "hashedFrogs")
+        # jfileutil.save(hashedFrogs, "hashedFrogs")
 
         global frog_urls
         frog_urls.clear()
@@ -332,7 +333,7 @@ class InfoCog(Cog):
     async def mdmessage(cog, ctx, message_id):
         message = settings.getSetting(ctx.guild.id, "messages").get(message_id)
         if message:
-            message.content = "```{}```".format(message.content)
+            message["content"] = "```{}```".format(message.get("content"))
             await ctx.send(**message)
         else:
             raise KeyError(message_id)
