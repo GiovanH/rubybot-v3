@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from enum import Enum
 import super_rubybot_settings as settings
+import jfileutil
+import traceback
 
 """
 class Context(discord.abc.Messageable)
@@ -132,30 +134,63 @@ def url_to_hash(url):
     return str(proc_hash)
 
 
-def get_new_frog_urls():
-    return [e.get("url") for e in jfileutil.load("frogsmd5")]
+def get_new_frog_urls(old_frog_urls=[]):    
+    import re
+    from urllib.request import urlopen
+    frogfetchers = [
+        {
+            "url": "http://allaboutfrogs.org/funstuff/randomfrog.html",
+            "re": '"(http:\/\/www\.allaboutfrogs\.org\/funstuff\/random\/.*?)"'
+        },
+        {
+            "url": "http://stickyfrogs.tumblr.com/tagged/frogfriends",
+            "re": 'img src="(.*?)"'
+        },
+        {
+            "url": "https://twitter.com/stickyfrogs/media",
+            "re": 'img data-aria-label-part src="(.*?)"'
+        },
+        {
+            "url": "https://twitter.com/Litoriacaeru/media",
+            "re": 'img data-aria-label-part src="(.*?)"'
+        }
+    ]
+    new_frog_urls = []
+    for method in frogfetchers:
+        try:
+            r = urlopen(method['url']).read()
+            r = r.decode()
+            new_frog_urls.extend(re.compile(method['re']).findall(r))
+        except Exception as e:
+            traceback.print_exc(limit=0)
+    return [u for u in new_frog_urls if u not in old_frog_urls]
 
 
 class FrogCog(Cog):
     def __init__(self, bot):
+        import loom
         super().__init__(bot)
-        self.loadFrogs()
+        loom.thread(target=self.loadFrogs)
 
     def loadFrogs(self):
-        import jfileutil
         from loom import Spool
 
         hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
 
-        new_frog_urls = get_new_frog_urls()
+        new_frog_urls = get_new_frog_urls(old_frog_urls=hashedFrogs.values())
 
         with Spool(4) as hashSpool:
             def job(url):
-                phash = url_to_hash(url)
-                if phash not in hashedFrogs.keys():
-                    hashedFrogs[phash] = url
+                try:
+                    phash = url_to_hash(url)
+                    if phash not in hashedFrogs.keys():
+                        hashedFrogs[phash] = url
+                except Exception:
+                    traceback.print_exc(limit=0)
+                    return
             for url in new_frog_urls:
                 hashSpool.enqueue(target=job, args=(url,))
+
         jfileutil.save(hashedFrogs, "hashedFrogs")
 
         global frog_urls
@@ -169,27 +204,50 @@ class FrogCog(Cog):
     @permission(Permisison.EVERYONE)
     async def frog(cog, ctx):
         from random import randint
+        if len(frog_urls) == 0:
+            await ctx.send("TRAGIC FROG ACCIDENT: No frogs in database!")
+            return
         frogi = randint(0, len(frog_urls))
         froggo = frog_urls[frogi]
-        await ctx.channel.send(
+        await ctx.send(
             "[{i}/{t}] Frog for {name}:\n{url}".format(
                 i=frogi + 1, t=len(frog_urls) + 1,
                 name=ctx.author.name, url=froggo
             )
         )
-        
+
     @commands.command(
         brief="addtitlanl forgs",
     )
     @permission(Permisison.MODERATOR)
     async def addfrog(cog, ctx, url):
+        await ctx.message.add_reaction("🔄")
         import jfileutil
         hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
         phash = url_to_hash(url)
         if phash not in hashedFrogs.keys():
             hashedFrogs[phash] = url
         jfileutil.save(hashedFrogs, "hashedFrogs")
+        await ctx.message.remove_reaction("🔄", ctx.me)
         await ctx.message.add_reaction("👍")
+
+    @commands.command(
+        brief="f-forg?",
+    )
+    @permission(Permisison.MODERATOR)
+    async def removefrog(cog, ctx, url):
+        await ctx.message.add_reaction("🔄")
+        import jfileutil
+        hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
+        for key in hashedFrogs.keys():
+            if hashedFrogs.get(key) == url:
+                hashedFrogs.pop(key)
+                jfileutil.save(hashedFrogs, "hashedFrogs")
+                await ctx.message.remove_reaction("🔄", ctx.me)
+                await ctx.message.add_reaction("👍")
+                return
+        await ctx.message.remove_reaction("🔄", ctx.me)
+        await ctx.message.add_reaction("❌")
 
 
 class ModCog(Cog):
@@ -201,21 +259,25 @@ class ModCog(Cog):
     )
     @permission(Permisison.MODERATOR)
     async def bad(cog, ctx):
+        await ctx.message.add_reaction("🔄")
         source = ctx.author
         for target in ctx.message.mentions:
             if target is None:
-                await ctx.channel.send("No such person")
+                await ctx.send("No such person")
                 await ctx.message.delete()
                 return
-            bad_roles = map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("bad_roles"))
-            good_roles = map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("good_roles"))
+            bad_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("bad_roles")))
+            good_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("good_roles")))
             while any(role in target.roles for role in good_roles):
-                await target.remove_roles(good_roles)
+                await target.remove_roles(*good_roles)
             while not all(role in target.roles for role in bad_roles):
-                await target.add_roles(bad_roles)
-            await ctx.channel.send(settings.getSetting(ctx.guild.id, "fmt_bad").format(target=target, source=source))
-            # await ctx.channel.send(target.name + " has been badded to the pit by " + source.name + ".")
-        await ctx.message.delete
+                await target.add_roles(*bad_roles)
+            report = settings.getSetting(ctx.guild.id, "bad").get("fmt_bad").format(target=target, source=source)
+            if report:
+                await ctx.send(report)
+            # await ctx.send(target.name + " has been badded to the pit by " + source.name + ".")
+        await ctx.message.remove_reaction("🔄", ctx.me)
+        await ctx.message.add_reaction("👍")
 
     @commands.command(
         brief="Unrestrict a user",
@@ -225,20 +287,24 @@ class ModCog(Cog):
     )
     @permission(Permisison.MODERATOR)
     async def unbad(cog, ctx):
+        await ctx.message.add_reaction("🔄")
         source = ctx.author
         for target in ctx.message.mentions:
             if target is None:
-                await ctx.channel.send("No such person")
+                await ctx.send("No such person")
                 await ctx.message.delete()
                 return
-            bad_roles = map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("bad_roles"))
-            good_roles = map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("good_roles"))
+            bad_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("bad_roles")))
+            good_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("good_roles")))
             while any(role in target.roles for role in bad_roles):
-                await target.remove_roles(bad_roles)
+                await target.remove_roles(*bad_roles)
             while not all(role in target.roles for role in good_roles):
-                await target.add_roles(good_roles)
-            await ctx.channel.send(settings.getSetting(ctx.guild.id, "fmt_unbad").format(target=target, source=source))
-        await ctx.message.delete
+                await target.add_roles(*good_roles)
+            report = settings.getSetting(ctx.guild.id, "bad").get("fmt_unbad").format(target=target, source=source)
+            if report:
+                await ctx.send(report)
+        await ctx.message.add_reaction("👍")
+        await ctx.message.remove_reaction("🔄", ctx.me)
         # target.name + " has been unbadded from the pit by " + source.name
 
 
@@ -253,7 +319,7 @@ class InfoCog(Cog):
     async def message(cog, ctx, message_id):
         message = settings.getSetting(ctx.guild.id, "messages").get(message_id)
         if message:
-            await ctx.channel.send(**message)
+            await ctx.send(**message)
         else:
             raise KeyError(message_id)
 
@@ -267,7 +333,7 @@ class InfoCog(Cog):
         message = settings.getSetting(ctx.guild.id, "messages").get(message_id)
         if message:
             message.content = "```{}```".format(message.content)
-            await ctx.channel.send(**message)
+            await ctx.send(**message)
         else:
             raise KeyError(message_id)
 
@@ -281,7 +347,7 @@ class InfoCog(Cog):
         messages = settings.getSetting(ctx.guild.id, "messages")
         messages[message_id] = {"content": newMessage}
         settings.setSetting(ctx.guild.id, "messages", messages)
-        await ctx.channel.send("Saved successfully.")
+        await ctx.send("Saved successfully.")
 
     @commands.command(
         brief="Information about patreon",
@@ -291,7 +357,7 @@ class InfoCog(Cog):
     )
     @permission(Permisison.EVERYONE)
     async def patreon(cog, ctx):
-        await ctx.channel.send(
+        await ctx.send(
             embed=discord.Embed(
                 title="Keep me alive and keep Gio healthy!",
                 url="https://www.patreon.com/giovan"
@@ -300,8 +366,19 @@ class InfoCog(Cog):
 
     @commands.command()
     @permission(Permisison.EVERYONE)
+    async def wwheek(cog, ctx):
+        from urllib.request import urlopen
+        import re
+        import random
+        r = urlopen("https://wwheekadoodle.tumblr.com/rss").read()
+        r = r.decode()
+        img = random.choice(re.compile('img src="([^"]+)').findall(r))
+        await ctx.send(img)
+
+    @commands.command()
+    @permission(Permisison.EVERYONE)
     async def frig(cog, ctx):
-        await ctx.channel.send("http://www.qwantz.com/comics/comic2-1348.png")
+        await ctx.send("http://www.qwantz.com/comics/comic2-1348.png")
 
     def get_message_alias(self, fixed_message_id):
         async def closure(ctx):
@@ -347,6 +424,46 @@ class UtilCog(Cog):
         from pprint import pprint
         pprint(ctx)
         pprint(dir(ctx))
+        pprint({x: x.__getattribute__(x) for x in dir(ctx)})
+
+    @commands.command(
+        brief="Restart rubybot",
+        aliases=["reload"]
+    )
+    @permission(Permisison.ADMIN)
+    async def restart(cog, ctx):
+        ctx.bot.logout()
+
+    @commands.command(
+        brief="Set new avatar",
+    )
+    @permission(Permisison.SUPERADMIN)
+    async def avatar(cog, ctx, filename):
+        try:
+            with open(filename, 'rb') as fp:
+                await ctx.bot.edit_profile(avatar=fp.read())
+        except Exception:
+            await ctx.author.send(traceback.format_exc())
+    
+    @commands.command(
+        brief="Dump all emotes",
+    )
+    @permission(Permisison.SUPERADMIN)
+    async def listemotes(cog, ctx):
+        m = "```{}```".format(
+            "\n".join(["\t".join([str(n) for n in [s.name, s.id, s.url]]) for s in ctx.guild.emojis])
+        )
+        await ctx.bot.spoolSend(ctx.author, m)
+
+    @commands.command(
+        brief="Dump all roles",
+    )
+    @permission(Permisison.SUPERADMIN)
+    async def listroles(cog, ctx):
+        m = "```{}```".format(
+            "\n".join(["\t".join([str(n) for n in [s.name, s.id, s.colour]]) for s in ctx.guild.roles])
+        )
+        await ctx.bot.spoolSend(ctx.author, m)
 
 
 class RoleCog(Cog):
@@ -356,17 +473,17 @@ class RoleCog(Cog):
         aliases=["pronoun"],
     )
     @permission(Permisison.EVERYONE)
-    async def togglerole(cog, ctx, requested):
+    async def togglerole(cog, ctx, *requested):
+        requested = " ".join(requested)
         ctx.author = ctx.author
+        freeroles = settings.getSetting(ctx.guild.id, "free_roles")
         try:
-            freeroles = settings.getSetting(ctx.guild.id, "free_roles")
-        except FileNotFoundError:
-            await ctx.channel.send("This server has no free roles, or else something is misconfigured.")
-        roleLookup = freeroles.get(requested)
-        if roleLookup is None:
-            await ctx.channel.send("That role name is unknown! Availible roles:")
-            await ctx.channel.send("\n".join(["`" + k + "`" for k in freeroles.keys()]))
-        else:
+            if freeroles is None:
+                await ctx.send("This server has no free roles, or else something is misconfigured.")
+                return
+            roleLookup = freeroles.get(requested)
+            if requested is None or roleLookup is None:
+                raise KeyError
             role = ctx.guild.get_role(roleLookup)
             if role in ctx.author.roles:
                 await ctx.author.remove_roles(role)
@@ -374,9 +491,12 @@ class RoleCog(Cog):
                 print(ctx.author.name + " has role " + role.name + ", removing.")
             else:
                 if role not in ctx.author.roles:
-                    await ctx.author.add_roles(ctx.author, role)
+                    await ctx.author.add_roles(role)
                     await ctx.author.send("You did not have the role " + role.name + ", so I'm adding it now for you!")
                     print(ctx.author.name + " does not have role " + role.name + ", adding.")
+        except KeyError:
+            await ctx.send("Availible roles:")
+            await ctx.send("\n".join(["`" + k + "`" for k in freeroles.keys()]))
 
 
 class FunCog(Cog):
@@ -394,7 +514,7 @@ class FunCog(Cog):
         reactions = random.choice(
             ['🇦🇧🇨🇩🇪🇫🇬🇭', '❤💛💚💙💜🖤💔', '🐶🐰🐍🐘🐭🐸💔', '🍅🍑🍒🍌🍉🍆🍓🍇']
         )
-        pollmsg = await ctx.channel.send(".........")
+        pollmsg = await ctx.send(".........")
         polltext = ctx.message.author.name + " has called a vote:"
         i = 0
         for o in options:
@@ -450,7 +570,6 @@ class FunCog(Cog):
                 ))
 
         except Exception as e:
-            trace = traceback.format_exc()
-            print(trace)
-            await ctx.message.channel.send("```{}```".format())
-            await ctx.message.channel.send("I don't understand the dice notation: " + dice)
+            # await ctx.message.channel.send("```{}```".format())
+            await ctx.message.channel.send("I don't understand the dice notation: '{dice}'\nProper usage (from help doc): \n```{command.usage}\n{command.help}```".format(dice=dice, command=ctx.command))
+            await ctx.message.channel.send("Guru mediation: ```{tb}```".format(tb=traceback.format_exc()))

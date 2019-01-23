@@ -17,17 +17,18 @@ def format_message(message):
     return message_format['logmessage'].format(
         guildname=message.guild.name if message.guild else "@me direct",
         channelname=message.channel.name if message.guild else message.author.name,
-        authorreal="{}#{}".format(message.author.name, message.author.id),
+        authorreal="{}#{}".format(message.author.name, message.author.discriminator),
         authornick=message.author.nick if message.guild and message.author.nick else None,
         message=message.clean_content
     )
 
 
 def logpath(message):
+    from slugify import slugify
     if message.guild is not None:
-        _dir = os.path.join("logs", message.channel.guild.name, message.channel.name)
+        _dir = os.path.join("logs", slugify(message.channel.guild.name), slugify(message.channel.name))
     else:
-        _dir = os.path.join("logs", "direct", message.author.name)
+        _dir = os.path.join("logs", "direct", slugify(message.author.name))
     os.makedirs(_dir, exist_ok=True)
     return os.path.join(_dir, str(datetime.date.today()) + ".log")
 

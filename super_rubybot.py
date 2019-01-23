@@ -11,6 +11,7 @@ import super_rubybot_cmds as srb_commands
 import super_rubybot_emotes as srb_emotes
 import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
+import super_rubybot_creport as srb_creport
 
 from snip import ContextPrinter
 print = ContextPrinter(vars(), width=20)
@@ -34,6 +35,8 @@ class Rubybot(commands.Bot):
         game = discord.Game("loading...")
         await self.change_presence(status=discord.Status.idle, activity=game)
 
+        self.creport = srb_creport.Creport(self)
+
         # Load managers
         self.emotemgr = srb_emotes.EmoteManager(self)
 
@@ -48,25 +51,23 @@ class Rubybot(commands.Bot):
         self.altgenserver = srb_servers.AltServer(self)
 
         # Post-init
-        game = discord.Game("with myself")
+        game = discord.Game("with ur heart <3")
         await self.change_presence(status=discord.Status.idle, activity=game)
         print("Fully ready.")
 
-    async def on_command_error(self, ctx, exc, *args, **kwargs):
-        from discord.ext.commands import errors
-        if isinstance(exc, errors.MissingRequiredArgument):
-            if ctx.message:
-                await ctx.message.channel.send("Error: Command is missing a required argument.\n\"{exc}\"\nUse {prefix}help {cmdname} for help.".format(
-                    exc=exc, prefix=self.command_prefix, cmdname=ctx.command)
-                )
-                return
-        if isinstance(exc, Exception):
-            traceback.format_exception_only(type(exc), exc)
-        try:
-            raise exc
-        except Exception:
-            traceback.print_exc()
-        await super().on_error(ctx, exc, *args, **kwargs)
+    # async def on_error(self, event_method, *args, **kwargs):
+    #     self.creport.on_error(event_method, *args, **kwargs)
+
+    # async def on_command_error(self, ctx, exc, *args, **kwargs):
+    #     self.creport.on_command_error(ctx, exc, *args, **kwargs)
+    async def spoolSend(self, messagable, content):
+        short = ""
+        for line in content.split('\n'):
+            short += line + "\n"
+            if len(short) >= 1600:
+                await messagable.send(content=short)
+                short = ""
+        await messagable.send(content=short)
 
     def get_member(self, guild):
         return guild.get_member(self.user.id)
@@ -77,7 +78,7 @@ class Rubybot(commands.Bot):
 
 def run():
     rubybot = Rubybot(
-        command_prefix="$",
+        command_prefix="!",
         case_insensitive=True
     )
 
