@@ -341,7 +341,7 @@ class InfoCog(Cog):
     @commands.command(
         brief="Set an arbitrary message",
         description="Set a server-specific message with id message_id.",
-        usage="\"The rules: such and such.\""
+        usage="rules \"The rules: such and such.\""
     )
     @permission(Permisison.MODERATOR)
     async def setmessage(cog, ctx, message_id, newMessage):

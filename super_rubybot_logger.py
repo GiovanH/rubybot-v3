@@ -8,6 +8,7 @@ message_format = {
     "on_message_edit": '**{0.author}** edited their message from: "{1.content}" to "{0.content}"',
     "on_message_delete": '{0.author.name} has deleted the message: "{0.content}"',
     "on_message": '',
+    "on_member_update": "Nickname change: {before.nick} -> {after.nick}",
     "logmessage": '[{guildname}] #{channelname}\t{authorreal}/{authornick}:\t{message}',
     "timestamp": '[{}] '
 }
