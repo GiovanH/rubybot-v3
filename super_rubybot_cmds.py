@@ -341,10 +341,10 @@ class InfoCog(Cog):
     @commands.command(
         brief="Set an arbitrary message",
         description="Set a server-specific message with id message_id.",
+        usage="\"The rules: such and such.\""
     )
     @permission(Permisison.MODERATOR)
-    async def setmessage(cog, ctx, message_id, *messageWords):
-        newMessage = " ".join(messageWords)
+    async def setmessage(cog, ctx, message_id, newMessage):
         messages = settings.getSetting(ctx.guild.id, "messages")
         messages[message_id] = {"content": newMessage}
         settings.setSetting(ctx.guild.id, "messages", messages)
