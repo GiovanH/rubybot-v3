@@ -201,6 +201,8 @@ class FrogCog(Cog):
 
     @commands.command(
         brief="acquire FROg",
+        help="a good command for those who seek frogs",
+        aliases=["contraband"]
     )
     @permission(Permisison.EVERYONE)
     async def frog(cog, ctx):
@@ -219,6 +221,7 @@ class FrogCog(Cog):
 
     @commands.command(
         brief="addtitlanl forgs",
+        help="Add a frog to the database",
     )
     @permission(Permisison.MODERATOR)
     async def addfrog(cog, ctx, url):
@@ -234,6 +237,7 @@ class FrogCog(Cog):
 
     @commands.command(
         brief="f-forg?",
+        help="Remove a frog from the database",
     )
     @permission(Permisison.MODERATOR)
     async def removefrog(cog, ctx, url):
