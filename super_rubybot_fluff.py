@@ -10,6 +10,8 @@ class FluffModule(object):
     def bind(self, bot):
         @bot.listen()
         async def on_message(message):
+            if message.author == bot.user:
+                return
             # tic = time.clock()
             # we do not want the bot to react to itself
             if message.guild is not None:  # Generic Server
