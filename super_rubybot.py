@@ -42,7 +42,7 @@ class Rubybot(commands.Bot):
 
         # Load modules
         self.tumblrmodule = srb_tumblr.TumblrModule(self, asyncio.get_event_loop(), self.get_channel)
-        self.loggermodule = srb_logger.LoggerModule(self)
+        self.loggermodule = srb_logger.LoggerModule(self, LoggerModule=False)
         self.cmdmodule = srb_commands.CommandModule(self)
         self.fluffmodule = srb_fluff.FluffModule(self)
 
