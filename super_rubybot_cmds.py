@@ -533,7 +533,7 @@ class FunCog(Cog):
         brief="Rolls fancy dice",
         usage="<x>d<y> [+<z>] [-<a>] [drop<b>]",
         help="Roll a d<y> <x> times. If present, add <z> to the total, subtract <a> from the total, and/or drop the lowest <b> values.",
-        aliases=["dx, rollby"],
+        aliases=["dx", "rollby"],
     )
     @permission(Permisison.EVERYONE)
     async def roll(cog, ctx, dice, *flags):
