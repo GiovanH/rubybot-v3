@@ -51,6 +51,9 @@ class Creport():
                     return
             elif isinstance(exc, errors.CommandNotFound):
                 if ctx.message:
+                    if set(ctx.message.content) == set(ctx.bot.command_prefix):
+                        # probably just shouting?
+                        return 
                     await ctx.message.channel.send("Error: {exc}\nUse {prefix}help for help.".format(
                         exc=exc, prefix=ctx.bot.command_prefix)
                     )
