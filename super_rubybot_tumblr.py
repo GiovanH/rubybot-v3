@@ -33,8 +33,8 @@ class TumblrModule():
                 self.background_check_feed(
                     self.client,
                     t['blogname'],
-                    self.get_channel(t['bigchannel']),
-                    self.get_channel(t['minichannel']),
+                    self.client.get_channel(t['bigchannel']),
+                    self.client.get_channel(t['minichannel']),
                     t['mindelay']
                 )
             )
@@ -42,7 +42,7 @@ class TumblrModule():
     async def background_check_feed(self, client, blogname, workingChan, rubychan, freq):
         async def handleUpdate(url):
             await rubychan.send("[[ Update! " + url + " ]]")
-            await workingChan.send(await self.client.emotemgr.message(":smolrubes: [[ Update! ]]"))
+            await workingChan.send("[[ Update! ]]")
 
         mostRecentID = 1
         lastPostID = 0
@@ -68,7 +68,7 @@ class TumblrModule():
                     elif update_delay < (MAX_UPDATE_DELAY):
                         update_delay += 10
                     lastPostID = mostRecentID
-                    print("Last post at", lastPostID)
+                    print("Last post had id", lastPostID)
             except Exception as e:  # TODO: Do not use bare except
                 print("error fetching status for", blogname)
                 traceback.print_exc()
