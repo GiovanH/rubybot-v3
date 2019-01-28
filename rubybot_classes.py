@@ -4,7 +4,6 @@ import discord
 import hashlib
 import requests
 
-gio_id = '233017800854077441'
 
 permissions = {}
 servers = {}
