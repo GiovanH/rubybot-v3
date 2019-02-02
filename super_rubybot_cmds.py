@@ -437,7 +437,7 @@ class UtilCog(Cog):
     )
     @permission(Permisison.ADMIN)
     async def restart(cog, ctx):
-        ctx.bot.logout()
+        await ctx.bot.logout()
 
     @commands.command(
         brief="Set new avatar",
