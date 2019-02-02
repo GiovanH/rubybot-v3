@@ -53,6 +53,10 @@ class TumblrModule():
             try:
                 response = self.tumblr_client.posts(blogname, limit=1)
                 # Get the 'posts' field of the response
+                if not response.get("posts"):  # Intentionally catching the empty list, here
+                    print("Bad response from tumblr")
+                    raise KeyError(response)
+
                 mostRecentPost = response['posts'][0]
                 mostRecentID = mostRecentPost['id']
 
@@ -71,7 +75,9 @@ class TumblrModule():
                     print("Last post had id", lastPostID)
             except Exception as e:  # TODO: Do not use bare except
                 print("error fetching status for", blogname)
+                print(traceback.format_exc())
                 traceback.print_exc()
+                
                 # No matter what goes wrong, wait same time and try again
             finally:
                 await asyncio.sleep(freq + update_delay)
