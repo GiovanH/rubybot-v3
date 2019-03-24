@@ -437,7 +437,11 @@ class UtilCog(Cog):
     )
     @permission(Permisison.ADMIN)
     async def restart(cog, ctx):
-        await ctx.bot.logout()
+        with open("last_trace.log", "w") as tracefile:
+            tracefile.write("Restarting at the request of {}".format(ctx.author.name))
+        import subprocess
+        subprocess.run(["killall", "python3"])
+        # await ctx.bot.logout()
 
     @commands.command(
         brief="Set new avatar",
