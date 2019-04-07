@@ -92,7 +92,9 @@ def run():
     from slugify import slugify
     from datetime import datetime
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
-    with std_redirected("~/logs/{}.log".format(slugify(now)), tee=True):
+    logpath = "~/logs/{}.log".format(slugify(now))
+    print("Logpath:", logpath)
+    with std_redirected(logpath, tee=True):
         try:
             SingleInstance()
             rubybot.run(token)
