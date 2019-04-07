@@ -75,7 +75,7 @@ class TumblrModule():
                     print("Last post had id", lastPostID)
             except Exception as e:  # TODO: Do not use bare except
                 print("error fetching status for", blogname)
-                print(traceback.format_exc())
+                print(traceback.format_exc(limit=1))
                 traceback.print_exc()
                 
                 # No matter what goes wrong, wait same time and try again
