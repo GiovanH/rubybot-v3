@@ -61,18 +61,24 @@ class TumblrModule():
                 mostRecentID = mostRecentPost['id']
 
                 if mostRecentID > lastPostID:
-                    if 0 != lastPostID:
-                        print(blogname, "change:", lastPostID, "=/=", mostRecentID)
-                        print(blogname, "update:", lastPostID, "->", mostRecentID)
-                        print("Time since last update:", str(time.time() - time_lastupdate), "sec")
-                        print("Delay at time of update:", str(update_delay))
-                        time_lastupdate = time.time()
-                        update_delay = 0
-                        await handleUpdate(mostRecentPost['post_url'])
-                    elif update_delay < (MAX_UPDATE_DELAY):
-                        update_delay += 10
+                    if 0 == lastPostID:
+                        lastPostID = mostRecentID
+                        continue
+                    print(blogname, "change:", lastPostID, "=/=", mostRecentID)
+                    print(blogname, "update:", lastPostID, "->", mostRecentID)
+
+                    print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
+                    print("Delay at time of update:", str(update_delay))
+                    time_lastupdate = time.time()
+                    update_delay = 0
+
                     lastPostID = mostRecentID
-                    print("Last post had id", lastPostID)
+                    print(blogname, "Last post had id", lastPostID)
+
+                    await handleUpdate(mostRecentPost['post_url'])
+
+                elif update_delay < (MAX_UPDATE_DELAY):
+                    update_delay += 10
             except Exception as e:  # TODO: Do not use bare except
                 print("error fetching status for", blogname)
                 print(traceback.format_exc(limit=1))
