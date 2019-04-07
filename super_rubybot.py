@@ -92,7 +92,7 @@ def run():
     from slugify import slugify
     from datetime import datetime
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
-    logpath = "/logs/rubybot/{}.log".format(slugify(now))
+    logpath = "./logs/rubybot/{}.log".format(slugify(now))
     print("Logpath:", logpath)
     with std_redirected(logpath, tee=True):
         try:
