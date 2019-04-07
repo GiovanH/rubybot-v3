@@ -15,7 +15,7 @@ import super_rubybot_creport as srb_creport
 
 from singleton import SingleInstance
 
-from snip import ContextPrinter
+from snip import ContextPrinter, std_redirected
 print = ContextPrinter(vars(), width=20)
 
 logger = logging.getLogger('discord')
@@ -23,8 +23,6 @@ logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
-
-SingleInstance()
 
 # 499047816807841813
 # https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1
@@ -91,10 +89,15 @@ def run():
 
 # running = True
 # while running:
-    try:
-        rubybot.run(token)
-    except KeyboardInterrupt as e:
-        rubybot.stop()
+    from slugify import slugify
+    from datetime import datetime
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
+    with std_redirected("~/logs/{}.log".format(slugify(now)), tee=True):
+        try:
+            SingleInstance()
+            rubybot.run(token)
+        except KeyboardInterrupt as e:
+            rubybot.stop()
 
 
 def main():
