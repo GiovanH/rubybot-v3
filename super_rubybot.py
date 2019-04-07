@@ -13,6 +13,8 @@ import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
 import super_rubybot_creport as srb_creport
 
+from singleton import SingleInstance
+
 from snip import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
@@ -21,6 +23,8 @@ logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
+
+SingleInstance()
 
 # 499047816807841813
 # https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1

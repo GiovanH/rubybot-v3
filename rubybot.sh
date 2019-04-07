@@ -12,6 +12,6 @@ do
 	python3 super_rubybot.py
 	echo Crashed at `date`
 	echo Crashed at `date` >/dev/stderr
-	cat "last_trace.log"
+#	cat "last_trace.log"
 	sleep 1
 done
