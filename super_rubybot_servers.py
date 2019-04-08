@@ -34,7 +34,7 @@ class AltCog(SRC.Cog):
     def __init__(self, module):
         super().__init__(bot=module.bot)
         self.guild = module.guild
-        self.teamids = module.teamids
+        self.setTeam = module.setTeam
 
     @commands.command(
         brief="Reset a user's team."
@@ -42,7 +42,7 @@ class AltCog(SRC.Cog):
     @SRC.permission(SRC.Permisison.MODERATOR)
     async def reteam(cog, cxt):
         for target in cxt.message.mentions:
-            await cog.module.setTeam(target)
+            await cog.setTeam(target)
 
 
 class LWUServer():
