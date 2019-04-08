@@ -19,7 +19,10 @@ class AltServer():
         if target.guild.id != self.guild.id:
             return
 
-        await target.remove_roles(*[self.guild.get_role(id_) for id_ in self.teamids])
+        for role in [self.guild.get_role(id_) for id_ in self.teamids]:
+            print(role)
+            await target.remove_role(role)
+        
         print("setting team in taboo")
         newteam = self.guild.get_role(self.teamids[int(target.id) % len(self.teamids)])
         await target.add_roles(newteam)
