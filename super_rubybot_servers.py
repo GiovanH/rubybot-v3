@@ -19,10 +19,10 @@ class AltServer():
         if target.guild.id != self.guild.id:
             return
 
-        print(self.teamids)
+        # print(self.teamids)
         for role in [self.guild.get_role(id_) for id_ in self.teamids]:
             try:
-                print(role)
+                # print(role)
                 await target.remove_roles(role)
             except Exception as e:
                 import traceback
