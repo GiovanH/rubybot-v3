@@ -174,7 +174,7 @@ class FrogCog(Cog):
         # loom.thread(target=self.loadFrogs)
 
     def loadFrogs(self):
-        from loom import Spool
+        # from loom import Spool
 
         hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
 
