@@ -15,9 +15,10 @@ class AltServer():
         bot.add_cog(AltCog(self)) 
         print("Altgen ready.")
 
-    def setTeam(self, target):
+    async def setTeam(self, target):
         if target.guild.id != self.guild.id:
             return
+
         await target.remove_roles([self.guild.get_role(id_) for id_ in self.teamids])
         print("setting team in taboo")
         newteam = self.guild.get_role(self.teamids[int(target.id) % len(self.teamids)])
@@ -26,7 +27,7 @@ class AltServer():
     def bind(self):
         @self.bot.listen()
         async def on_member_join(member):
-            self.setTeam(member)
+            await self.setTeam(member)
 
 
 class AltCog(SRC.Cog):
@@ -41,7 +42,8 @@ class AltCog(SRC.Cog):
     @SRC.permission(SRC.Permisison.MODERATOR)
     async def reteam(cog, cxt):
         for target in cxt.message.mentions:
-            cog.module.setTeam(target)
+            await cog.module.setTeam(target)
+
 
 class LWUServer():
     def __init__(self, bot):
