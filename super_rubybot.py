@@ -33,11 +33,11 @@ class Rubybot(commands.Bot):
     async def on_ready(self):
 
         # Pre-init
+        self.creport = srb_creport.Creport(self)
+
         print('Logged on as {0}!'.format(self.user))
         game = discord.Game("loading...")
         await self.change_presence(status=discord.Status.idle, activity=game)
-
-        self.creport = srb_creport.Creport(self)
 
         # Load managers
         self.emotemgr = srb_emotes.EmoteManager(self)
