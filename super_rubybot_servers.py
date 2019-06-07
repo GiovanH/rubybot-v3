@@ -1,5 +1,5 @@
 import super_rubybot_settings as settings
-from snip import ContextPrinter
+from snip.stream import ContextPrinter
 from discord.ext import commands
 import super_rubybot_cmds as SRC
 print = ContextPrinter(vars(), width=20)

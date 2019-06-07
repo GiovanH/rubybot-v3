@@ -1,4 +1,4 @@
-import jfileutil
+from snip import jfileutil
 
 settings_template = {
     "messages": {

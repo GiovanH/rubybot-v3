@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from snip import ContextPrinter
+from snip.stream import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
 message_format = {
