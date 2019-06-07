@@ -3,11 +3,11 @@ import asyncio
 import pickle
 import pytumblr
 import traceback
-import jfileutil
+from snip import jfileutil
 
 import threading
 
-from snip import ContextPrinter
+from snip.stream import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
 MAX_UPDATE_DELAY = 4 * 60  # Four minutes

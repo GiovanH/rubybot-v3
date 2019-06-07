@@ -15,7 +15,7 @@ import super_rubybot_creport as srb_creport
 
 from singleton import SingleInstance
 
-from snip import ContextPrinter, std_redirected
+from snip.stream import ContextPrinter, std_redirected
 print = ContextPrinter(vars(), width=20)
 
 logger = logging.getLogger('discord')

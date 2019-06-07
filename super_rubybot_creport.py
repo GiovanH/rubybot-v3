@@ -2,7 +2,7 @@ import os
 import traceback
 from discord.ext import commands
 
-from snip import ContextPrinter
+from snip.stream import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
 

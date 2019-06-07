@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from enum import Enum
 import super_rubybot_settings as settings
-import jfileutil
+from snip import jfileutil
 import traceback
 
 """
@@ -57,7 +57,7 @@ class Context(discord.abc.Messageable)
  |      discord.abc.Messageable
  |      builtins.object
  """
-from snip import ContextPrinter
+from snip.stream import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
 
@@ -226,7 +226,7 @@ class FrogCog(Cog):
     @permission(Permisison.MODERATOR)
     async def addfrog(cog, ctx, url):
         await ctx.message.add_reaction("🔄")
-        import jfileutil
+        from snip import jfileutil
         hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
         phash = url_to_hash(url)
         if phash not in hashedFrogs.keys():
@@ -242,7 +242,7 @@ class FrogCog(Cog):
     @permission(Permisison.MODERATOR)
     async def removefrog(cog, ctx, url):
         await ctx.message.add_reaction("🔄")
-        import jfileutil
+        from snip import jfileutil
         hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
         for key in hashedFrogs.keys():
             if hashedFrogs.get(key) == url:
