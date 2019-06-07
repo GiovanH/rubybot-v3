@@ -13,7 +13,7 @@ import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
 import super_rubybot_creport as srb_creport
 
-from singleton import SingleInstance
+from snip.singleton import SingleInstance
 
 from snip.stream import ContextPrinter, std_redirected
 print = ContextPrinter(vars(), width=20)
