@@ -5,10 +5,12 @@ import pytumblr
 import traceback
 import jfileutil
 
+import threading
+
 from snip import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
-MAX_UPDATE_DELAY = 15 * 60  # Fifteen minutes
+MAX_UPDATE_DELAY = 4 * 60  # Four minutes
 
 
 class TumblrModule():
@@ -48,38 +50,42 @@ class TumblrModule():
         lastPostID = 0
         update_delay = 0
         time_lastupdate = time.time()
+
+        this_lock = threading.Lock()
+
         # Basically run forever
         while not self.loop.is_closed():
             try:
-                response = self.tumblr_client.posts(blogname, limit=1)
-                # Get the 'posts' field of the response
-                if not response.get("posts"):  # Intentionally catching the empty list, here
-                    print("Bad response from tumblr")
-                    raise KeyError(response)
+                with this_lock:
+                    response = self.tumblr_client.posts(blogname, limit=1)
+                    # Get the 'posts' field of the response
+                    if not response.get("posts"):  # Intentionally catching the empty list, here
+                        print("Bad response from tumblr")
+                        raise KeyError(response)
 
-                mostRecentPost = response['posts'][0]
-                mostRecentID = mostRecentPost['id']
+                    mostRecentPost = response['posts'][0]
+                    mostRecentID = mostRecentPost['id']
 
-                if mostRecentID > lastPostID:
-                    if 0 == lastPostID:
+                    if mostRecentID > lastPostID:
+                        if 0 == lastPostID:
+                            lastPostID = mostRecentID
+                            continue
+                        print(blogname, "change:", lastPostID, "=/=", mostRecentID)
+
+                        print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
+                        print("Delay at time of update:", freq, "+", update_delay)
+                        time_lastupdate = time.time()
+                        update_delay = 0
+
+                        print(blogname, "update:", lastPostID, "->", mostRecentID)
                         lastPostID = mostRecentID
-                        continue
-                    print(blogname, "change:", lastPostID, "=/=", mostRecentID)
 
-                    print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
-                    print("Delay at time of update:", freq, "+", update_delay)
-                    time_lastupdate = time.time()
-                    update_delay = 0
+                        print(blogname, "Last post is now id", lastPostID, "(should be", mostRecentID, ")")
 
-                    print(blogname, "update:", lastPostID, "->", mostRecentID)
-                    lastPostID = mostRecentID
+                        await handleUpdate(mostRecentPost['post_url'])
 
-                    print(blogname, "Last post is now id", lastPostID, "(should be", mostRecentID, ")")
-
-                    await handleUpdate(mostRecentPost['post_url'])
-
-                elif update_delay < (MAX_UPDATE_DELAY):
-                    update_delay += 10
+                    elif update_delay < (MAX_UPDATE_DELAY):
+                        update_delay += 1
             except Exception as e:  # TODO: Do not use bare except
                 print("error fetching status for", blogname)
                 print(traceback.format_exc(limit=1))
