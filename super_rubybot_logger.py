@@ -5,7 +5,7 @@ from snip.stream import ContextPrinter
 print = ContextPrinter(vars(), width=20)
 
 message_format = {
-    "on_message_edit": '**{0.author}** edited their message from: "{1.content}" to "{0.content}"',
+    "on_message_edit": '**{after.author}** edited their message from: "{before.content}" to "{after.content}"',
     "on_message_delete": '{0.author.name} has deleted the message: "{0.content}"',
     "on_message": '',
     "on_member_update": "Nickname change: {before.nick} -> {after.nick}",
