@@ -43,8 +43,10 @@ class TumblrModule():
 
     async def background_check_feed(self, client, blogname, workingChan, rubychan, freq):
         async def handleUpdate(url):
-            await rubychan.send("[[ Update! " + url + " ]]")
-            await workingChan.send("[[ Update! ]]")
+            if rubychan:
+                await rubychan.send("[[ Update! " + url + " ]]")
+            if workingChan:
+                await workingChan.send("[[ Update! ]]")
 
         mostRecentID = 1
         lastPostID = 0
