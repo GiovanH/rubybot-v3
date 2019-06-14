@@ -83,12 +83,12 @@ class LoggerModule():
             if self.stdout:
                 print(
                     message_format['timestamp'].format(datetime.datetime.now()),
-                    message_format['on_message_edit'].format(after, before)
+                    message_format['on_message_edit'].format(after=after, before=before)
                 )
             if self.file:
                 with open(logpath(after), 'a+', encoding="utf-8") as file:
                     file.write(message_format['timestamp'].format(datetime.datetime.now()))
-                    file.write(message_format['on_message_edit'].format(after, before))
+                    file.write(message_format['on_message_edit'].format(after=after, before=before))
                     file.write("\n")
 
         @bot.listen()
@@ -103,5 +103,5 @@ class LoggerModule():
             if self.file:
                 with open(os.path.join("logs", "global"), 'a+', encoding="utf-8") as file:
                     file.write(message_format['timestamp'].format(datetime.datetime.now()))
-                    file.write(message_format['on_member_update'].format(before, after))
+                    file.write(message_format['on_member_update'].format(before=before, after=after))
                     file.write("\n")
