@@ -72,14 +72,14 @@ class TumblrModule():
                         if 0 == lastPostID:
                             lastPostID = mostRecentID
                             continue
-                        print(blogname, "change:", lastPostID, "=/=", mostRecentID)
 
+                        print(blogname, "update:", lastPostID, "->", mostRecentID)
+                        
                         # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
                         # print("Delay at time of update:", freq, "+", update_delay)
                         time_lastupdate = time.time()
                         update_delay = 0
 
-                        print(blogname, "update:", lastPostID, "->", mostRecentID)
                         lastPostID = mostRecentID
                         print(blogname, "Last post is now id", lastPostID, "(should be", mostRecentID, ")")
 
