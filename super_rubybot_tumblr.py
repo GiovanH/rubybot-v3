@@ -14,9 +14,9 @@ MAX_UPDATE_DELAY = 4 * 60  # Four minutes
 
 
 class TumblrModule():
-    def __init__(self, bot, asyncioloop, get_channel):
+    def __init__(self, bot, get_channel):
         super(TumblrModule, self).__init__()
-        self.loop = asyncioloop
+        self.loop = asyncio.get_event_loop()
         self.client = bot
         with open("tumblr_token", 'rb') as filehandler:
             tumblr_token_data = pickle.load(filehandler)
