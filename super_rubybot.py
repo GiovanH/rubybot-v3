@@ -36,14 +36,12 @@ class Rubybot(commands.Bot):
         self.creport = srb_creport.Creport(self)
 
         print('Logged on as {0}!'.format(self.user))
-        game = discord.Game("loading...")
-        await self.change_presence(status=discord.Status.idle, activity=game)
 
         # Load managers
         self.emotemgr = srb_emotes.EmoteManager(self)
 
         # Load modules
-        self.tumblrmodule = srb_tumblr.TumblrModule(self, asyncio.get_event_loop(), self.get_channel)
+        self.tumblrmodule = srb_tumblr.TumblrModule(self, self.get_channel)
         self.loggermodule = srb_logger.LoggerModule(self, stdout=False)
         self.cmdmodule = srb_commands.CommandModule(self)
         self.fluffmodule = srb_fluff.FluffModule(self)
