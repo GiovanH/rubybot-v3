@@ -3,7 +3,7 @@ from discord.ext import commands
 import pickle
 import asyncio
 import traceback
-import logging
+# import logging
 
 import super_rubybot_tumblr as srb_tumblr
 import super_rubybot_logger as srb_logger
@@ -16,13 +16,17 @@ import super_rubybot_creport as srb_creport
 from snip.singleton import SingleInstance
 
 from snip.stream import ContextPrinter, std_redirected
+
 print = ContextPrinter(vars(), width=20)
 
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+# logger = logging.getLogger('discord')
+# logger.setLevel(logging.DEBUG)
+# handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+# handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+# logger.addHandler(handler)
+
+
+# print = logger.info
 
 # 499047816807841813
 # https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1
@@ -34,6 +38,7 @@ class Rubybot(commands.Bot):
 
         # Pre-init
         self.creport = srb_creport.Creport(self)
+
 
         print('Logged on as {0}!'.format(self.user))
 
@@ -91,12 +96,12 @@ def run():
     from datetime import datetime
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
     logpath = "./logs/rubybot/{}.log".format(slugify(now))
-    print("Logpath:", logpath)
+    print(f"Logpath: {logpath}")
     with std_redirected(logpath, tee=True):
         try:
             SingleInstance()
             rubybot.run(token)
-        except KeyboardInterrupt as e:
+        except KeyboardInterrupt:
             rubybot.stop()
 
 
