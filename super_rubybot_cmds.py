@@ -103,7 +103,7 @@ def permission(level):
     return commands.check(predicate)
 
 
-class Cog():
+class Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -394,7 +394,7 @@ class InfoCog(Cog):
             description="description",
             usage="",
             help="help",
-            callback=closure
+            func=closure
         ))
 
     def __init__(self, bot):
@@ -528,7 +528,7 @@ class FunCog(Cog):
         i = 0
         for o in options:
             polltext = polltext + "\n" + reactions[i] + ": " + o
-            print(reactions[i])
+            # print(reactions[i])
             await pollmsg.add_reaction(reactions[i])
             i = i + 1
         await pollmsg.edit(content=polltext)
