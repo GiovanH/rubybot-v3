@@ -1,6 +1,7 @@
 
-from snip.stream import ContextPrinter
-print = ContextPrinter(vars(), width=20)
+import logging
+
+logger = logging.getLogger(__name__)
 
 # EMOTES = {
 #     "question": 537010720324190233
@@ -30,15 +31,15 @@ class EmoteManager(object):
 
         else:
             if fallback:
-                print("Using fallback emoji in", guild)
+                logger.warning("Using fallback emoji in", guild)
                 return fallback
             else:
                 if self.client.get_member(guild).guild_permissions.manage_emojis:
                     with open("asset/" + fallback_name + ".png", 'rb') as fp:
-                        print("I'm being forced to add an emoji to " + guild.name)
+                        logger.warning("I'm being forced to add an emoji to " + guild.name)
                         return await guild.create_custom_emoji(name=fallback_name, image=fp.read())
 
-            print("EMOJI FAILURE! Guild: '{guild.name}' <{guild.id}>, Manage emojis permission: {manage}".format(
+            logger.error("EMOJI FAILURE! Guild: '{guild.name}' <{guild.id}>, Manage emojis permission: {manage}".format(
                 guild=guild,
                 manage=self.client.get_member(guild).guild_permissions.manage_emojis
             ))

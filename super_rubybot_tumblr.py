@@ -7,8 +7,9 @@ from snip import jfileutil
 
 import threading
 
-from snip.stream import ContextPrinter
-print = ContextPrinter(vars(), width=20)
+import logging
+
+logger = logging.getLogger(__name__)
 
 MAX_UPDATE_DELAY = 4 * 60  # Four minutes
 
@@ -23,14 +24,14 @@ class TumblrModule():
             self.tumblr_client = pytumblr.TumblrRestClient(*tumblr_token_data)
         self.get_channel = get_channel
         self.start()
-        print("Ready.")
+        logger.info("Ready.")
 
     def start(self):
-        print('Creating update loops')
+        logger.info('Creating update loops')
         tumblr_polls = jfileutil.load("polls")
 
         for t in tumblr_polls:
-            print('Creating update loop for ' + t['blogname'])
+            logger.info('Creating update loop for ' + t['blogname'])
             self.loop.create_task(
                 self.background_check_feed(
                     self.client,
@@ -62,7 +63,7 @@ class TumblrModule():
                     response = self.tumblr_client.posts(blogname, limit=1)
                     # Get the 'posts' field of the response
                     if not response.get("posts"):  # Intentionally catching the empty list, here
-                        print("Bad response from tumblr")
+                        logger.error("Bad response from tumblr")
                         raise KeyError(response)
 
                     mostRecentPost = response['posts'][0]
@@ -73,7 +74,7 @@ class TumblrModule():
                             lastPostID = mostRecentID
                             continue
 
-                        print(blogname, "update:", lastPostID, "->", mostRecentID)
+                        logger.info(f"{blogname} update: {lastPostID} -> {mostRecentID}")
                         
                         # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
                         # print("Delay at time of update:", freq, "+", update_delay)
@@ -81,17 +82,15 @@ class TumblrModule():
                         update_delay = 0
 
                         lastPostID = mostRecentID
-                        print(blogname, "Last post is now id", lastPostID, "(should be", mostRecentID, ")")
+                        logger.info(f"{blogname} last post is now id {lastPostID}, should be {mostRecentID}")
 
-                        print(blogname, "Broadcasting update", mostRecentID)
+                        logger.info(f"{blogname} Broadcasting update {mostRecentID}")
                         await handleUpdate(mostRecentPost['post_url'])
 
                     elif update_delay < (MAX_UPDATE_DELAY):
                         update_delay += 1
-            except Exception as e:  # TODO: Do not use bare except
-                print("error fetching status for", blogname)
-                print(traceback.format_exc(limit=1))
-                traceback.print_exc()
+            except Exception:  # TODO: Do not use bare except
+                logger.error("error fetching status for", blogname, exc_info=True)
                 
                 # No matter what goes wrong, wait same time and try again
             finally:

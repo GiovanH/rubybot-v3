@@ -2,8 +2,9 @@ import os
 import traceback
 from discord.ext import commands
 
-from snip.stream import ContextPrinter
-print = ContextPrinter(vars(), width=20)
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Creport():
@@ -30,9 +31,9 @@ class Creport():
 
         @bot.listen()
         async def on_error(event_method, *args, **kwargs):
-            print("caught error")
-            print(__name__)
-            print(vars())
+            logger.error("caught error", exc_info=True)
+            logger.error(__name__)
+            logger.error(vars())
             with open("last_trace.log", "w") as tracefile:
                 tracefile.write(traceback.format_exc())
             await super(commands.Bot, bot).on_error(event_method, *args, **kwargs)
@@ -40,7 +41,7 @@ class Creport():
         @bot.listen()
         async def on_command_error(ctx, exc, *args, **kwargs):
             import sys
-            print("caught command error")
+            logger.error("caught command error")
 
             from discord.ext.commands import errors
             if isinstance(exc, errors.MissingRequiredArgument):
@@ -58,7 +59,6 @@ class Creport():
                         exc=exc, prefix=ctx.bot.command_prefix)
                     )
                     return
-            print('Exception in command {}:'.format(ctx.command), file=sys.stderr)
-            traceback.print_exception(type(exc), exc, exc.__traceback__, file=sys.stderr)
-            
+            logger.error('Exception in command {}:'.format(ctx.command), file=sys.stderr)
+            logger.error("Traceback", exc_info=True)
             # raise exc

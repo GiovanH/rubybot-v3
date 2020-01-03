@@ -1,8 +1,10 @@
 import super_rubybot_settings as settings
-from snip.stream import ContextPrinter
 from discord.ext import commands
 import super_rubybot_cmds as SRC
-print = ContextPrinter(vars(), width=20)
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AltServer():
@@ -13,7 +15,7 @@ class AltServer():
         self.teamids = settings.getSetting(self.guild.id, "altgen_teams")
         self.bind()
         bot.add_cog(AltCog(self)) 
-        print("Altgen ready.")
+        logger.info("Altgen ready.")
 
     async def setTeam(self, target):
         if target.guild.id != self.guild.id:
@@ -24,11 +26,10 @@ class AltServer():
             try:
                 # print(role)
                 await target.remove_roles(role)
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
+            except Exception:
+                logger.error("Couldn't remove role", exc_info=True)
 
-        print("setting team in taboo")
+        logger.info("setting team in taboo")
         newteam = self.guild.get_role(self.teamids[int(target.id) % len(self.teamids)])
         await target.add_roles(newteam)
         
@@ -59,7 +60,7 @@ class LWUServer():
         self.bot = bot
         self.guild = bot.get_guild(232218346999775232)
         bot.add_cog(LWUCog(self)) 
-        print("LWU ready.")
+        logger.info("LWU ready.")
         
 
 class LWUCog(SRC.Cog):

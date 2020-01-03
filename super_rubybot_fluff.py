@@ -1,5 +1,8 @@
-from snip.stream import ContextPrinter
-print = ContextPrinter(vars(), width=20)
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class FluffModule(object):
     def __init__(self, bot):

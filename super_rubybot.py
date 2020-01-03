@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 import pickle
-import asyncio
-import traceback
 # import logging
 
 import super_rubybot_tumblr as srb_tumblr
@@ -15,9 +13,17 @@ import super_rubybot_creport as srb_creport
 
 from snip.singleton import SingleInstance
 
-from snip.stream import ContextPrinter, std_redirected
+from snip.stream import std_redirected
+import logging
 
-print = ContextPrinter(vars(), width=20)
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
+
+loghandler_file = logging.FileHandler(f'rubybot_debug_latest.log')
+loghandler_file.setLevel(logging.DEBUG)
+f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+loghandler_file.setFormatter(f_format)
+logger.addHandler(loghandler_file)
 
 # logger = logging.getLogger('discord')
 # logger.setLevel(logging.DEBUG)
@@ -39,8 +45,7 @@ class Rubybot(commands.Bot):
         # Pre-init
         self.creport = srb_creport.Creport(self)
 
-
-        print('Logged on as {0}!'.format(self.user))
+        logger.info('Logged on as {0}!'.format(self.user))
 
         # Load managers
         self.emotemgr = srb_emotes.EmoteManager(self)
@@ -58,7 +63,7 @@ class Rubybot(commands.Bot):
         # Post-init
         game = discord.Game("with ur heart <3")
         await self.change_presence(status=discord.Status.idle, activity=game)
-        print("Fully ready.")
+        logger.info("Fully ready.")
 
     # async def on_error(self, event_method, *args, **kwargs):
     #     self.creport.on_error(event_method, *args, **kwargs)
@@ -96,7 +101,7 @@ def run():
     from datetime import datetime
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
     logpath = "./logs/rubybot/{}.log".format(slugify(now))
-    print(f"Logpath: {logpath}")
+    logger.info(f"Logpath: {logpath}")
     with std_redirected(logpath, tee=True):
         try:
             SingleInstance()
