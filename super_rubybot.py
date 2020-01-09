@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import pickle
-# import logging
 
 import super_rubybot_tumblr as srb_tumblr
 import super_rubybot_logger as srb_logger
@@ -11,15 +10,25 @@ import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
 import super_rubybot_creport as srb_creport
 
+from snip.filesystem import easySlug
+from datetime import datetime
+
 from snip.singleton import SingleInstance
 
 from snip.stream import std_redirected
 import logging
 
-logging.basicConfig(level=logging.WARNING)
+import os
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-loghandler_file = logging.FileHandler(f'rubybot_debug_latest.log')
+now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
+os.makedirs("./logs/rubybot/", exist_ok=True)
+logpath = "./logs/rubybot/debug {}.log".format(easySlug(now))
+logger.info(f"Logpath: {logpath}")
+loghandler_file = logging.FileHandler(logpath)
+
 loghandler_file.setLevel(logging.DEBUG)
 f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 loghandler_file.setFormatter(f_format)
@@ -97,11 +106,6 @@ def run():
 
 # running = True
 # while running:
-    from slugify import slugify
-    from datetime import datetime
-    now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
-    logpath = "./logs/rubybot/{}.log".format(slugify(now))
-    logger.info(f"Logpath: {logpath}")
     with std_redirected(logpath, tee=True):
         try:
             SingleInstance()
