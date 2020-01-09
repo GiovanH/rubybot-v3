@@ -1,6 +1,7 @@
 import os
 import traceback
 from discord.ext import commands
+import discord.errors
 
 import logging
 
@@ -20,13 +21,16 @@ class Creport():
         async def on_ready():
             gio = bot.get_user(233017800854077441)
             # Load shutdown report
-            if os.path.exists("last_trace.log"):
-                with open("last_trace.log", "r") as tracefile:
-                    await gio.send("I just came online. Last error: \n" + tracefile.read())
-            else:
-                await gio.send("I just came online. No traceback file exists.")
-            with open("git.log", "r") as _file:
-                await gio.send("Latest git revision: \n" + _file.read())
+            try:
+                if os.path.exists("last_trace.log"):
+                    with open("last_trace.log", "r") as tracefile:
+                        await gio.send("I just came online. Last error: \n" + tracefile.read())
+                else:
+                    await gio.send("I just came online. No traceback file exists.")
+                with open("git.log", "r") as _file:
+                    await gio.send("Latest git revision: \n" + _file.read())
+            except discord.errors.Forbidden:
+                pass
             os.unlink("last_trace.log")
 
         @bot.listen()
