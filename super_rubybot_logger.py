@@ -1,8 +1,10 @@
 import datetime
 import os
 
-from snip.stream import ContextPrinter
-print = ContextPrinter(vars(), width=20)
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 message_format = {
     "on_message_edit": '**{after.author}** edited their message from: "{before.content}" to "{after.content}"',
@@ -41,15 +43,15 @@ class LoggerModule():
         self.bot = bot
         self.file = file
         self.stdout = stdout
-        print("Ready.")
+        logger.info("Ready.")
 
     def bind(self, bot):
         @bot.listen()
         async def on_message(message):
             if self.stdout:
-                print(
-                    message_format['timestamp'].format(datetime.datetime.now()),
-                    message_format['on_message'].format(message),
+                logger.info(
+                    message_format['timestamp'].format(datetime.datetime.now()) + " " +
+                    message_format['on_message'].format(message) + " " +
                     format_message(message)
                 )
             if self.file:
@@ -63,9 +65,9 @@ class LoggerModule():
         @bot.listen()
         async def on_message_delete(message):
             if self.stdout:
-                print(
-                    message_format['timestamp'].format(datetime.datetime.now()),
-                    message_format['on_message_delete'].format(message),
+                logger.info(
+                    message_format['timestamp'].format(datetime.datetime.now()) + " " +
+                    message_format['on_message_delete'].format(message) + " " +
                     format_message(message)
                 )
             if self.file:
@@ -81,8 +83,8 @@ class LoggerModule():
             if before.content == after.content:
                 return
             if self.stdout:
-                print(
-                    message_format['timestamp'].format(datetime.datetime.now()),
+                logger.info(
+                    message_format['timestamp'].format(datetime.datetime.now()) + " " +
                     message_format['on_message_edit'].format(after=after, before=before)
                 )
             if self.file:
@@ -96,8 +98,8 @@ class LoggerModule():
             if before.nick == after.nick:
                 return
             if self.stdout:
-                print(
-                    message_format['timestamp'].format(datetime.datetime.now()),
+                logger.info(
+                    message_format['timestamp'].format(datetime.datetime.now()) + " " +
                     message_format['on_member_update'].format(before, after)
                 )
             if self.file:

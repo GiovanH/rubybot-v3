@@ -57,8 +57,9 @@ class Context(discord.abc.Messageable)
  |      discord.abc.Messageable
  |      builtins.object
  """
-from snip.stream import ContextPrinter
-print = ContextPrinter(vars(), width=20)
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Permisison(Enum):
@@ -80,7 +81,7 @@ class CommandModule(object):
         bot.add_cog(RoleCog(bot))
         bot.add_cog(ModCog(bot))
         bot.add_cog(FrogCog(bot))
-        print("Ready.")
+        logger.info("Ready.")
 
 
 def hasPermission(ctx, level):
@@ -161,8 +162,8 @@ def get_new_frog_urls(old_frog_urls=[]):
             r = urlopen(method['url']).read()
             r = r.decode()
             new_frog_urls.extend(re.compile(method['re']).findall(r))
-        except Exception as e:
-            traceback.print_exc(limit=0)
+        except Exception:
+            logger.error("Couldn't get frogs from source", exc_info=True)
     return [u for u in new_frog_urls if u not in old_frog_urls]
 
 
@@ -421,15 +422,14 @@ class UtilCog(Cog):
         await ctx.message.channel.send(reply)
 
     @commands.command(
-        brief="Check message context",
+        brief="Check message context (to log)",
         description="description",
     )
     @permission(Permisison.SUPERADMIN)
     async def context(cog, ctx):
-        from pprint import pprint
-        pprint(ctx)
-        pprint(dir(ctx))
-        pprint({x: x.__getattribute__(x) for x in dir(ctx)})
+        logger.info(ctx)
+        logger.info(dir(ctx))
+        logger.info({x: x.__getattribute__(x) for x in dir(ctx)})
 
     @commands.command(
         brief="Restart rubybot",
@@ -497,12 +497,12 @@ class RoleCog(Cog):
             if role in ctx.author.roles:
                 await ctx.author.remove_roles(role)
                 await ctx.author.send("You already had the role " + role.name + ", so I'm toggling it off. ")
-                print(ctx.author.name + " has role " + role.name + ", removing.")
+                logger.info(ctx.author.name + " has role " + role.name + ", removing.")
             else:
                 if role not in ctx.author.roles:
                     await ctx.author.add_roles(role)
                     await ctx.author.send("You did not have the role " + role.name + ", so I'm adding it now for you!")
-                    print(ctx.author.name + " does not have role " + role.name + ", adding.")
+                    logger.info(ctx.author.name + " does not have role " + role.name + ", adding.")
         except KeyError:
             await ctx.send("Availible roles:")
             await ctx.send("\n".join(["`" + k + "`" for k in freeroles.keys()]))

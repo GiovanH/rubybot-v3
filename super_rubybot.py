@@ -1,9 +1,6 @@
 import discord
 from discord.ext import commands
 import pickle
-import asyncio
-import traceback
-# import logging
 
 import super_rubybot_tumblr as srb_tumblr
 import super_rubybot_logger as srb_logger
@@ -13,11 +10,29 @@ import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
 import super_rubybot_creport as srb_creport
 
+from snip.filesystem import easySlug
+from datetime import datetime
+
 from snip.singleton import SingleInstance
 
-from snip.stream import ContextPrinter, std_redirected
+from snip.stream import std_redirected
+import logging
 
-print = ContextPrinter(vars(), width=20)
+import os
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
+os.makedirs("./logs/rubybot/", exist_ok=True)
+logpath = "./logs/rubybot/debug {}.log".format(easySlug(now))
+logger.info(f"Logpath: {logpath}")
+loghandler_file = logging.FileHandler(logpath)
+
+loghandler_file.setLevel(logging.DEBUG)
+f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+loghandler_file.setFormatter(f_format)
+logger.addHandler(loghandler_file)
 
 # logger = logging.getLogger('discord')
 # logger.setLevel(logging.DEBUG)
@@ -39,8 +54,7 @@ class Rubybot(commands.Bot):
         # Pre-init
         self.creport = srb_creport.Creport(self)
 
-
-        print('Logged on as {0}!'.format(self.user))
+        logger.info('Logged on as {0}!'.format(self.user))
 
         # Load managers
         self.emotemgr = srb_emotes.EmoteManager(self)
@@ -58,7 +72,7 @@ class Rubybot(commands.Bot):
         # Post-init
         game = discord.Game("with ur heart <3")
         await self.change_presence(status=discord.Status.idle, activity=game)
-        print("Fully ready.")
+        logger.info("Fully ready.")
 
     # async def on_error(self, event_method, *args, **kwargs):
     #     self.creport.on_error(event_method, *args, **kwargs)
@@ -92,11 +106,6 @@ def run():
 
 # running = True
 # while running:
-    from slugify import slugify
-    from datetime import datetime
-    now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
-    logpath = "./logs/rubybot/{}.log".format(slugify(now))
-    print(f"Logpath: {logpath}")
     with std_redirected(logpath, tee=True):
         try:
             SingleInstance()

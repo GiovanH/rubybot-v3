@@ -1,5 +1,9 @@
 from snip import jfileutil
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 settings_template = {
     "messages": {
         "rules": {
@@ -26,7 +30,7 @@ def getSetting(guild_id, key):
     try:
         settings = jfileutil.load(settings_filename(guild_id))
     except FileNotFoundError:
-        print("Missing settings file for server", guild_id)
+        logger.info("Missing settings file for server", guild_id)
         settings = settings_template
         jfileutil.save(settings, settings_filename(guild_id))
     try:
@@ -36,7 +40,7 @@ def getSetting(guild_id, key):
             settings[key] = settings_template.get(key)
             jfileutil.save(settings, settings_filename(guild_id))
         else:
-            print("No such settings key '{}'".format(key))
+            logger.info("No such settings key '{}'".format(key))
             raise
 
 
@@ -44,7 +48,7 @@ def setSetting(guild_id, key, value):
     try:
         settings = jfileutil.load(settings_filename(guild_id))
     except FileNotFoundError:
-        print("Missing settings file for server", guild_id)
+        logger.info("Missing settings file for server", guild_id)
         jfileutil.save(settings_template, settings_filename(guild_id))
     try:
         assert settings.get(key)
@@ -55,5 +59,5 @@ def setSetting(guild_id, key, value):
             settings[key] = settings_template.get(key)
             jfileutil.save(settings, settings_filename(guild_id))
         else:
-            print("No such settings key '{}'".format(key))
+            logger.info("No such settings key '{}'".format(key))
             raise
