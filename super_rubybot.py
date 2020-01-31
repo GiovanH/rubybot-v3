@@ -87,14 +87,11 @@ def run():
     with open("token", 'rb') as filehandler:
         token = pickle.load(filehandler)
 
-# running = True
-# while running:
-    with std_redirected(logpath, tee=True):
-        try:
-            SingleInstance()
-            rubybot.run(token)
-        except KeyboardInterrupt:
-            rubybot.stop()
+    try:
+        SingleInstance()
+        rubybot.run(token)
+    except KeyboardInterrupt:
+        rubybot.stop()
 
 
 def main():
