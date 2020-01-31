@@ -1,10 +1,9 @@
 import datetime
 import os
 
+from snip.stream import TriadLogger
 
-import logging
-
-logger = logging.getLogger(__name__)
+logger = TriadLogger(__name__)
 
 message_format = {
     "on_message_edit": '**{after.author}** edited their message from: "{before.content}" to "{after.content}"',

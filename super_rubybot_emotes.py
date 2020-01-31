@@ -1,7 +1,7 @@
 
-import logging
+from snip.stream import TriadLogger
 
-logger = logging.getLogger(__name__)
+logger = TriadLogger(__name__)
 
 # EMOTES = {
 #     "question": 537010720324190233

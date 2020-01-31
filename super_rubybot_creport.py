@@ -3,9 +3,10 @@ import traceback
 from discord.ext import commands
 import discord.errors
 
-import logging
 
-logger = logging.getLogger(__name__)
+from snip.stream import TriadLogger
+
+logger = TriadLogger(__name__)
 
 
 class Creport():
