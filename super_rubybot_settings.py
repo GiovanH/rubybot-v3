@@ -1,8 +1,8 @@
 from snip import jfileutil
 
-import logging
+from snip.stream import TriadLogger
 
-logger = logging.getLogger(__name__)
+logger = TriadLogger(__name__)
 
 settings_template = {
     "messages": {

@@ -7,9 +7,9 @@ from snip import jfileutil
 
 import threading
 
-import logging
+from snip.stream import TriadLogger
 
-logger = logging.getLogger(__name__)
+logger = TriadLogger(__name__)
 
 MAX_UPDATE_DELAY = 4 * 60  # Four minutes
 

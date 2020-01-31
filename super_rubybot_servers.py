@@ -2,9 +2,9 @@ import super_rubybot_settings as settings
 from discord.ext import commands
 import super_rubybot_cmds as SRC
 
-import logging
+from snip.stream import TriadLogger
 
-logger = logging.getLogger(__name__)
+logger = TriadLogger(__name__)
 
 
 class AltServer():

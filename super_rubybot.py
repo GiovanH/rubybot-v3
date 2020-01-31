@@ -10,29 +10,12 @@ import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
 import super_rubybot_creport as srb_creport
 
-from snip.filesystem import easySlug
-from datetime import datetime
-
 from snip.singleton import SingleInstance
 
 from snip.stream import std_redirected
-import logging
+from snip.stream import TriadLogger
 
-import os
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-now = datetime.strftime(datetime.now(), "%Y-%m-%d %X")
-os.makedirs("./logs/rubybot/", exist_ok=True)
-logpath = "./logs/rubybot/debug {}.log".format(easySlug(now))
-logger.info(f"Logpath: {logpath}")
-loghandler_file = logging.FileHandler(logpath)
-
-loghandler_file.setLevel(logging.DEBUG)
-f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-loghandler_file.setFormatter(f_format)
-logger.addHandler(loghandler_file)
+logger = TriadLogger(__name__)
 
 # logger = logging.getLogger('discord')
 # logger.setLevel(logging.DEBUG)

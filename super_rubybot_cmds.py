@@ -57,9 +57,10 @@ class Context(discord.abc.Messageable)
  |      discord.abc.Messageable
  |      builtins.object
  """
-import logging
 
-logger = logging.getLogger(__name__)
+from snip.stream import TriadLogger
+
+logger = TriadLogger(__name__)
 
 
 class Permisison(Enum):
