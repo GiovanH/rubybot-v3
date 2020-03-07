@@ -80,7 +80,7 @@ class TumblrModule():
                                 lastPostID = mostRecentID
                                 continue
 
-                            logger.info(f"{blogname} update: {lastPostID} -> {mostRecentID}")
+                            logger.debug(f"{blogname} update: {lastPostID} -> {mostRecentID}")
                             
                             # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
                             # print("Delay at time of update:", freq, "+", update_delay)
@@ -88,7 +88,7 @@ class TumblrModule():
                             update_delay = 0
 
                             lastPostID = mostRecentID
-                            logger.info(f"{blogname} last post is now id {lastPostID}, should be {mostRecentID}")
+                            logger.debug(f"{blogname} last post is now id {lastPostID}, should be {mostRecentID}")
 
                             logger.info(f"{blogname} Broadcasting update {mostRecentID}")
                             await handleUpdate(post['post_url'])
