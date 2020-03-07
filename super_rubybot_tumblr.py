@@ -81,6 +81,7 @@ class TumblrModule():
                                 continue
 
                             logger.debug(f"{blogname} update: {lastPostID} -> {mostRecentID}")
+                            logger.debug(repr([p['id'] for p in recent_posts]))
                             
                             # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
                             # print("Delay at time of update:", freq, "+", update_delay)
