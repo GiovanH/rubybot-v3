@@ -52,7 +52,7 @@ class TumblrModule():
         mostRecentID = 1
         lastPostID = 0
         update_delay = 0
-        time_lastupdate = time.time()
+        # time_lastupdate = time.time()
 
         this_lock = threading.Lock()
 
@@ -66,29 +66,35 @@ class TumblrModule():
                         logger.error("Bad response from tumblr")
                         raise KeyError(response)
 
-                    mostRecentPost = response['posts'][0]
-                    mostRecentID = mostRecentPost['id']
+                    recent_posts = response['posts']
+                    recent_posts.reverse()
 
-                    if mostRecentID > lastPostID:
-                        if 0 == lastPostID:
+                    for post in recent_posts:
+                        if post['id'] > lastPostID:
+
+                            # mostRecentPost = response['posts'][0]
+                            mostRecentID = post['id']
+
+                            # if mostRecentID > lastPostID:
+                            if 0 == lastPostID:
+                                lastPostID = mostRecentID
+                                continue
+
+                            logger.info(f"{blogname} update: {lastPostID} -> {mostRecentID}")
+                            
+                            # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
+                            # print("Delay at time of update:", freq, "+", update_delay)
+                            # time_lastupdate = time.time()
+                            update_delay = 0
+
                             lastPostID = mostRecentID
-                            continue
+                            logger.info(f"{blogname} last post is now id {lastPostID}, should be {mostRecentID}")
 
-                        logger.info(f"{blogname} update: {lastPostID} -> {mostRecentID}")
-                        
-                        # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
-                        # print("Delay at time of update:", freq, "+", update_delay)
-                        time_lastupdate = time.time()
-                        update_delay = 0
+                            logger.info(f"{blogname} Broadcasting update {mostRecentID}")
+                            await handleUpdate(post['post_url'])
 
-                        lastPostID = mostRecentID
-                        logger.info(f"{blogname} last post is now id {lastPostID}, should be {mostRecentID}")
-
-                        logger.info(f"{blogname} Broadcasting update {mostRecentID}")
-                        await handleUpdate(mostRecentPost['post_url'])
-
-                    elif update_delay < (MAX_UPDATE_DELAY):
-                        update_delay += 1
+                        elif update_delay < (MAX_UPDATE_DELAY):
+                            update_delay += 1
             except Exception:  # TODO: Do not use bare except
                 logger.error("error fetching status for", blogname, exc_info=True)
                 
