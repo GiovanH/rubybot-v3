@@ -52,7 +52,7 @@ class TumblrModule():
         mostRecentID = 1
         lastPostID = 0
         update_delay = 0
-        # time_lastupdate = time.time()
+        time_lastupdate = time.time()
 
         this_lock = threading.Lock()
 
@@ -83,9 +83,10 @@ class TumblrModule():
                             logger.debug(f"{blogname} update: {lastPostID} -> {mostRecentID}")
                             logger.debug(repr([p['id'] for p in recent_posts]))
                             
-                            # print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
-                            # print("Delay at time of update:", freq, "+", update_delay)
-                            # time_lastupdate = time.time()
+                            print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
+                            print("Delay at time of update:", freq, "+", update_delay)
+                            time_lastupdate = time.time()
+                            
                             update_delay = 0
 
                             lastPostID = mostRecentID

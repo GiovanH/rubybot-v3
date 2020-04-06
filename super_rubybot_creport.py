@@ -46,7 +46,7 @@ class Creport():
         @bot.listen()
         async def on_command_error(ctx, exc, *args, **kwargs):
             import sys
-            logger.error("caught command error")
+            logger.error(f"caught command error {exc}")
 
             from discord.ext.commands import errors
             if isinstance(exc, errors.MissingRequiredArgument):
