@@ -86,7 +86,7 @@ def run():
 
     with open("token", 'rb') as filehandler:
         token = pickle.load(filehandler)
-
+    
     try:
         SingleInstance()
         rubybot.run(token)
@@ -99,4 +99,5 @@ def main():
 
 
 if __name__ == "__main__":
+    SingleInstance()
     main()

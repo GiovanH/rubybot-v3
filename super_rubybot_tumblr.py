@@ -3,6 +3,7 @@ import asyncio
 import pickle
 import pytumblr
 import traceback
+import os
 from snip import jfileutil
 
 import threading
@@ -80,7 +81,7 @@ class TumblrModule():
                                 lastPostID = mostRecentID
                                 continue
 
-                            logger.debug(f"{blogname} update: {lastPostID} -> {mostRecentID}")
+                            logger.debug(f"{os.getpid()} {blogname} update: {lastPostID} -> {mostRecentID}")
                             logger.debug(repr([p['id'] for p in recent_posts]))
                             
                             print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
@@ -90,7 +91,7 @@ class TumblrModule():
                             update_delay = 0
 
                             lastPostID = mostRecentID
-                            logger.debug(f"{blogname} last post is now id {lastPostID}, should be {mostRecentID}")
+                            logger.debug(f"{os.getpid()} {blogname} last post is now id {lastPostID}, should be {mostRecentID}")
 
                             logger.info(f"{blogname} Broadcasting update {mostRecentID}")
                             await handleUpdate(post['post_url'])
