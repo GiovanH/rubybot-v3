@@ -4,6 +4,7 @@ import pickle
 import pytumblr
 import traceback
 import os
+import time
 from snip import jfileutil
 
 import threading
@@ -44,6 +45,8 @@ class TumblrModule():
             )
 
     async def background_check_feed(self, client, blogname, workingChan, rubychan, freq):
+        checker = f"{blogname}@{os.getpid()}.{time.time()}"
+        
         async def handleUpdate(url):
             if rubychan:
                 await rubychan.send("[[ Update! " + url + " ]]")
@@ -81,7 +84,7 @@ class TumblrModule():
                                 lastPostID = mostRecentID
                                 continue
 
-                            logger.debug(f"{os.getpid()} {blogname} update: {lastPostID} -> {mostRecentID}")
+                            logger.debug(f"{checker} {blogname} update: {lastPostID} -> {mostRecentID}")
                             logger.debug(repr([p['id'] for p in recent_posts]))
                             
                             print(blogname, "Time since last update:", str(time.time() - time_lastupdate), "sec")
@@ -91,7 +94,7 @@ class TumblrModule():
                             update_delay = 0
 
                             lastPostID = mostRecentID
-                            logger.debug(f"{os.getpid()} {blogname} last post is now id {lastPostID}, should be {mostRecentID}")
+                            logger.debug(f"{checker} {blogname} last post is now id {lastPostID}, should be {mostRecentID}")
 
                             logger.info(f"{blogname} Broadcasting update {mostRecentID}")
                             await handleUpdate(post['post_url'])
