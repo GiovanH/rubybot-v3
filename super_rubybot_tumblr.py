@@ -102,7 +102,7 @@ class TumblrModule():
                         elif update_delay < (MAX_UPDATE_DELAY):
                             update_delay += 1
             except Exception:  # TODO: Do not use bare except
-                logger.error("error fetching status for", blogname, exc_info=True)
+                logger.error(f"error fetching status for {blogname}", exc_info=True)
                 
                 # No matter what goes wrong, wait same time and try again
             finally:
