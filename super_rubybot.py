@@ -12,7 +12,6 @@ import super_rubybot_creport as srb_creport
 
 from snip.singleton import SingleInstance
 
-from snip.stream import std_redirected
 from snip.stream import TriadLogger
 
 logger = TriadLogger(__name__)
@@ -88,8 +87,9 @@ def run():
         token = pickle.load(filehandler)
     
     try:
-        SingleInstance()
         rubybot.run(token)
+    except discord.errors.LoginFailure:
+        print("Bad token!")
     except KeyboardInterrupt:
         rubybot.stop()
 

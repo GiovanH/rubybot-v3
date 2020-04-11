@@ -68,6 +68,7 @@ class TumblrModule():
                     # Get the 'posts' field of the response
                     if not response.get("posts"):  # Intentionally catching the empty list, here
                         logger.error(f"{checker} {blogname} Bad response from tumblr")
+                        update_delay = MAX_UPDATE_DELAY
                         raise KeyError(response)
 
                     recent_posts = response['posts']
