@@ -10,6 +10,8 @@ import super_rubybot_fluff as srb_fluff
 import super_rubybot_servers as srb_servers
 import super_rubybot_creport as srb_creport
 
+import asyncio
+
 from snip.singleton import SingleInstance
 
 from snip.stream import TriadLogger
@@ -26,35 +28,40 @@ logger = TriadLogger(__name__)
 # print = logger.info
 
 # 499047816807841813
-# https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1
-
+# https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1        
 
 class Rubybot(commands.Bot):
 
+    def __init__(self, *args, **kwargs):
+        super(Rubybot, self).__init__(*args, **kwargs)
+        self.initialized = False
+
     async def on_ready(self):
 
-        # Pre-init
-        self.creport = srb_creport.Creport(self)
+        if not self.initialized:
+            # Pre-init
+            self.creport = srb_creport.Creport(self)
+            logger.info('Logged on as {0}!'.format(self.user))
+            self.loop = asyncio.get_event_loop()
 
-        logger.info('Logged on as {0}!'.format(self.user))
+            # Load managers
+            self.emotemgr = srb_emotes.EmoteManager(self)
 
-        # Load managers
-        self.emotemgr = srb_emotes.EmoteManager(self)
+            # Load modules
+            self.tumblrmodule = srb_tumblr.TumblrModule(self, self.get_channel)
+            self.loggermodule = srb_logger.LoggerModule(self, stdout=False)
+            self.cmdmodule = srb_commands.CommandModule(self)
+            self.fluffmodule = srb_fluff.FluffModule(self)
 
-        # Load modules
-        self.tumblrmodule = srb_tumblr.TumblrModule(self, self.get_channel)
-        self.loggermodule = srb_logger.LoggerModule(self, stdout=False)
-        self.cmdmodule = srb_commands.CommandModule(self)
-        self.fluffmodule = srb_fluff.FluffModule(self)
+            # Server-specific code
+            self.lwuserver = srb_servers.LWUServer(self)
+            self.altgenserver = srb_servers.AltServer(self)
 
-        # Server-specific code
-        self.lwuserver = srb_servers.LWUServer(self)
-        self.altgenserver = srb_servers.AltServer(self)
-
-        # Post-init
-        game = discord.Game("with ur heart <3")
-        await self.change_presence(status=discord.Status.idle, activity=game)
-        logger.info("Fully ready.")
+            # Post-init
+            game = discord.Game("with ur heart <3")
+            await self.change_presence(status=discord.Status.idle, activity=game)
+            logger.info("Fully ready.")
+            self.initialized = True
 
     # async def on_error(self, event_method, *args, **kwargs):
     #     self.creport.on_error(event_method, *args, **kwargs)

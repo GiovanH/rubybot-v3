@@ -2,9 +2,7 @@ import time
 import asyncio
 import pickle
 import pytumblr
-import traceback
 import os
-import time
 from snip import jfileutil
 
 import threading
@@ -19,7 +17,6 @@ MAX_UPDATE_DELAY = 4 * 60  # Four minutes
 class TumblrModule():
     def __init__(self, bot, get_channel):
         super(TumblrModule, self).__init__()
-        self.loop = asyncio.get_event_loop()
         self.client = bot
         with open("tumblr_token", 'rb') as filehandler:
             tumblr_token_data = pickle.load(filehandler)
@@ -34,7 +31,7 @@ class TumblrModule():
 
         for t in tumblr_polls:
             logger.info('Creating update loop for ' + t['blogname'])
-            self.loop.create_task(
+            self.client.loop.create_task(
                 self.background_check_feed(
                     self.client,
                     t['blogname'],
@@ -61,7 +58,7 @@ class TumblrModule():
         this_lock = threading.Lock()
 
         # Basically run forever
-        while not self.loop.is_closed():
+        while not self.client.loop.is_closed():
             try:
                 with this_lock:
                     response = self.tumblr_client.posts(blogname, limit=1)
