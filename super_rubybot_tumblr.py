@@ -67,7 +67,7 @@ class TumblrModule():
                     response = self.tumblr_client.posts(blogname, limit=1)
                     # Get the 'posts' field of the response
                     if not response.get("posts"):  # Intentionally catching the empty list, here
-                        logger.error("Bad response from tumblr")
+                        logger.error(f"{checker} {blogname} Bad response from tumblr")
                         raise KeyError(response)
 
                     recent_posts = response['posts']

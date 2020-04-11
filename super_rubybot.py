@@ -94,10 +94,12 @@ def run():
         rubybot.stop()
 
 
-def main():
-    run()
-
-
 if __name__ == "__main__":
     SingleInstance()
-    main()
+    while True:
+        try:
+            run()
+            logger.error("Crashed out of main!")
+            continue
+        except KeyboardInterrupt:
+            break

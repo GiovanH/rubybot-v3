@@ -13,5 +13,5 @@ do
 	echo Crashed at `date`
 	echo Crashed at `date` >/dev/stderr
 #	cat "last_trace.log"
-	sleep 1
+	sleep 1  # in case of fastloop
 done
