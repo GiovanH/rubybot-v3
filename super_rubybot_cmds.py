@@ -124,16 +124,19 @@ frog_urls = []
 
 
 def url_to_hash(url):
-    import imagehash
-    from PIL import Image   # Image IO libraries
-    from urllib.request import urlretrieve
-    import tempfile
+    try:
+        import imagehash
+        from PIL import Image   # Image IO libraries
+        from urllib.request import urlretrieve
+        import tempfile
 
-    filename = tempfile.mktemp()
-    urlretrieve(url, filename)
-    image = Image.open(filename)
-    proc_hash = imagehash.dhash(image, hash_size=8)
-    return str(proc_hash)
+        filename = tempfile.mktemp()
+        urlretrieve(url, filename)
+        image = Image.open(filename)
+        proc_hash = imagehash.dhash(image, hash_size=8)
+        return str(proc_hash)
+    except ImportError:
+        return url
 
 
 def get_new_frog_urls(old_frog_urls=[]):    
