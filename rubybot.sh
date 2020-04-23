@@ -4,7 +4,19 @@ echo Rubybot.sh started
 while true
 do
 	echo Compressing logs
-	zip logs.zip -rf logs
+
+	if [ "$(ls -A /media/usb/)" ]; then
+	    zip_target=/media/usb/discord.zip
+	else
+	    zip_target=./discord.zip
+	fi
+
+	if [ ! -f ${zip_target} ]; then
+	    zip ${zip_target} -r logs &
+	else
+	    zip ${zip_target} -rf logs &
+	fi
+
 	echo Reloading git
 	./git.sh > git.log
 	echo starting up at `date`
