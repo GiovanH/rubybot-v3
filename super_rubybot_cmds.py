@@ -369,7 +369,7 @@ class InfoCog(Cog):
     async def patreon(cog, ctx):
         await ctx.send(
             embed=discord.Embed(
-                title="Keep me alive and keep Gio healthy!",
+                title="Keep Gio and me alive!",
                 url="https://www.patreon.com/giovan"
             ).set_author(name="Giovan").set_thumbnail(url="https://cdn.discordapp.com/emojis/361958691244867584.png")
         )
@@ -404,7 +404,7 @@ class InfoCog(Cog):
 
     def __init__(self, bot):
         super().__init__(bot)
-        for fixed_message_id in ["rules", "liveblogs"]:
+        for fixed_message_id in ["rules", "liveblogs", "streams"]:
             self.get_message_alias(fixed_message_id)
 
 
