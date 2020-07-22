@@ -120,8 +120,6 @@ class Cog(commands.Cog):
     #     print('{0.command} is done.'.format(ctx))
 
 
-frog_urls = []
-
 
 def url_to_hash(url):
     try:
@@ -181,7 +179,11 @@ class FrogCog(Cog):
     def loadFrogs(self):
         # from loom import Spool
 
-        hashedFrogs = jfileutil.load("hashedFrogs", default=dict())
+        try:
+            hashedFrogs = jfileutil.load("hashedFrogs")
+        except:
+            hashedFrogs = dict()
+            logger.error("Couldn't load frogs?", exc_info=True)
 
         # new_frog_urls = get_new_frog_urls(old_frog_urls=hashedFrogs.values())
 
@@ -199,10 +201,7 @@ class FrogCog(Cog):
 
         # jfileutil.save(hashedFrogs, "hashedFrogs")
 
-        global frog_urls
-        frog_urls.clear()
-        for key in hashedFrogs.keys():
-            frog_urls.append(hashedFrogs[key])
+        self.frog_urls = list(hashedFrogs.values())
 
     @commands.command(
         brief="acquire FROg",
@@ -212,14 +211,14 @@ class FrogCog(Cog):
     @permission(Permisison.EVERYONE)
     async def frog(cog, ctx):
         from random import randint
-        if len(frog_urls) == 0:
+        if len(cog.frog_urls) == 0:
             await ctx.send("TRAGIC FROG ACCIDENT: No frogs in database!")
             return
-        frogi = randint(0, len(frog_urls))
-        froggo = frog_urls[frogi]
+        frogi = randint(0, len(cog.frog_urls))
+        froggo = cog.frog_urls[frogi]
         await ctx.send(
             "[{i}/{t}] Frog for {name}:\n{url}".format(
-                i=frogi + 1, t=len(frog_urls) + 1,
+                i=frogi + 1, t=len(cog.frog_urls) + 1,
                 name=ctx.author.name, url=froggo
             )
         )

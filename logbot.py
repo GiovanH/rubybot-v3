@@ -50,8 +50,8 @@ class Logbot(commands.Bot):
 
 def run():
     logbot = Logbot(
-        command_prefix="!",
-        case_insensitive=True
+        command_prefix="§§LOGBOT",
+        case_insensitive=False
     )
 
     with open("token_logbot", 'rb') as filehandler:
