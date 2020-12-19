@@ -91,9 +91,9 @@ def hasPermission(ctx, level):
         return True
     if ctx.guild is not None:
         if level == Permisison.ADMIN:
-            return ctx.guild.get_member(aid).guild_permissions.administrator
+            return ctx.author.guild_permissions.administrator
         if level == Permisison.MODERATOR:
-            return ctx.guild.get_member(aid).guild_permissions.manage_messages
+            return ctx.author.guild_permissions.manage_messages
     if level == Permisison.SUPERADMIN:
         return aid in superadmin_ids
     return False
@@ -101,7 +101,9 @@ def hasPermission(ctx, level):
 
 def permission(level):
     def predicate(ctx):
-        return hasPermission(ctx, level)
+        success = hasPermission(ctx, level)
+        print("Checking permission", level, ctx, success)
+        return success
     return commands.check(predicate)
 
 
