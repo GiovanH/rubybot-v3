@@ -56,8 +56,8 @@ class LoggerModule():
             if self.file:
                 with open(logpath(message), 'a+', encoding="utf-8") as file:
                     file.write(message_format['timestamp'].format(datetime.datetime.now()))
-                    file.write(message_format['on_message'].format(message))
-                    file.write("\n")
+                    # file.write(message_format['on_message'].format(message))
+                    # file.write("\n")
                     file.write(format_message(message))
                     file.write("\n")
 

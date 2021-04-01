@@ -47,6 +47,7 @@ class Creport():
         async def on_command_error(ctx, exc, *args, **kwargs):
             import sys
             logger.error(f"caught command error {exc}")
+            logger.error("Traceback", exc_info=True)
 
             from discord.ext.commands import errors
             if isinstance(exc, errors.MissingRequiredArgument):
@@ -65,5 +66,4 @@ class Creport():
                     )
                     return
             logger.error('Exception in command {}:'.format(ctx.command), file=sys.stderr)
-            logger.error("Traceback", exc_info=True)
             # raise exc

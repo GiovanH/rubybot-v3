@@ -279,9 +279,11 @@ class ModCog(Cog):
                 return
             bad_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("bad_roles")))
             good_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("good_roles")))
-            while any(role in target.roles for role in good_roles):
+            if any(role in target.roles for role in good_roles):
+                logger.info(f"Removing {good_roles} from {target}")
                 await target.remove_roles(*good_roles)
-            while not all(role in target.roles for role in bad_roles):
+            if not all(role in target.roles for role in bad_roles):
+                logger.info(f"Adding {bad_roles} from {target}")                
                 await target.add_roles(*bad_roles)
             report = settings.getSetting(ctx.guild.id, "bad").get("fmt_bad").format(target=target, source=source)
             if report:
@@ -307,9 +309,11 @@ class ModCog(Cog):
                 return
             bad_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("bad_roles")))
             good_roles = list(map(ctx.guild.get_role, settings.getSetting(ctx.guild.id, "bad").get("good_roles")))
-            while any(role in target.roles for role in bad_roles):
+            if any(role in target.roles for role in bad_roles):
+                logger.info(f"Removing roles {bad_roles} from {target}")
                 await target.remove_roles(*bad_roles)
-            while not all(role in target.roles for role in good_roles):
+            if not all(role in target.roles for role in good_roles):
+                logger.info(f"Adding roles {good_roles} to {target}")
                 await target.add_roles(*good_roles)
             report = settings.getSetting(ctx.guild.id, "bad").get("fmt_unbad").format(target=target, source=source)
             if report:
