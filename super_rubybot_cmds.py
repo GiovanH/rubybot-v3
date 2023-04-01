@@ -139,7 +139,7 @@ def url_to_hash(url):
         return url
 
 
-def get_new_frog_urls(old_frog_urls=[]):    
+def get_new_frog_urls(old_frog_urls=[]):
     import re
     from urllib.request import urlopen
     frogfetchers = [
@@ -283,7 +283,7 @@ class ModCog(Cog):
                 logger.info(f"Removing {good_roles} from {target}")
                 await target.remove_roles(*good_roles)
             if not all(role in target.roles for role in bad_roles):
-                logger.info(f"Adding {bad_roles} from {target}")                
+                logger.info(f"Adding {bad_roles} from {target}")
                 await target.add_roles(*bad_roles)
             report = settings.getSetting(ctx.guild.id, "bad").get("fmt_bad").format(target=target, source=source)
             if report:
@@ -396,16 +396,15 @@ class InfoCog(Cog):
         await ctx.send("http://www.qwantz.com/comics/comic2-1348.png")
 
     def get_message_alias(self, fixed_message_id):
-        async def closure(ctx):
-            await ctx.bot.get_command("message").callback(self, ctx, fixed_message_id)
-        self.bot.add_command(commands.Command(
+        @commands.command(
             brief="Show the '{}' message".format(fixed_message_id),
             name=fixed_message_id,
             description="description",
             usage="",
-            help="help",
-            func=closure
-        ))
+            help="help"
+        )
+        async def closure(ctx):
+            await ctx.bot.get_command("message").callback(self, ctx, fixed_message_id)
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -462,7 +461,7 @@ class UtilCog(Cog):
                 await ctx.bot.edit_profile(avatar=fp.read())
         except Exception:
             await ctx.author.send(traceback.format_exc())
-    
+
     @commands.command(
         brief="Dump all emotes",
     )

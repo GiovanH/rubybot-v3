@@ -28,7 +28,7 @@ logger = TriadLogger(__name__)
 # print = logger.info
 
 # 499047816807841813
-# https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1        
+# https://discordapp.com/api/oauth2/authorize?client_id=499047816807841813&scope=bot&permissions=1
 
 class Rubybot(commands.Bot):
 
@@ -85,14 +85,19 @@ class Rubybot(commands.Bot):
 
 
 def run():
+
+    intents = discord.Intents.default()
+    intents.message_content = True
+
     rubybot = Rubybot(
         command_prefix="!",
+        intents=intents,
         case_insensitive=True
     )
 
     with open("token", 'rb') as filehandler:
         token = pickle.load(filehandler)
-    
+
     try:
         rubybot.run(token)
     except discord.errors.LoginFailure:
